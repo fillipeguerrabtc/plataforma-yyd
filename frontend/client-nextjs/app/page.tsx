@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import * as styles from './styles/components.css';
+import { TourCard } from './components/TourCard';
 
 interface Tour {
   id: number;
@@ -71,21 +72,8 @@ export default async function Home() {
             </div>
           ) : (
             <div className={styles.toursGrid}>
-              {tours.map((tour) => (
-                <div key={tour.id} className={styles.tourCard}>
-                  <div className={styles.tourCardContent}>
-                    <h3 className={styles.tourTitle}>{tour.title_en}</h3>
-                    <p className={styles.tourCity}>{tour.city}</p>
-                    <p className={styles.tourDescription}>
-                      {tour.description_en?.substring(0, 150)}...
-                    </p>
-                    <div className={styles.tourDetails}>
-                      <span className={styles.tourPrice}>€{tour.base_price_eur}</span>
-                      <span className={styles.tourDuration}>{tour.duration_minutes} min</span>
-                    </div>
-                    <button className={styles.bookButton}>Book Now</button>
-                  </div>
-                </div>
+              {tours.map((tour, index) => (
+                <TourCard key={tour.id} tour={tour} index={index} />
               ))}
             </div>
           )}
