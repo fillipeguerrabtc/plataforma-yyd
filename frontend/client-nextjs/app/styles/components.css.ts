@@ -100,6 +100,7 @@ export const toursGrid = style({
 });
 
 export const tourCard = style({
+  position: 'relative',
   background: tokens.colors.white,
   borderRadius: '24px',
   overflow: 'hidden',
@@ -111,6 +112,47 @@ export const tourCard = style({
     boxShadow: '0 8px 32px rgba(95, 188, 188, 0.2)',
     borderColor: tokens.colors.turquoise,
   },
+});
+
+export const bestChoiceBadge = style({
+  position: 'absolute',
+  top: tokens.spacing.md,
+  right: tokens.spacing.md,
+  padding: `${tokens.spacing.xs} ${tokens.spacing.md}`,
+  backgroundColor: tokens.colors.gold,
+  color: tokens.colors.black,
+  fontFamily: tokens.fonts.body,
+  fontSize: tokens.fontSizes.xs,
+  fontWeight: tokens.fontWeights.semiBold,
+  borderRadius: tokens.radii.full,
+  textTransform: 'uppercase',
+  letterSpacing: '0.5px',
+  zIndex: 10,
+});
+
+export const popularBadge = style({
+  position: 'absolute',
+  top: tokens.spacing.md,
+  right: tokens.spacing.md,
+  padding: `${tokens.spacing.xs} ${tokens.spacing.md}`,
+  backgroundColor: tokens.colors.turquoise,
+  color: tokens.colors.white,
+  fontFamily: tokens.fonts.body,
+  fontSize: tokens.fontSizes.xs,
+  fontWeight: tokens.fontWeights.semiBold,
+  borderRadius: tokens.radii.full,
+  textTransform: 'uppercase',
+  letterSpacing: '0.5px',
+  zIndex: 10,
+});
+
+export const tourCategory = style({
+  color: tokens.colors.turquoise,
+  fontWeight: tokens.fontWeights.semiBold,
+  fontSize: tokens.fontSizes.xs,
+  marginBottom: tokens.spacing.sm,
+  textTransform: 'uppercase',
+  letterSpacing: '1px',
 });
 
 export const tourCardContent = style({
@@ -138,6 +180,51 @@ export const tourDescription = style({
   marginBottom: tokens.spacing.lg,
   lineHeight: 1.8,
   fontSize: tokens.fontSizes.sm,
+});
+
+export const tourMeta = style({
+  display: 'flex',
+  gap: tokens.spacing.lg,
+  marginBottom: tokens.spacing.lg,
+  paddingTop: tokens.spacing.md,
+  borderTop: `1px solid ${tokens.colors.grayLight}`,
+});
+
+export const tourMetaItem = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: tokens.spacing.xs,
+});
+
+export const tourMetaIcon = style({
+  fontSize: tokens.fontSizes.md,
+});
+
+export const tourMetaText = style({
+  fontFamily: tokens.fonts.body,
+  fontSize: tokens.fontSizes.sm,
+  color: tokens.colors.gray,
+  fontWeight: tokens.fontWeights.regular,
+});
+
+export const tourPriceSection = style({
+  paddingTop: tokens.spacing.md,
+  marginBottom: tokens.spacing.lg,
+  borderTop: `1px solid ${tokens.colors.grayLight}`,
+});
+
+export const tourPriceWrapper = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: tokens.spacing.xs,
+});
+
+export const tourPriceLabel = style({
+  fontFamily: tokens.fonts.body,
+  fontSize: tokens.fontSizes.xs,
+  color: tokens.colors.gray,
+  textTransform: 'uppercase',
+  letterSpacing: '0.5px',
 });
 
 export const tourDetails = style({
@@ -208,4 +295,136 @@ export const loadingText = style({
   fontSize: tokens.fontSizes.xl,
   color: tokens.colors.turquoise,
   fontWeight: tokens.fontWeights.semiBold,
+});
+
+// Tours Section
+export const toursSection = style({
+  padding: `${tokens.spacing['4xl']} ${tokens.spacing.lg}`,
+  backgroundColor: tokens.colors.white,
+  '@media': {
+    '(max-width: 768px)': {
+      padding: `${tokens.spacing['2xl']} ${tokens.spacing.md}`,
+    },
+  },
+});
+
+export const toursSectionHeader = style({
+  textAlign: 'center',
+  marginBottom: tokens.spacing['3xl'],
+});
+
+export const toursSectionTitle = style({
+  fontFamily: tokens.fonts.heading,
+  fontSize: tokens.fontSizes['3xl'],
+  fontWeight: tokens.fontWeights.bold,
+  color: tokens.colors.black,
+  marginBottom: tokens.spacing.lg,
+  '@media': {
+    '(max-width: 768px)': {
+      fontSize: tokens.fontSizes.xl,
+    },
+  },
+});
+
+export const toursSectionSubtitle = style({
+  fontFamily: tokens.fonts.body,
+  fontSize: tokens.fontSizes.lg,
+  color: tokens.colors.gray,
+  maxWidth: '800px',
+  margin: '0 auto',
+  lineHeight: 1.6,
+  '@media': {
+    '(max-width: 768px)': {
+      fontSize: tokens.fontSizes.md,
+    },
+  },
+});
+
+// Footer enhancements
+export const footerContent = style({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+  gap: tokens.spacing.xl,
+  marginBottom: tokens.spacing.xl,
+  textAlign: 'left',
+  '@media': {
+    '(max-width: 768px)': {
+      gridTemplateColumns: '1fr',
+      textAlign: 'center',
+    },
+  },
+});
+
+export const footerBrand = style({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+  gap: tokens.spacing.sm,
+  '@media': {
+    '(max-width: 768px)': {
+      alignItems: 'center',
+    },
+  },
+});
+
+export const footerLogo = style({
+  width: '60px',
+  height: '60px',
+  borderRadius: tokens.radii.full,
+  background: tokens.colors.white,
+  padding: tokens.spacing.xs,
+});
+
+export const footerTagline = style({
+  fontFamily: tokens.fonts.body,
+  fontSize: tokens.fontSizes.sm,
+  color: tokens.colors.grayDark,
+  lineHeight: 1.4,
+});
+
+export const footerLinks = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: tokens.spacing.sm,
+});
+
+export const footerLink = style({
+  fontFamily: tokens.fonts.body,
+  fontSize: tokens.fontSizes.sm,
+  color: tokens.colors.white,
+  textDecoration: 'none',
+  transition: 'color 0.3s ease',
+  ':hover': {
+    color: tokens.colors.turquoise,
+  },
+});
+
+export const footerSocial = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: tokens.spacing.sm,
+});
+
+export const socialLink = style({
+  fontFamily: tokens.fonts.body,
+  fontSize: tokens.fontSizes.sm,
+  color: tokens.colors.white,
+  textDecoration: 'none',
+  transition: 'color 0.3s ease',
+  ':hover': {
+    color: tokens.colors.gold,
+  },
+});
+
+export const footerBottom = style({
+  paddingTop: tokens.spacing.xl,
+  borderTop: `1px solid rgba(255, 255, 255, 0.1)`,
+  textAlign: 'center',
+});
+
+export const footerCopyright = style({
+  fontFamily: tokens.fonts.body,
+  fontSize: tokens.fontSizes.sm,
+  color: tokens.colors.white,
+  marginBottom: tokens.spacing.sm,
 });

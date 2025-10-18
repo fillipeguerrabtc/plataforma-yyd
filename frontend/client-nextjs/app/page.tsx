@@ -2,7 +2,16 @@ import Image from 'next/image';
 import * as styles from './styles/components.css';
 import { TourCard } from './components/TourCard';
 import { WhatsAppButton } from './components/WhatsAppButton';
-import { SocialProof } from './components/SocialProof';
+import { HeroSection } from './components/HeroSection';
+import { NoCrowdsSection } from './components/NoCrowdsSection';
+import { AwardsSection } from './components/AwardsSection';
+import { FeaturesSection } from './components/FeaturesSection';
+import { StatsCounter } from './components/StatsCounter';
+import { ContactSection } from './components/ContactSection';
+import { ComparisonTable } from './components/ComparisonTable';
+import { TestimonialsSection } from './components/TestimonialsSection';
+import { WhyChooseSection } from './components/WhyChooseSection';
+import { LeadCaptureForm } from './components/LeadCaptureForm';
 
 interface Tour {
   id: string;
@@ -52,26 +61,36 @@ export default async function Home() {
           <Image 
             src="/yyd-logo-real.png" 
             alt="Yes You Deserve Logo" 
-            width={100}
-            height={100}
+            width={80}
+            height={80}
             className={styles.headerLogo}
             priority
           />
           <div>
-            <h1 className={styles.headerTitle}>YYD - Yes You Deserve</h1>
-            <p className={styles.headerSubtitle}>Boutique Tourism Experiences in Portugal 🇵🇹</p>
+            <h1 className={styles.headerTitle}>Yes, You Deserve!</h1>
+            <p className={styles.headerSubtitle}>Private Tuk Tuk Tours in Sintra & Cascais</p>
           </div>
         </div>
       </header>
 
-      <main className={styles.main}>
+      <HeroSection />
+      <NoCrowdsSection />
+      <AwardsSection />
+      <FeaturesSection />
+      <StatsCounter />
+
+      <section id="tours" className={styles.toursSection}>
         <div className={styles.container}>
-          <section className={styles.heroSection}>
-            <h2 className={styles.heroTitle}>Discover Our Tours</h2>
-            <p className={styles.heroSubtitle}>
-              Experience the magic of Sintra, Cascais, Lisboa, and Douro with our private electric tuk-tuk tours.
+          <div className={styles.toursSectionHeader}>
+            <h2 className={styles.toursSectionTitle}>
+              Choose Your Perfect Tuk Tuk Tour
+            </h2>
+            <p className={styles.toursSectionSubtitle}>
+              Whether you want to explore majestic palaces or ride along dramatic coastal roads, 
+              our tuk tuk tours offer the perfect match — from half-day highlights to full-day adventures. 
+              Choose what inspires you most.
             </p>
-          </section>
+          </div>
 
           {tours.length === 0 ? (
             <div className={styles.loading}>
@@ -85,14 +104,59 @@ export default async function Home() {
             </div>
           )}
         </div>
-      </main>
+      </section>
 
-      <SocialProof />
+      <ComparisonTable />
+      <TestimonialsSection />
+      <WhyChooseSection />
+      <LeadCaptureForm />
+      <ContactSection />
 
       <footer className={styles.footer}>
         <div className={styles.container}>
-          <p className={styles.footerText}>© 2025 Yes You Deserve - Boutique Tourism Portugal</p>
-          <p className={styles.footerCities}>Sintra · Lisboa · Cascais · Douro</p>
+          <div className={styles.footerContent}>
+            <div className={styles.footerBrand}>
+              <Image 
+                src="/yyd-logo-real.png" 
+                alt="Yes You Deserve Logo" 
+                width={60}
+                height={60}
+                className={styles.footerLogo}
+              />
+              <p className={styles.footerTagline}>
+                Private Tuk Tuk Tours in Sintra & Cascais
+              </p>
+            </div>
+            <div className={styles.footerLinks}>
+              <a href="#tours" className={styles.footerLink}>Tours</a>
+              <a href="#contact" className={styles.footerLink}>Contact</a>
+              <a href="/privacy" className={styles.footerLink}>Privacy Policy</a>
+            </div>
+            <div className={styles.footerSocial}>
+              <a 
+                href="https://www.facebook.com/Yesyoudeserve/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className={styles.socialLink}
+              >
+                📘 Facebook
+              </a>
+              <a 
+                href="https://www.instagram.com/yesyoudeservetours/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className={styles.socialLink}
+              >
+                📷 Instagram
+              </a>
+            </div>
+          </div>
+          <div className={styles.footerBottom}>
+            <p className={styles.footerCopyright}>
+              © 2025 Yes You Deserve - All rights reserved
+            </p>
+            <p className={styles.footerCities}>Sintra · Lisboa · Cascais · Douro</p>
+          </div>
         </div>
       </footer>
 
