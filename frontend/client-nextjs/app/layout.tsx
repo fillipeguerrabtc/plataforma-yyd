@@ -1,6 +1,12 @@
 import type { Metadata } from 'next';
-import { Montserrat, Lato } from 'next/font/google';
+import { Playfair_Display, Lato, Montserrat } from 'next/font/google';
 import './styles/global.css';
+
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-playfair',
+  weight: ['400', '600', '700'],
+});
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -26,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${montserrat.variable} ${lato.variable}`}>
+    <html lang="en" className={`${playfair.variable} ${montserrat.variable} ${lato.variable}`}>
       <body>{children}</body>
     </html>
   );

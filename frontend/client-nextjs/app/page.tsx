@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import * as styles from './styles/components.css';
 import { TourCard } from './components/TourCard';
+import { WhatsAppButton } from './components/WhatsAppButton';
 
 interface Tour {
   id: string;
@@ -48,10 +49,10 @@ export default async function Home() {
       <header className={styles.header}>
         <div className={`${styles.container} ${styles.headerContent}`}>
           <Image 
-            src="/yyd-logo.png" 
-            alt="YYD Logo" 
-            width={80}
-            height={80}
+            src="/yyd-logo-real.png" 
+            alt="Yes You Deserve Logo" 
+            width={100}
+            height={100}
             className={styles.headerLogo}
             priority
           />
@@ -91,6 +92,8 @@ export default async function Home() {
           <p className={styles.footerCities}>Sintra · Lisboa · Cascais · Douro</p>
         </div>
       </footer>
+
+      <WhatsAppButton />
     </div>
   );
 }

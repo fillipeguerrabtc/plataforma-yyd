@@ -246,6 +246,88 @@
 }.__variable_06d0dd {--font-lato: '__Lato_06d0dd', '__Lato_Fallback_06d0dd'
 }
 
+/*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[15].oneOf[0].use[1]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[15].oneOf[0].use[2]!./node_modules/@vanilla-extract/webpack-plugin/virtualNextFileLoader/dist/vanilla-extract-webpack-plugin-virtualNextFileLoader.cjs.js!./node_modules/@vanilla-extract/webpack-plugin/vanilla.virtual.css?%7B%22fileName%22%3A%22app%2Fstyles%2Ftokens.css.ts.vanilla.css%22%2C%22source%22%3A%22%23H4sIAAAAAAAAA33USY%2BbMBQA4Ht%2FhaUeppVChNkS3NMk6ZymUqUeehw91rhjAmOTTjJV%2F3ufiQxmmcIlyvvst2Bgsq5b8ucDIY6T1qKWymnP8uVcc5U%2FPcnqKnxwGfkYPuz2u%2F2XRXcA%2BWwsRRsAxBAv20deHluDPcSbLE3SZITLWmSG%2BEi%2Bxvsgup8RO22ALAtgGxQjlghIexOioff6HpnXI2%2F7ViM0D901MdAqaBrDNsi88OBH0bgqCddRg1u9XajvmTMkRhJ114zYDQKyuLturKhPrXKOOWT8VBqUMHL3XcC1AC7JgasGf9%2BtiMolL%2BxlSZ31%2BVNc8whtrR2clDPDKpW86TvKkH%2FT%2F%2BdSQvvOop%2B5HoJyhD2LnBHfdedI5uVZgDSsYCRYYiqv%2BM46GCUj0ZJLLHNkZLNk8ksrwd6MM7K14Q%2F%2Blivnokz8FyPuersJZV5NkaoMemaELoCqzyIQrKm3tIvon2Gl0aK5CGNO2iwRbzC1NosV%2BwNqGPEWRDCIFxRWKtVAigfOGo3E59VcxtFhJgoHO40OA2mxxmgaHkZxxtyzvYfSfuOB8qZhawKvWNksudX8BU%2FQbHur9as%2BFCYu8UXjVmNvVmO32NAWxQ8m9cbRoStK7a5v0eIs%2BrQUv4r6Pe8rO0JWv9oHjeJH0dVT77IQWSbwyV1195p%2BHq%2Byqgr0Kiy6G%2Br%2FV1nVhnpVl8fvk4XhiniuuyI0jlb4ZniT5YmE05A3MtV67nsb%2BLjB33%2B8bLGliwYAAA%3D%3D%22%7D ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+:root {
+  --colors-turquoise__rmyl3a0: #5FBCBC;
+  --colors-turquoiseDark__rmyl3a1: #4aa9a9;
+  --colors-turquoiseLight__rmyl3a2: #7dcbcb;
+  --colors-gold__rmyl3a3: #E9C46A;
+  --colors-goldDark__rmyl3a4: #d4a84f;
+  --colors-black__rmyl3a5: #1A1A1A;
+  --colors-white__rmyl3a6: #FFFFFF;
+  --colors-whatsapp__rmyl3a7: #25D366;
+  --colors-grayLight__rmyl3a8: #F5F5F5;
+  --colors-gray__rmyl3a9: #666666;
+  --colors-grayDark__rmyl3aa: #999999;
+  --fonts-heading__rmyl3ab: 'Playfair Display', serif;
+  --fonts-body__rmyl3ac: 'Lato', sans-serif;
+  --fonts-script__rmyl3ad: 'Montserrat', sans-serif;
+  --fontWeights-light__rmyl3ae: 300;
+  --fontWeights-regular__rmyl3af: 400;
+  --fontWeights-semiBold__rmyl3ag: 600;
+  --fontWeights-bold__rmyl3ah: 700;
+  --fontWeights-extraBold__rmyl3ai: 800;
+  --fontSizes-xs__rmyl3aj: 0.875rem;
+  --fontSizes-sm__rmyl3ak: 1rem;
+  --fontSizes-md__rmyl3al: 1.125rem;
+  --fontSizes-lg__rmyl3am: 1.25rem;
+  --fontSizes-xl__rmyl3an: 1.5rem;
+  --fontSizes-2xl__rmyl3ao: 1.75rem;
+  --fontSizes-3xl__rmyl3ap: 2rem;
+  --fontSizes-4xl__rmyl3aq: 2.5rem;
+  --spacing-xs__rmyl3ar: 4px;
+  --spacing-sm__rmyl3as: 8px;
+  --spacing-md__rmyl3at: 16px;
+  --spacing-lg__rmyl3au: 24px;
+  --spacing-xl__rmyl3av: 32px;
+  --spacing-2xl__rmyl3aw: 48px;
+  --spacing-3xl__rmyl3ax: 64px;
+  --spacing-4xl__rmyl3ay: 80px;
+  --radii-sm__rmyl3az: 8px;
+  --radii-md__rmyl3a10: 12px;
+  --radii-lg__rmyl3a11: 16px;
+  --radii-full__rmyl3a12: 9999px;
+  --shadows-sm__rmyl3a13: 0 4px 12px rgba(0,0,0,0.1);
+  --shadows-md__rmyl3a14: 0 8px 24px rgba(0,0,0,0.1);
+  --shadows-lg__rmyl3a15: 0 12px 32px rgba(55, 200, 196, 0.2);
+  --shadows-brand__rmyl3a16: 0 4px 20px rgba(55, 200, 196, 0.3);
+}
+/*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[15].oneOf[0].use[1]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[15].oneOf[0].use[2]!./node_modules/@vanilla-extract/webpack-plugin/virtualNextFileLoader/dist/vanilla-extract-webpack-plugin-virtualNextFileLoader.cjs.js!./node_modules/@vanilla-extract/webpack-plugin/vanilla.virtual.css?%7B%22fileName%22%3A%22app%2Fstyles%2Fglobal.css.ts.vanilla.css%22%2C%22source%22%3A%22KiwgKjo6YmVmb3JlLCAqOjphZnRlciB7CiAgbWFyZ2luOiAwOwogIHBhZGRpbmc6IDA7CiAgYm94LXNpemluZzogYm9yZGVyLWJveDsKfQpodG1sIHsKICBmb250LXNpemU6IDE2cHg7Cn0KYm9keSB7CiAgZm9udC1mYW1pbHk6IHZhcigtLWZvbnRzLWJvZHlfX3JteWwzYWMpOwogIGxpbmUtaGVpZ2h0OiAxLjY7CiAgY29sb3I6IHZhcigtLWNvbG9ycy1ibGFja19fcm15bDNhNSk7CiAgYmFja2dyb3VuZDogdmFyKC0tY29sb3JzLXdoaXRlX19ybXlsM2E2KTsKICAtd2Via2l0LWZvbnQtc21vb3RoaW5nOiBhbnRpYWxpYXNlZDsKICAtbW96LW9zeC1mb250LXNtb290aGluZzogZ3JheXNjYWxlOwp9CmgxLCBoMiwgaDMsIGg0LCBoNSwgaDYgewogIGZvbnQtZmFtaWx5OiB2YXIoLS1mb250cy1oZWFkaW5nX19ybXlsM2FiKTsKICBmb250LXdlaWdodDogdmFyKC0tZm9udFdlaWdodHMtYm9sZF9fcm15bDNhaCk7CiAgbGluZS1oZWlnaHQ6IDEuMjsKfQpidXR0b24gewogIGZvbnQtZmFtaWx5OiB2YXIoLS1mb250cy1oZWFkaW5nX19ybXlsM2FiKTsKICBjdXJzb3I6IHBvaW50ZXI7CiAgYm9yZGVyOiBub25lOwogIHRyYW5zaXRpb246IGFsbCAwLjNzIGVhc2U7Cn0KYnV0dG9uOmhvdmVyIHsKICB0cmFuc2Zvcm06IHRyYW5zbGF0ZVkoLTJweCk7CiAgYm94LXNoYWRvdzogdmFyKC0tc2hhZG93cy1zbV9fcm15bDNhMTMpOwp9%22%7D ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html {
+  font-size: 16px;
+}
+body {
+  font-family: var(--fonts-body__rmyl3ac);
+  line-height: 1.6;
+  color: var(--colors-black__rmyl3a5);
+  background: var(--colors-white__rmyl3a6);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--fonts-heading__rmyl3ab);
+  font-weight: var(--fontWeights-bold__rmyl3ah);
+  line-height: 1.2;
+}
+button {
+  font-family: var(--fonts-heading__rmyl3ab);
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+}
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadows-sm__rmyl3a13);
+}
 /*!*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[15].oneOf[0].use[1]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[15].oneOf[0].use[2]!./node_modules/@vanilla-extract/webpack-plugin/virtualNextFileLoader/dist/vanilla-extract-webpack-plugin-virtualNextFileLoader.cjs.js!./node_modules/@vanilla-extract/webpack-plugin/vanilla.virtual.css?%7B%22fileName%22%3A%22app%2Fstyles%2Ftokens.css.ts.vanilla.css%22%2C%22source%22%3A%22%23H4sIAAAAAAAAA32UTW%2BcMBCG7%2F0VlnpIK8EKzMeyzinZtqf01EOPkVk%2BG4M3NnTZVP3vHbMyNh%2BpfULzzLzvjG2I4LxDfz4g5LonzriQbteL157XMn9%2BFs2VBdQj6GOwPybH8H6T%2B0LFi2Z9YDGlCZ2zJWeZRjAgXw%2FHMH5YIXalALAspElYzLCU0dPEhMD4D2rPmEtVd5P7CJhv45rLCXp9qsuq01ysuEjtFaeRPSDxuFaI7TwB7DCuG1bwtpNuldOsbksNHQi6%2B64CuRC0u3OQpK104asu7KyUZ5M8hZQn2vF34J%2B5ake6zO4qJSjwvDUk8rJnVGjsRFC4hcm8qR%2Bts8sIire41GJygvZbTD50gtrFCoISG%2FxRv%2BXSHaSOlwR5u2QfibxZQrLRUEWQvwE0k0oNwM7HW1XYdBq%2FFLTJDEwzL4rZQrBhmGI2HQcGagjCG0RoiBYIS0qe6QmujjUaDud1HuZRM5MzDHYZNQN5BY%2FxMmxGIUB7VdtYk3Ch8DJsTaADZytxq%2FkebtCqvNX6b3UpdFzAk6mtxi5WY7eYaWuAtvA8aJq62j3fgkXPJtE3gtRznWxVNOMX%2B5b58A%2F01MhHDSTKlH7ynHHv%2FM%2FzLGPJ91UWOB4n%2Bv8s49XHKmvUCSaxKHIQ9jwH%2BYfYgWeBF%2BmpoK3RDbRb7L1XIIACf%2F8BvO7Bvf4FAAA%3D%22%7D ***!
   \*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/

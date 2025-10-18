@@ -2,19 +2,22 @@ import { createGlobalTheme } from '@vanilla-extract/css';
 
 export const tokens = createGlobalTheme(':root', {
   colors: {
-    turquoise: '#37C8C4',
-    turquoiseDark: '#2aa8a4',
+    turquoise: '#5FBCBC',
+    turquoiseDark: '#4aa9a9',
+    turquoiseLight: '#7dcbcb',
     gold: '#E9C46A',
     goldDark: '#d4a84f',
     black: '#1A1A1A',
     white: '#FFFFFF',
+    whatsapp: '#25D366',
     grayLight: '#F5F5F5',
     gray: '#666666',
     grayDark: '#999999',
   },
   fonts: {
-    heading: "'Montserrat', sans-serif",
+    heading: "'Playfair Display', serif",
     body: "'Lato', sans-serif",
+    script: "'Montserrat', sans-serif",
   },
   fontWeights: {
     light: '300',
