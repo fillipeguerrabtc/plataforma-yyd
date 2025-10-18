@@ -1,42 +1,218 @@
-#root {
-  max-width: 1280px;
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--yyd-white);
+}
+
+.header {
+  background: linear-gradient(135deg, var(--yyd-turquoise) 0%, #2aa8a4 100%);
+  color: var(--yyd-white);
+  padding: 24px 0;
+  box-shadow: 0 4px 20px rgba(55, 200, 196, 0.3);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.header-logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--yyd-white);
+  padding: 4px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.header-text h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.header-text p {
+  font-size: 1.25rem;
+  font-weight: 300;
+  opacity: 0.95;
+}
+
+.main {
+  flex: 1;
+  padding: 60px 0;
+}
+
+.hero-section {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.hero-section h2 {
+  font-size: 2.5rem;
+  color: var(--yyd-black);
+  margin-bottom: 16px;
+}
+
+.hero-section p {
+  font-size: 1.25rem;
+  color: var(--yyd-gray);
+  max-width: 800px;
   margin: 0 auto;
-  padding: 2rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.loading p {
+  font-size: 1.5rem;
+  color: var(--yyd-turquoise);
+  font-weight: 600;
+}
+
+.tours-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 32px;
+  margin-top: 40px;
+}
+
+.tour-card {
+  background: var(--yyd-white);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  border: 3px solid var(--yyd-gold);
+  transition: all 0.3s ease;
+}
+
+.tour-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 32px rgba(55, 200, 196, 0.2);
+  border-color: var(--yyd-turquoise);
+}
+
+.tour-card-content {
+  padding: 32px;
+}
+
+.tour-card h3 {
+  font-size: 1.75rem;
+  color: var(--yyd-black);
+  margin-bottom: 12px;
+  font-weight: 800;
+}
+
+.tour-city {
+  color: var(--yyd-turquoise);
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.tour-description {
+  color: var(--yyd-gray);
+  margin-bottom: 24px;
+  line-height: 1.8;
+  font-size: 1rem;
+}
+
+.tour-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-top: 20px;
+  border-top: 2px solid var(--yyd-gray-light);
+}
+
+.tour-price {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--yyd-turquoise);
+  font-family: 'Montserrat', sans-serif;
+}
+
+.tour-duration {
+  color: var(--yyd-gray);
+  font-weight: 600;
+}
+
+.book-button {
+  width: 100%;
+  background: linear-gradient(135deg, var(--yyd-gold) 0%, #d4a84f 100%);
+  color: var(--yyd-white);
+  padding: 16px 32px;
+  font-size: 1.125rem;
+  font-weight: 700;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.book-button:hover {
+  background: linear-gradient(135deg, var(--yyd-turquoise) 0%, #2aa8a4 100%);
+}
+
+.no-tours {
+  text-align: center;
+  padding: 80px 20px;
+  grid-column: 1 / -1;
+}
+
+.no-tours p {
+  font-size: 1.5rem;
+  color: var(--yyd-gray);
+}
+
+.footer {
+  background: var(--yyd-black);
+  color: var(--yyd-white);
+  padding: 40px 0;
+  margin-top: 80px;
+}
+
+.footer-content {
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.footer-content p {
+  font-size: 1.125rem;
+  margin-bottom: 8px;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.footer-cities {
+  font-size: 0.875rem;
+  color: #999;
+  margin-top: 12px;
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    text-align: center;
   }
-  to {
-    transform: rotate(360deg);
+  
+  .header-text h1 {
+    font-size: 1.75rem;
   }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+  
+  .header-text p {
+    font-size: 1rem;
   }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+  
+  .hero-section h2 {
+    font-size: 1.875rem;
+  }
+  
+  .tours-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
 }
