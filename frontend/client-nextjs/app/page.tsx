@@ -3,19 +3,24 @@ import * as styles from './styles/components.css';
 import { TourCard } from './components/TourCard';
 
 interface Tour {
-  id: number;
+  id: string;
   title_en: string;
   description_en: string;
   city: string;
-  base_price_eur: number;
+  base_price_eur: string | number;
   duration_minutes: number;
 }
 
 async function getTours(): Promise<Tour[]> {
   try {
-    const backendUrl = 'http://localhost:8000';
+    const backendUrl = process.env.BACKEND_URL || 
+                       (typeof window === 'undefined' ? 'http://localhost:8000' : '');
     
-    const res = await fetch(`${backendUrl}/api/v1/tours/`, {
+    const url = backendUrl 
+      ? `${backendUrl}/api/v1/tours/`
+      : '/api/backend/v1/tours/';
+    
+    const res = await fetch(url, {
       cache: 'no-store',
       headers: {
         'Accept': 'application/json',

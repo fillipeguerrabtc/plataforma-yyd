@@ -219,3 +219,114 @@
     gap: var(--spacing-lg__rmyl3ar);
   }
 }
+/*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[15].oneOf[0].use[1]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[15].oneOf[0].use[2]!./node_modules/@vanilla-extract/webpack-plugin/virtualNextFileLoader/dist/vanilla-extract-webpack-plugin-virtualNextFileLoader.cjs.js!./node_modules/@vanilla-extract/webpack-plugin/vanilla.virtual.css?%7B%22fileName%22%3A%22app%2Fstyles%2Fmodal.css.ts.vanilla.css%22%2C%22source%22%3A%22%23H4sIAAAAAAAAA81WyW7bMBC95yt4KZAAoSHZcRb1FhTopbcW7dGgxJHMlCJVkorlFvn3kpREyUu8pDkUSRxRfhzOvHmcmUkpKeEL%2BQyKk%2FViET%2FcccmjCP25QKiSmhkmRYJy1gD9aF8xocEkKHLPKcl%2BFkrWguJMcqkSpIqUXEbXqPud3F053G%2FMBIUmQXO77eVi0h6ZSWFAmHBk%2FNqRRlZu6wf3zCE3YWEUETqXqkzaR04MXGL75TVyn1f7fXwm6hK3C41XS2ZgsVDlms%2FIvN0hFQWFFaGs1j3crRjmRQ9de2hFKGWi6EG6Ipld4ob3MO1hJWnwilGzTNBtFFWNe9etH9pIHGIJrFja4O7nz0v3zqUk53KVIFIbuclj3DraYL0k1EEiNLWG0Y376JLgfybTqxHlhhkOgfCpJzy3acCa%2FYY%2BCvfiq11rPBsCKX0gHrvq%2FBzQP%2FwbjaGxaXiUnPa7cr9rH%2B8pt3npYTcdS6pgAqfSGFluU6rLHlwNnuSkZHw99kRbFolLSY9%2BGIdPQWeKVU5egYTZMRKGk5evRmNq9auWTAclRafQpaFkY7ao32Qsi3ik7LqqQGVEQyt%2FY6w2O1YSFLdiOkjdIFo1JkNDtkHEjSfiHyx92xDX%2FBivg7GnU8hKR0TBcb2UAfzrbL2cqNid%2BG3iQvi3Pvx9dgrlymxrpi2PnAkItz%2Be3H88R5DBi0qxDB5lE1y48y4cqX%2FOmy%2Fu5N7m7aHCtimAg6VySEBzPFvbdinTle1Gtgdw8AJ%2FqrVh%2BRp3PSNBbifgFMwKQDgE4awQ2Bbz0jqSWQyobXK%2BkBR4oOf%2BPS7%2BdjI3D%2FxOeD3ciIftA6eTuYLyfevqoUp0brlMa5sr8dmKpwpBEB9EyE%2BhmG%2FR7j%2B23FeuBTtf6lLYPMS5cn8eQarDd3SYC4jIgD%2F6w8O5aTsc7Jfl2NARZZ2R7zdV7zNuRAu1MrAtW0vO6Ja0Rranbxxl9kp2x25WK%2B1glWTttTm3XPpu1U1thHM79800At%2ByjmQ1Wbop582FajxL5kyVW%2Baz%2F040u13sHMEEhhLfM4hyrFBmi91lPJtTKK4PpRq5uXjn%2B09Eha42u0Jx1M3NZw3LCRJSwPto6Q3jz0n626%2BQvQI8kd49tXaX4wAaEx0Hol%2F%2BAtLVmMeADQAA%22%7D ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+.modal_overlay__197lol00 {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 50;
+}
+.modal_content__197lol01 {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--colors-white__rmyl3a5);
+  border-radius: var(--radii-lg__rmyl3ay);
+  padding: var(--spacing-xl__rmyl3as);
+  max-width: 600px;
+  width: 90%;
+  max-height: 85vh;
+  overflow: auto;
+  z-index: 51;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+.modal_title__197lol02 {
+  font-size: var(--fontSizes-3xl__rmyl3am);
+  font-weight: var(--fontWeights-extraBold__rmyl3af);
+  color: var(--colors-black__rmyl3a4);
+  margin-bottom: var(--spacing-sm__rmyl3ap);
+  font-family: var(--fonts-heading__rmyl3a9);
+}
+.modal_description__197lol03 {
+  font-size: var(--fontSizes-sm__rmyl3ah);
+  color: var(--colors-turquoise__rmyl3a0);
+  font-weight: var(--fontWeights-semiBold__rmyl3ad);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: var(--spacing-lg__rmyl3ar);
+}
+.modal_section__197lol04 {
+  margin-bottom: var(--spacing-lg__rmyl3ar);
+}
+.modal_sectionTitle__197lol05 {
+  font-size: var(--fontSizes-lg__rmyl3aj);
+  font-weight: var(--fontWeights-bold__rmyl3ae);
+  margin-bottom: var(--spacing-md__rmyl3aq);
+  font-family: var(--fonts-heading__rmyl3a9);
+  color: var(--colors-black__rmyl3a4);
+}
+.modal_sectionText__197lol06 {
+  color: var(--colors-gray__rmyl3a7);
+  line-height: 1.8;
+  font-size: var(--fontSizes-sm__rmyl3ah);
+}
+.modal_priceBox__197lol07 {
+  background-color: var(--colors-grayLight__rmyl3a6);
+  padding: var(--spacing-lg__rmyl3ar);
+  border-radius: var(--radii-md__rmyl3ax);
+  margin-bottom: var(--spacing-lg__rmyl3ar);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal_priceLabel__197lol08 {
+  font-size: var(--fontSizes-sm__rmyl3ah);
+  color: var(--colors-gray__rmyl3a7);
+}
+.modal_priceValue__197lol09 {
+  font-size: 2.5rem;
+  font-weight: var(--fontWeights-extraBold__rmyl3af);
+  color: var(--colors-turquoise__rmyl3a0);
+  font-family: var(--fonts-heading__rmyl3a9);
+}
+.modal_buttonGroup__197lol0a {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: var(--spacing-md__rmyl3aq);
+  gap: var(--spacing-md__rmyl3aq);
+}
+.modal_cancelButton__197lol0b {
+  padding: var(--spacing-md__rmyl3aq) var(--spacing-lg__rmyl3ar);
+  font-size: var(--fontSizes-sm__rmyl3ah);
+  font-weight: var(--fontWeights-semiBold__rmyl3ad);
+  border-radius: var(--radii-md__rmyl3ax);
+  border: 2px solid var(--colors-gold__rmyl3a2);
+  background-color: var(--colors-white__rmyl3a5);
+  color: var(--colors-gold__rmyl3a2);
+  cursor: pointer;
+  font-family: var(--fonts-heading__rmyl3a9);
+  transition: all 0.3s ease;
+}
+.modal_cancelButton__197lol0b:hover {
+  background-color: var(--colors-grayLight__rmyl3a6);
+}
+.modal_confirmButton__197lol0c {
+  padding: var(--spacing-md__rmyl3aq) var(--spacing-lg__rmyl3ar);
+  font-size: var(--fontSizes-sm__rmyl3ah);
+  font-weight: var(--fontWeights-bold__rmyl3ae);
+  border-radius: var(--radii-md__rmyl3ax);
+  background: linear-gradient(135deg, var(--colors-gold__rmyl3a2) 0%, var(--colors-goldDark__rmyl3a3) 100%);
+  color: var(--colors-white__rmyl3a5);
+  border: none;
+  cursor: pointer;
+  font-family: var(--fonts-heading__rmyl3a9);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+.modal_confirmButton__197lol0c:hover {
+  background: linear-gradient(135deg, var(--colors-turquoise__rmyl3a0) 0%, var(--colors-turquoiseDark__rmyl3a1) 100%);
+}
