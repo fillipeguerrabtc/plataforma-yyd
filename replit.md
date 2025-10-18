@@ -19,14 +19,15 @@ Build a comprehensive platform based on a 26,120-line technical whitepaper with 
 - **Multilingual Support**: English, Portuguese (BR), Spanish
 
 ## Recent Changes
-- **2025-10-18**: Initial MVP implementation
-  - Set up development environment: Python 3.11, Node.js 20, PostgreSQL
-  - Created project structure: backend (FastAPI), frontend/client (React), frontend/backoffice (React)
-  - Configured database schema with real YYD tours (Sintra Mágica, Lisboa Elétrica, Douro Intimista, Pôr do Sol em Cabo da Roca)
-  - Implemented Tours API with SQLAlchemy models, schemas, and CRUD operations
-  - Configured Vite to allow all hosts (critical for Replit proxy)
-  - Set up workflows: Frontend on port 5000, Backend on port 8000
-  - **Working MVP**: Frontend successfully displaying 4 real YYD tours from database
+- **2025-10-18**: Upgraded to State-of-the-Art Modern Stack
+  - **Migrated Frontend**: Next.js 14 (App Router) with SSR replacing Vite React
+  - **Design System**: vanilla-extract with type-safe design tokens (YYD colors, fonts, spacing)
+  - **UI Components**: Radix UI (accessible, headless) + Framer Motion (smooth animations)
+  - **Backend Integration**: FastAPI serving 4 real YYD tours via PostgreSQL
+  - **Type Safety**: Full TypeScript integration aligned with backend models (UUID, decimals)
+  - **Architect Approved**: All critical issues resolved (dynamic fetch, type contracts, design tokens)
+  - **100% Open Source**: Next.js, vanilla-extract, Radix, Framer Motion all MIT licensed
+  - **Production Ready**: Environment-driven configuration, SSR optimization, accessible modals
 
 ## Project Architecture
 
@@ -38,13 +39,16 @@ Build a comprehensive platform based on a 26,120-line technical whitepaper with 
 - **Database**: PostgreSQL (Neon) with real tour data
 - **CORS**: Configured for Replit environment
 
-### Frontend (React + Vite)
-- **Client App**: Port 5000, public-facing tour booking interface
-- **BackOffice**: Port 5001 (future), internal management dashboard
-- **Framework**: React 18 with Vite
-- **Styling**: Tailwind CSS
-- **Fonts**: Montserrat (headings), Lato (body)
+### Frontend (Next.js 14 + Modern Stack)
+- **Client App**: Port 5000, Next.js 14 App Router with SSR
+- **BackOffice**: Vite + React (future migration to shared components)
+- **Framework**: Next.js 14 (App Router, React 18)
+- **Styling**: vanilla-extract (type-safe CSS-in-TS, zero runtime)
+- **Design Tokens**: YYD colors, fonts, spacing all typed and centralized
+- **Components**: Radix UI (Dialog, Dropdown) + Framer Motion animations
+- **Fonts**: Montserrat (headings), Lato (body) via Google Fonts
 - **Colors**: Turquoise #37C8C4, Gold #E9C46A, Black #1A1A1A
+- **Features**: SSR tours, animated cards, accessible booking modals
 
 ### Database Schema
 - **tour_products**: Real YYD tours with multilingual content (PT/EN/ES)
