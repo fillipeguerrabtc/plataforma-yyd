@@ -20,6 +20,7 @@ def get_customers(
     db: Session, 
     skip: int = 0, 
     limit: int = 100,
+    segment: Optional[str] = None,
     country: Optional[str] = None,
     tag: Optional[str] = None,
     active_only: bool = True
@@ -29,6 +30,9 @@ def get_customers(
     
     if active_only:
         query = query.filter(Customer.is_active == True)
+    
+    if segment:
+        query = query.filter(Customer.segment == segment)
     
     if country:
         query = query.filter(Customer.country == country)

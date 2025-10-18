@@ -4,7 +4,7 @@ from typing import List, Optional
 from uuid import UUID
 
 from app.db.session import get_db
-from app.schemas.customer import Customer, CustomerCreate, CustomerUpdate
+from app.schemas.customer import Customer, CustomerCreate, CustomerUpdate, CustomerResponse
 from app.crud import customer as customer_crud
 from app.api.v1.deps import get_current_user, require_manager_or_admin
 from app.models.user import User
@@ -12,10 +12,11 @@ from app.models.user import User
 router = APIRouter()
 
 
-@router.get("/customers", response_model=List[Customer])
+@router.get("/customers", response_model=List[CustomerResponse])
 def get_all_customers(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, le=1000),
+    segment: Optional[str] = None,
     country: Optional[str] = None,
     tag: Optional[str] = None,
     active_only: bool = True,
@@ -23,14 +24,16 @@ def get_all_customers(
     current_user: User = Depends(get_current_user)
 ):
     """Get all customers with optional filters (requires authentication)"""
-    return customer_crud.get_customers(
+    customers = customer_crud.get_customers(
         db, 
         skip=skip, 
         limit=limit, 
+        segment=segment,
         country=country, 
         tag=tag, 
         active_only=active_only
     )
+    return [CustomerResponse.from_customer(c) for c in customers]
 
 
 @router.get("/customers/stats")

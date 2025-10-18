@@ -1,6 +1,6 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
   "/page": "app/page.js",
+  "/api/v1/backoffice/customers/route": "app/api/v1/backoffice/customers/route.js",
   "/backoffice/auth/login/page": "app/backoffice/auth/login/page.js",
-  "/backoffice/dashboard/page": "app/backoffice/dashboard/page.js"
+  "/backoffice/customers/page": "app/backoffice/customers/page.js"
 }

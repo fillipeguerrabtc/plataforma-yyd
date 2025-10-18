@@ -16,6 +16,7 @@ class Customer(Base):
     phone = Column(String(50))
     language = Column(String(10), default='en')
     country = Column(String(100), index=True)
+    segment = Column(String(50), default='regular', index=True)
     
     tags = Column(JSONB, default=[])
     notes = Column(Text)
