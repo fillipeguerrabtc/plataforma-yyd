@@ -476,8 +476,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  -o-object-fit: cover;
-     object-fit: cover;
+  object-fit: cover;
   z-index: 0;
 }
 .hero_heroOverlay__11hbl9r2 {
@@ -600,7 +599,8 @@
   font-size: var(--fontSizes-md__rmyl3al);
   font-weight: var(--fontWeights-semiBold__rmyl3ag);
   border-radius: var(--radii-sm__rmyl3az);
-  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+          backdrop-filter: blur(10px);
 }
 @media (max-width: 768px) {
   .hero_hero__11hbl9r0 {

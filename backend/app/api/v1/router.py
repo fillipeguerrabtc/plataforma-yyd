@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints import auth, tours, guides, vehicles, bookings, users, integrations, financial, leads, backoffice_auth, backoffice_config
+from app.api.v1.endpoints import auth, tours, guides, vehicles, bookings, users, integrations, financial, leads, backoffice_auth, backoffice_config, backoffice_customers
 
 api_router = APIRouter()
 
@@ -17,3 +17,4 @@ api_router.include_router(leads.router, prefix="/leads", tags=["leads"])
 # BackOffice APIs
 api_router.include_router(backoffice_auth.router, prefix="/backoffice/auth", tags=["backoffice-auth"])
 api_router.include_router(backoffice_config.router, prefix="/backoffice", tags=["backoffice-config"])
+api_router.include_router(backoffice_customers.router, prefix="/backoffice", tags=["backoffice-customers"])
