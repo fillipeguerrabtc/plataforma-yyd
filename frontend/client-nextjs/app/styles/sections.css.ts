@@ -59,6 +59,40 @@ export const sectionText = style({
   },
 });
 
+export const sectionSubtitle = style({
+  fontFamily: tokens.fonts.body,
+  fontSize: tokens.fontSizes.lg,
+  fontWeight: tokens.fontWeights.regular,
+  color: tokens.colors.gray,
+  maxWidth: '800px',
+  margin: '0 auto',
+  lineHeight: 1.6,
+  '@media': {
+    '(max-width: 768px)': {
+      fontSize: tokens.fontSizes.md,
+    },
+  },
+});
+
+export const ctaButton = style({
+  display: 'inline-block',
+  padding: `${tokens.spacing.md} ${tokens.spacing.xl}`,
+  backgroundColor: tokens.colors.turquoise,
+  color: tokens.colors.white,
+  fontFamily: tokens.fonts.body,
+  fontSize: tokens.fontSizes.md,
+  fontWeight: tokens.fontWeights.semiBold,
+  borderRadius: tokens.radii.full,
+  textDecoration: 'none',
+  transition: 'all 0.3s ease',
+  boxShadow: '0 4px 16px rgba(0, 181, 204, 0.3)',
+  ':hover': {
+    backgroundColor: tokens.colors.turquoiseDark,
+    transform: 'translateY(-2px)',
+    boxShadow: '0 6px 20px rgba(0, 181, 204, 0.4)',
+  },
+});
+
 // Awards Section
 export const awardsGrid = style({
   display: 'grid',

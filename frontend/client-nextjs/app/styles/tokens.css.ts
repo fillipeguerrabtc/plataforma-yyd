@@ -2,9 +2,9 @@ import { createGlobalTheme } from '@vanilla-extract/css';
 
 export const tokens = createGlobalTheme(':root', {
   colors: {
-    turquoise: '#5FBCBC',
-    turquoiseDark: '#4aa9a9',
-    turquoiseLight: '#7dcbcb',
+    turquoise: '#00B5CC',
+    turquoiseDark: '#0095a8',
+    turquoiseLight: '#33C5DD',
     gold: '#E9C46A',
     goldDark: '#d4a84f',
     black: '#1A1A1A',
@@ -15,9 +15,9 @@ export const tokens = createGlobalTheme(':root', {
     grayDark: '#999999',
   },
   fonts: {
-    heading: "'Playfair Display', serif",
-    body: "'Lato', sans-serif",
-    script: "'Montserrat', sans-serif",
+    decorative: "'Playball', cursive",
+    heading: "'Poppins', sans-serif",
+    body: "'Open Sans', sans-serif",
   },
   fontWeights: {
     light: '300',
@@ -53,9 +53,9 @@ export const tokens = createGlobalTheme(':root', {
     full: '9999px',
   },
   shadows: {
-    sm: '0 4px 12px rgba(0,0,0,0.1)',
+    sm: '0 3px 10px rgba(0,0,0,0.08)',
     md: '0 8px 24px rgba(0,0,0,0.1)',
-    lg: '0 12px 32px rgba(55, 200, 196, 0.2)',
-    brand: '0 4px 20px rgba(55, 200, 196, 0.3)',
+    lg: '0 12px 32px rgba(0, 181, 204, 0.2)',
+    brand: '0 4px 20px rgba(0, 181, 204, 0.3)',
   },
 });

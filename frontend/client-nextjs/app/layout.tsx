@@ -1,23 +1,23 @@
 import type { Metadata } from 'next';
-import { Playfair_Display, Lato, Montserrat } from 'next/font/google';
+import { Playball, Poppins, Open_Sans } from 'next/font/google';
 import './styles/global.css';
 
-const playfair = Playfair_Display({
+const playball = Playball({
   subsets: ['latin'],
-  variable: '--font-playfair',
-  weight: ['400', '600', '700'],
+  variable: '--font-playball',
+  weight: ['400'],
 });
 
-const montserrat = Montserrat({
+const poppins = Poppins({
   subsets: ['latin'],
-  variable: '--font-montserrat',
-  weight: ['400', '600', '700', '800'],
+  variable: '--font-poppins',
+  weight: ['300', '400', '600', '700', '800'],
 });
 
-const lato = Lato({
+const openSans = Open_Sans({
   subsets: ['latin'],
-  variable: '--font-lato',
-  weight: ['300', '400', '700'],
+  variable: '--font-opensans',
+  weight: ['300', '400', '600', '700'],
 });
 
 export const metadata: Metadata = {
@@ -36,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${montserrat.variable} ${lato.variable}`}>
+    <html lang="en" className={`${playball.variable} ${poppins.variable} ${openSans.variable}`}>
       <body>{children}</body>
     </html>
   );
