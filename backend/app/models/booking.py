@@ -8,18 +8,18 @@ from app.db.base import Base
 
 
 class BookingStatus(str, enum.Enum):
-    PENDING = "pending"
+    TENTATIVE = "tentative"
     CONFIRMED = "confirmed"
-    CANCELLED = "cancelled"
     COMPLETED = "completed"
+    CANCELLED = "cancelled"
+    NO_SHOW = "no-show"
 
 
 class PaymentStatus(str, enum.Enum):
     PENDING = "pending"
-    PROCESSING = "processing"
-    SUCCEEDED = "succeeded"
-    FAILED = "failed"
+    PAID = "paid"
     REFUNDED = "refunded"
+    CANCELLED = "cancelled"
 
 
 class Booking(Base):

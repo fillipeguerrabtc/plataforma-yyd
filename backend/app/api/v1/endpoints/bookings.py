@@ -97,7 +97,7 @@ async def create_booking(
         currency="EUR",
         special_requests=booking_data.special_requests,
         booking_number=booking_number,
-        booking_status=BookingStatus.PENDING.value,
+        booking_status=BookingStatus.TENTATIVE.value,
         payment_status=PaymentStatus.PENDING.value
     )
     
@@ -133,7 +133,7 @@ async def create_payment_intent(
     
     # Check if already paid
     current_payment_status = str(booking.payment_status)
-    if current_payment_status == PaymentStatus.SUCCEEDED.value:
+    if current_payment_status == PaymentStatus.PAID.value:
         raise HTTPException(status_code=400, detail="Booking already paid")
     
     try:
@@ -161,7 +161,7 @@ async def create_payment_intent(
         # Update booking with Stripe Payment Intent ID using direct SQL update
         db.query(Booking).filter(Booking.id == uuid.UUID(payment_data.booking_id)).update({
             "stripe_payment_intent_id": payment_intent.id,
-            "payment_status": PaymentStatus.PROCESSING.value
+            "payment_status": PaymentStatus.PENDING.value
         })
         db.commit()
         
