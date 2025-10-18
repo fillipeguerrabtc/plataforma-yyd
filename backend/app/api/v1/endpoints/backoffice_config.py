@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from app.db.session import get_db
-from app.schemas.site_config import SiteConfig, SiteConfigCreate, SiteConfigUpdate, MediaAsset, MediaAssetCreate, MediaAssetUpdate
+from app.schemas.site_config import SiteConfig, SiteConfigCreate, SiteConfigUpdate, MediaAsset as MediaAssetSchema, MediaAssetCreate, MediaAssetUpdate
+from app.models.site_config import MediaAsset as MediaAssetModel
 from app.crud import site_config as config_crud
 from app.api.v1.deps import get_current_user, require_manager_or_admin
 from app.models.user import User
@@ -61,16 +62,16 @@ def update_site_config(
     return config
 
 
-@router.get("/media", response_model=List[MediaAsset])
+@router.get("/media", response_model=List[MediaAssetSchema])
 def get_all_media(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     """Get all media assets (requires authentication)."""
-    return db.query(MediaAsset).filter(MediaAsset.is_active == True).all()
+    return db.query(MediaAssetModel).filter(MediaAssetModel.is_active == True).all()
 
 
-@router.post("/media", response_model=MediaAsset, status_code=201)
+@router.post("/media", response_model=MediaAssetSchema, status_code=201)
 def create_media_asset(
     media_data: MediaAssetCreate,
     db: Session = Depends(get_db),
@@ -84,7 +85,7 @@ def create_media_asset(
     return config_crud.create_media(db=db, media=media_data)
 
 
-@router.put("/media/{key}", response_model=MediaAsset)
+@router.put("/media/{key}", response_model=MediaAssetSchema)
 def update_media_asset(
     key: str,
     media_update: MediaAssetUpdate,
