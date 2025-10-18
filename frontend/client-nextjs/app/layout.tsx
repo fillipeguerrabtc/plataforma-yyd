@@ -24,6 +24,10 @@ export const metadata: Metadata = {
   title: 'YYD - Yes You Deserve | Boutique Tourism Portugal',
   description: 'Experience the magic of Sintra, Cascais, Lisboa, and Douro with our private electric tuk-tuk tours.',
   keywords: ['tours', 'Portugal', 'Sintra', 'Cascais', 'Lisboa', 'Douro', 'tuk-tuk', 'electric tours'],
+  icons: {
+    icon: '/favicon.png',
+    apple: '/favicon.png',
+  },
 };
 
 export default function RootLayout({
