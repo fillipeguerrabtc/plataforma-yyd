@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 from typing import List, Optional
@@ -8,6 +8,8 @@ from decimal import Decimal
 import uuid
 import stripe
 import os
+import hmac
+import hashlib
 
 from app.db.session import get_db
 from app.models.booking import Booking, BookingStatus, PaymentStatus
@@ -15,8 +17,10 @@ from app.models.tour import TourProduct
 
 router = APIRouter()
 
-# Initialize Stripe
-stripe.api_key = os.getenv("STRIPE_SECRET_KEY", "sk_test_51SJ48KBkC2gtgckmAeGfu9nLD5SjSB0snAuolYVufKtNlXrJTQcQaL0QgJ4j3TeRMqXoTC5XnbwnYLd6x1dh5aa0BImx5tGl6")
+# Initialize Stripe with secret from environment
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+if not stripe.api_key:
+    raise ValueError("STRIPE_SECRET_KEY environment variable not set")
 
 
 class CreateBookingRequest(BaseModel):
@@ -197,4 +201,94 @@ async def get_booking(booking_id: str, db: Session = Depends(get_db)):
         "status": str(booking.booking_status),
         "payment_status": str(booking.payment_status),
         "created_at": booking.created_at.isoformat()
+    }
+
+
+@router.post("/webhook")
+async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
+    """Handle Stripe webhook events for payment confirmation"""
+    payload = await request.body()
+    sig_header = request.headers.get('stripe-signature')
+    
+    # Get webhook secret from environment (optional for testing)
+    webhook_secret = os.getenv("STRIPE_WEBHOOK_SECRET")
+    
+    try:
+        if webhook_secret:
+            # Verify webhook signature in production
+            event = stripe.Webhook.construct_event(
+                payload, sig_header, webhook_secret
+            )
+        else:
+            # For testing without webhook secret
+            import json
+            event = json.loads(payload)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail="Invalid payload")
+    except stripe.error.SignatureVerificationError as e:
+        raise HTTPException(status_code=400, detail="Invalid signature")
+    
+    # Handle payment_intent.succeeded event
+    if event['type'] == 'payment_intent.succeeded':
+        payment_intent = event['data']['object']
+        booking_id = payment_intent.get('metadata', {}).get('booking_id')
+        
+        if booking_id:
+            # Update booking status to confirmed and payment to paid
+            booking = db.query(Booking).filter(Booking.id == uuid.UUID(booking_id)).first()
+            if booking:
+                booking.payment_status = PaymentStatus.PAID.value
+                booking.booking_status = BookingStatus.CONFIRMED.value
+                booking.confirmed_at = datetime.utcnow()
+                db.commit()
+                
+                print(f"✅ Booking {booking.booking_number} confirmed - Payment successful!")
+    
+    # Handle payment_intent.payment_failed event
+    elif event['type'] == 'payment_intent.payment_failed':
+        payment_intent = event['data']['object']
+        booking_id = payment_intent.get('metadata', {}).get('booking_id')
+        
+        if booking_id:
+            # Update payment status to cancelled
+            booking = db.query(Booking).filter(Booking.id == uuid.UUID(booking_id)).first()
+            if booking:
+                booking.payment_status = PaymentStatus.CANCELLED.value
+                db.commit()
+                
+                print(f"❌ Booking {booking.booking_number} - Payment failed!")
+    
+    return {"status": "success"}
+
+
+@router.post("/{booking_id}/cancel")
+async def cancel_booking(booking_id: str, db: Session = Depends(get_db)):
+    """Cancel a booking"""
+    booking = db.query(Booking).filter(Booking.id == uuid.UUID(booking_id)).first()
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    
+    # Can only cancel tentative or confirmed bookings
+    if booking.booking_status in [BookingStatus.COMPLETED.value, BookingStatus.CANCELLED.value]:
+        raise HTTPException(status_code=400, detail="Cannot cancel completed or already cancelled booking")
+    
+    booking.booking_status = BookingStatus.CANCELLED.value
+    
+    # Refund if payment was made
+    if booking.payment_status == PaymentStatus.PAID.value and booking.stripe_payment_intent_id:
+        try:
+            refund = stripe.Refund.create(
+                payment_intent=booking.stripe_payment_intent_id
+            )
+            booking.payment_status = PaymentStatus.REFUNDED.value
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Refund failed: {str(e)}")
+    
+    db.commit()
+    
+    return {
+        "message": "Booking cancelled successfully",
+        "booking_number": str(booking.booking_number),
+        "status": str(booking.booking_status),
+        "payment_status": str(booking.payment_status)
     }

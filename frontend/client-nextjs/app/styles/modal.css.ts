@@ -119,4 +119,88 @@ export const confirmButton = style({
   ':hover': {
     background: `linear-gradient(135deg, ${tokens.colors.turquoise} 0%, ${tokens.colors.turquoiseDark} 100%)`,
   },
+  ':disabled': {
+    opacity: 0.6,
+    cursor: 'not-allowed',
+  },
+});
+
+export const form = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: tokens.spacing.md,
+});
+
+export const formGroup = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: tokens.spacing.xs,
+});
+
+export const label = style({
+  fontSize: tokens.fontSizes.sm,
+  fontWeight: tokens.fontWeights.semiBold,
+  color: tokens.colors.black,
+  fontFamily: tokens.fonts.body,
+});
+
+export const input = style({
+  padding: tokens.spacing.md,
+  fontSize: tokens.fontSizes.sm,
+  borderRadius: tokens.radii.md,
+  border: `2px solid ${tokens.colors.grayLight}`,
+  fontFamily: tokens.fonts.body,
+  transition: 'border-color 0.2s ease',
+  ':focus': {
+    outline: 'none',
+    borderColor: tokens.colors.turquoise,
+  },
+});
+
+export const error = style({
+  padding: tokens.spacing.md,
+  backgroundColor: '#fee',
+  color: '#c00',
+  borderRadius: tokens.radii.md,
+  fontSize: tokens.fontSizes.sm,
+  fontWeight: tokens.fontWeights.semiBold,
+});
+
+export const confirmationBox = style({
+  textAlign: 'center',
+  padding: tokens.spacing.xl,
+});
+
+export const confirmationIcon = style({
+  fontSize: '4rem',
+  marginBottom: tokens.spacing.md,
+});
+
+export const confirmationTitle = style({
+  fontSize: tokens.fontSizes['2xl'],
+  fontWeight: tokens.fontWeights.extraBold,
+  color: tokens.colors.turquoise,
+  marginBottom: tokens.spacing.md,
+  fontFamily: tokens.fonts.heading,
+});
+
+export const confirmationText = style({
+  fontSize: tokens.fontSizes.md,
+  color: tokens.colors.gray,
+  marginBottom: tokens.spacing.lg,
+});
+
+export const confirmationDetails = style({
+  backgroundColor: tokens.colors.grayLight,
+  padding: tokens.spacing.lg,
+  borderRadius: tokens.radii.md,
+  marginBottom: tokens.spacing.lg,
+  textAlign: 'left',
+});
+
+export const confirmationNote = style({
+  fontSize: tokens.fontSizes.sm,
+  color: tokens.colors.gray,
+  marginBottom: tokens.spacing.lg,
+  fontStyle: 'italic',
 });
