@@ -2,6 +2,7 @@ import Image from 'next/image';
 import * as styles from './styles/components.css';
 import { TourCard } from './components/TourCard';
 import { WhatsAppButton } from './components/WhatsAppButton';
+import { SocialProof } from './components/SocialProof';
 
 interface Tour {
   id: string;
@@ -85,6 +86,8 @@ export default async function Home() {
           )}
         </div>
       </main>
+
+      <SocialProof />
 
       <footer className={styles.footer}>
         <div className={styles.container}>
