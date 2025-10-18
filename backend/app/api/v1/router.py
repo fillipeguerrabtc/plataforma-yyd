@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints import auth, tours, guides, vehicles, bookings, users, integrations, financial
+from app.api.v1.endpoints import auth, tours, guides, vehicles, bookings, users, integrations, financial, leads
 
 api_router = APIRouter()
 
@@ -11,3 +11,4 @@ api_router.include_router(bookings.router, prefix="/bookings", tags=["bookings"]
 api_router.include_router(users.router, prefix="/users", tags=["users"])
 api_router.include_router(integrations.router, prefix="/integrations", tags=["integrations"])
 api_router.include_router(financial.router, prefix="/financial", tags=["financial"])
+api_router.include_router(leads.router, prefix="/leads", tags=["leads"])

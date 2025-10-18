@@ -18,13 +18,38 @@ export function LeadCaptureForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    console.log('Lead Capture Form Submitted:', formData);
-    setSubmitted(true);
-    
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({ name: '', email: '', phone: '', source: '', privacy: false });
-    }, 3000);
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const response = await fetch(`${apiUrl}/api/v1/leads/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone || null,
+          source: formData.source || null,
+          privacy_consent: formData.privacy,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit lead');
+      }
+
+      const data = await response.json();
+      console.log('✅ Lead submitted successfully:', data);
+      setSubmitted(true);
+      
+      setTimeout(() => {
+        setSubmitted(false);
+        setFormData({ name: '', email: '', phone: '', source: '', privacy: false });
+      }, 3000);
+    } catch (error) {
+      console.error('❌ Error submitting lead:', error);
+      alert('There was an error submitting your information. Please try again.');
+    }
   };
 
   return (
