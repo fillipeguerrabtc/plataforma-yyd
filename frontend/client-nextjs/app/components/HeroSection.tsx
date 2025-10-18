@@ -6,6 +6,17 @@ import * as styles from '../styles/hero.css';
 export function HeroSection() {
   return (
     <section className={styles.hero}>
+      {/* Video Background - fallback to gradient if video not available */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className={styles.videoBackground}
+        poster="https://images.unsplash.com/photo-1563492065421-68d4d33c90d7?w=1920"
+      >
+        <source src="https://player.vimeo.com/external/434045526.sd.mp4?s=c27eecc69a27dbc4ff2b87d38afc35f1a9e7c02d&profile_id=164&oauth2_token_id=57447761" type="video/mp4" />
+      </video>
       <div className={styles.heroOverlay} />
       <div className={styles.heroContent}>
         <motion.div

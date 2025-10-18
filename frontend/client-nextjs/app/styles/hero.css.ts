@@ -3,7 +3,7 @@ import { tokens } from './tokens.css';
 
 export const hero = style({
   position: 'relative',
-  minHeight: '85vh',
+  minHeight: '100vh',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -11,24 +11,31 @@ export const hero = style({
   overflow: 'hidden',
   '@media': {
     '(max-width: 768px)': {
-      minHeight: '70vh',
+      minHeight: '80vh',
     },
   },
+});
+
+export const videoBackground = style({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',
+  zIndex: 0,
 });
 
 export const heroOverlay = style({
   position: 'absolute',
   inset: 0,
-  backgroundImage: 'url("https://images.unsplash.com/photo-1555881400-74d7acaacd8b?w=1920&q=80")',
-  backgroundSize: 'cover',
-  backgroundPosition: 'center',
-  opacity: 0.15,
-  zIndex: 0,
+  background: 'linear-gradient(135deg, rgba(95, 188, 188, 0.7) 0%, rgba(233, 196, 106, 0.6) 100%)',
+  zIndex: 1,
 });
 
 export const heroContent = style({
   position: 'relative',
-  zIndex: 1,
+  zIndex: 2,
   maxWidth: '1200px',
   margin: '0 auto',
   padding: `${tokens.spacing['3xl']} ${tokens.spacing.lg}`,

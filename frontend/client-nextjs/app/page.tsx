@@ -12,6 +12,7 @@ import { ComparisonTable } from './components/ComparisonTable';
 import { TestimonialsSection } from './components/TestimonialsSection';
 import { WhyChooseSection } from './components/WhyChooseSection';
 import { LeadCaptureForm } from './components/LeadCaptureForm';
+import { VideoSection } from './components/VideoSection';
 
 interface Tour {
   id: string;
@@ -76,6 +77,7 @@ export default async function Home() {
       <HeroSection />
       <NoCrowdsSection />
       <AwardsSection />
+      <VideoSection />
       <FeaturesSection />
       <StatsCounter />
 
