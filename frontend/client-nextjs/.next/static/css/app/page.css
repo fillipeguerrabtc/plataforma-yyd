@@ -46,9 +46,132 @@
   --shadows-lg__rmyl3a15: 0 12px 32px rgba(55, 200, 196, 0.2);
   --shadows-brand__rmyl3a16: 0 4px 20px rgba(55, 200, 196, 0.3);
 }
-/*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[15].oneOf[0].use[1]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[15].oneOf[0].use[2]!./node_modules/@vanilla-extract/webpack-plugin/virtualNextFileLoader/dist/vanilla-extract-webpack-plugin-virtualNextFileLoader.cjs.js!./node_modules/@vanilla-extract/webpack-plugin/vanilla.virtual.css?%7B%22fileName%22%3A%22app%2Fstyles%2Fcomponents.css.ts.vanilla.css%22%2C%22source%22%3A%22%23H4sIAAAAAAAAA8VYUW%2BjOBB%2B76%2Fwy0qJVFeQNN2Uvqx2V9qXfTipK53uqTJgiBuDqW2a5E7972ebACYxENo9naoohQyemW9mvpnhJmJZwXKcS%2FEUsVwikmP%2B9OTjfJHHLx745wqADO3hjsRyEwB%2F4XnF%2FsHc5CnJA%2BABVEqm7xQojkme6luviM8gFAWK1A1I06cnnh3oEpXzh6u3qxtL5waj2FLoG4UhirYpZ2UeB4AqgxCHKUcxUU%2FM%2FOUqxun1UUXEKOMCypK%2FlIwIXCvy5sD71Cf0HfFtLejPge95n%2BbaASMXdB%2FabYhsTr2bd%2Fzs9xJ4WjBkeyg2KGa7RtZcCRhylMeNCXc9qHxT8VCXDTgLA05MREHRIQAJxSYSiJI0h8rMTAQgUg9grm%2BnqBgy0a3yJ0tZo29p9B0jvz7GfYNJupHtdci4eg7q8JSiVqivCExKShsnFwY7O7LvxHkvajE%2BH0ZZZI32ZY%2B%2Fv4ikuHH41jicKNihIH%2Fj%2Bjx941FdC3i7bxx6McqN7O4ISSv9p7kjIN5Ljr4y2sSazNvagSGTkmWn%2FrVWCyMs1SGNg4tibz636sPTEM28a%2FN34%2Fc4%2BFiGsuPjaszHNkmyS1yk%2Bqt%2BApsnmPZEqgz1bu5Xp2ZlimEaY%2B4qY1QiK2oZiPmyxX1viuvUVc4ecSQJa4%2F%2BbI424JkCsUtjEP%2BOLpembs6sJ%2BeMi2ZCqgqjFluNJ0nWZJR02ngW9vupYXdZqUj4UEvdH41sWsO6rzN0rZOs5OIHJ3FjGurSWqp%2BM%2FylvqEiNXVXYm1BmeWKYDguMJIzfTRMCKXXICO5MmO2XCn918BP%2BHzew39tJF5tiCU7k1y0orszgLUL3xBvPQjPutYYtw2wZhsI36%2FK6RXzhOrq35A4xvkw6bWZ4d9aqgKwVJQhGCXxSUwtdlpWhKOakyC6mALVW6iq4qUAGAk8jkOw0cZWladPSRhXqWv%2B1VH8awbXxX6EtS3%2FVzZWroR09P0%2BI0%2BbaWSs7OsxnUQ5P7BLAfFYbVnZxP4jCnhfK3JApYi7cQwbxy4GftQGgTNim5C2D7mBa3vhdjoghvutNCyLAvPI5DEAFEvVDOpnVffR3HUOx3csIk6KTmdJelFx8eOAwd1xDJhRF9bzlX%2BzngSOy3Y1zVPR2J26x8fnUkiSHGBUFUgAtHkYhljucEU2PQPmJN%2BOhebi2lPRY70byUUPaSmgf9qDx9qJwB%2BcRG2ZbsbK1Or8xQemu6n1kqCM0IOtQEA9vClsaunQHeCSo05mkgmZ%2BY5S7VoQMrb9WqrYt%2Fqf7YVBr1WnI%2F9Fy1y3I53vcfp3e4W7%2FW0rnM0gI6PDQBq1p9BLkA4tdzdjw4HV3b3fQnKuKFpd%2FH%2FZxLsWJoxJ6w3BdnjWcnTRj%2BVEZxKs9vr%2BsdGa9Q9teE72D5d7v5Rc4yIdI6rTDJuwT7qUq55PcNsnsjH17Qb%2BPLgq2NFFIwP30EJD2ZEMjwbmA6tdTxQ7gZnwVuSouhMeNopPoyt%2FV0OYyspfMhwTBGbWMvb5Tg%2FaxtBL3ytVeziMCa826QBUO9eD%2Bc2N9pvzfNdLlWnzsfvcnncZkybI85PdC%2F3H7O1bcnu3WrW1VjiPvrXTyt7%2BBZYjIjK2FQAA%22%7D ***!
-  \***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[15].oneOf[0].use[1]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[15].oneOf[0].use[2]!./node_modules/@vanilla-extract/webpack-plugin/virtualNextFileLoader/dist/vanilla-extract-webpack-plugin-virtualNextFileLoader.cjs.js!./node_modules/@vanilla-extract/webpack-plugin/vanilla.virtual.css?%7B%22fileName%22%3A%22app%2Fstyles%2Fsocialproof.css.ts.vanilla.css%22%2C%22source%22%3A%22%23H4sIAAAAAAAAA61WUWvbMBB%2Bz68QjEECU3HSNknjl9FCx6CMQQd7LLIty2ply5XkJtnIf58kR7ETu7FN95JEyp3uvu%2B%2Bk%2B5C8pAilgvO46fy90%2Fz%2BxGHivLs6UkkM4kWHvg7AiBHUUQzsgJvSIwhlDkK9RJebZi2S7fsEm0nwPO1ZYDCFyJ4kUUw5IwL52IXEq4TqrDzmU%2F80W50UU8k5JlCNMPCxZ%2Fa%2BCnawDWNVLIC05nn5RvfbgpCsxXwACoU9%2BtpeieJMuJiFu0xcaZcxJmNqPBGQcQo0QFC%2FS8WDT%2BFCNOpOr9L6xfrw6Ckf7ADbjYe9VrCiqxs4jvTGKWUbevGEgY82jrTsDKVasv0sVTptEKz20YwEejgezOpaNKHKsXT0wpeVkltrLVBBBNMSaI01xdz%2F5j95Xvkn3AjFVLym6CRY%2BfKshNRmTOk4RL9lznGfEOFU72rsMFQpJlcAYFzjNTYHA1jqr6AlGY6i7Gt%2FRcwjcXEZktQfoqoAvQ2GH4LiDskDhiu%2ByrDOP4o0qCS8bxLHLVWej2vjgQjI3JnHVTW633ZKuvfdscoikXOIZm8px1ViNeCU3loUK%2BbQZk6Y9mmn1krNw8owMxRs%2BiipgrxMrRv%2BnWIragSKJMxFxoh42ssQiRxI%2FkARQRLl%2FnyWNMxw7Y1ngupaLyF%2B3ulUgkAVjZQX4GprG%2B3yHhW6WFdotanw7UwluazVhjFu7zbUDgQN%2Bcu%2BNNm6rjdDbUPpvTOa1l6cRFhAYXWbSGdi1lRmB5kOfWaiRLOCcO39XRRO%2Bf9ia0iqvcCfg%2Br9y%2Bw8fa339WyvPycvsv1yRkCqbI9rX%2FYpe5aqfj%2Fa%2BWA6Uo5s2tr9gHONtIdJZqclXh%2F6R5ymKOhHT3oIWuR%2B9n8UBAeKQh%2FTPCf7u%2Fvpt6iRdfX3me%2F0sp06R2L5bDRKIRt7YiKcvJagfIZPFOiMzdMj9dJE1KvVtw5txzYfe4jUIlTelsTKRki0rNvTVeZHzjhDhXpQlWNhGkfVJowgeqw6BBYwx7z5hv6QWIei0DVKp4MrXgvlLvR1xRHFIFxbV5czPUVObHx%2BsyHXQPhrJz9%2FNK0eVEdz%2FkA7Nritk1mZ%2BmoTYn5%2FtjdPyP5L2g%2FDQAA%22%7D ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+.socialproof_socialProofSection__rh2sa70 {
+  padding: var(--spacing-4xl__rmyl3ay) 0;
+  background-color: var(--colors-white__rmyl3a6);
+}
+.socialproof_container__rh2sa71 {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg__rmyl3au);
+}
+.socialproof_content__rh2sa72 {
+  text-align: center;
+}
+.socialproof_tagline__rh2sa73 {
+  font-size: var(--fontSizes-xl__rmyl3an);
+  font-family: var(--fonts-body__rmyl3ac);
+  font-style: italic;
+  color: var(--colors-gray__rmyl3a9);
+  margin-bottom: var(--spacing-3xl__rmyl3ax);
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.socialproof_statsGrid__rh2sa74 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-gap: var(--spacing-xl__rmyl3av);
+  gap: var(--spacing-xl__rmyl3av);
+  margin-bottom: var(--spacing-3xl__rmyl3ax);
+}
+.socialproof_statCard__rh2sa75 {
+  text-align: center;
+}
+.socialproof_statNumber__rh2sa76 {
+  font-size: var(--fontSizes-4xl__rmyl3aq);
+  font-family: var(--fonts-heading__rmyl3ab);
+  font-weight: var(--fontWeights-bold__rmyl3ah);
+  color: var(--colors-turquoise__rmyl3a0);
+  margin-bottom: var(--spacing-sm__rmyl3as);
+  line-height: 1.2;
+}
+.socialproof_statLabel__rh2sa77 {
+  font-size: var(--fontSizes-sm__rmyl3ak);
+  font-family: var(--fonts-body__rmyl3ac);
+  color: var(--colors-gray__rmyl3a9);
+  text-transform: lowercase;
+}
+.socialproof_badges__rh2sa78 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-2xl__rmyl3aw);
+  flex-wrap: wrap;
+  margin-top: var(--spacing-2xl__rmyl3aw);
+}
+.socialproof_badge__rh2sa79 {
+  padding: var(--spacing-xl__rmyl3av);
+  background-color: var(--colors-grayLight__rmyl3a8);
+  border-radius: var(--radii-md__rmyl3a10);
+}
+.socialproof_googleBadge__rh2sa7a {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md__rmyl3at);
+}
+.socialproof_googleIcon__rh2sa7b {
+  width: 48px;
+  height: 48px;
+}
+.socialproof_rating__rh2sa7c {
+  font-size: var(--fontSizes-2xl__rmyl3ao);
+  font-weight: var(--fontWeights-bold__rmyl3ah);
+  color: var(--colors-black__rmyl3a5);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs__rmyl3ar);
+}
+.socialproof_ratingText__rh2sa7d {
+  font-size: var(--fontSizes-sm__rmyl3ak);
+  color: var(--colors-gray__rmyl3a9);
+  margin-top: var(--spacing-xs__rmyl3ar);
+}
+.socialproof_abcBadge__rh2sa7e {
+  padding: var(--spacing-xl__rmyl3av);
+  background-color: #FFC107;
+  border-radius: 50%;
+  width: 180px;
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.socialproof_abcText__rh2sa7f {
+  font-size: var(--fontSizes-xs__rmyl3aj);
+  font-weight: var(--fontWeights-semiBold__rmyl3ag);
+  color: var(--colors-black__rmyl3a5);
+  margin-bottom: var(--spacing-xs__rmyl3ar);
+}
+.socialproof_abcLogo__rh2sa7g {
+  font-size: var(--fontSizes-lg__rmyl3am);
+  font-weight: var(--fontWeights-extraBold__rmyl3ai);
+  color: var(--colors-black__rmyl3a5);
+  font-family: var(--fonts-heading__rmyl3ab);
+  line-height: 1.2;
+  margin-bottom: var(--spacing-xs__rmyl3ar);
+}
+.socialproof_abcSubtext__rh2sa7h {
+  font-size: var(--fontSizes-xs__rmyl3aj);
+  color: var(--colors-black__rmyl3a5);
+}
+@media (max-width: 768px) {
+  .socialproof_statsGrid__rh2sa74 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg__rmyl3au);
+  }
+  .socialproof_statNumber__rh2sa76 {
+    font-size: var(--fontSizes-3xl__rmyl3ap);
+  }
+}
+/*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[15].oneOf[0].use[1]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[15].oneOf[0].use[2]!./node_modules/@vanilla-extract/webpack-plugin/virtualNextFileLoader/dist/vanilla-extract-webpack-plugin-virtualNextFileLoader.cjs.js!./node_modules/@vanilla-extract/webpack-plugin/vanilla.virtual.css?%7B%22fileName%22%3A%22app%2Fstyles%2Fcomponents.css.ts.vanilla.css%22%2C%22source%22%3A%22%23H4sIAAAAAAAAA7VYW2%2BjOBR%2B76%2Fwy0iJVEeEXCZNX1YzI%2B3LPKzUkVb7FBkwxI3B1DZNsqv%2B97XNPRgorUZVm%2BLYPt%2F5zp2Fz%2BKUJTiR4uCzRCKSYH44LHHiJsGLA%2F67AyBGF3gmgTzuwdJ1nPTyaBZ5RJI9cADKJNMrKQoCkkR66RXxGYQiRb5agDQ6HHh8pSuUzR%2Fv3u4WDZlHjIKGwKUR6CH%2FFHGWJcEeUAUIcRhxFBB1YrZcbQIc3RcifEYZF1Bm%2FCVjROBSkDMHzpe%2BTT8QP5Ubl3OwdJwvc62A2bdvHzofiaxu3c5bevZrCRy90WMXKI4oYOdqr3kS0OMoCSoI2x5Wvit7qMeKHNeQExCRUnTdg5BiYwlESZRABTMWe%2BCrA5jr5QilQxDtIn%2ByiFXyVkZeYfldYfcjJtFR1s8e4%2Boc1ObJRClQPxEYZpRWSrqGu6ZlP8jzRZTb%2BHyYZRFX0lc9%2Bv4ikuJK4bVROFS0Q0H%2BxeV9euFJPQu4vlQKvRjhZu%2B5oKTe%2FbdZERBfJEffGK1sTeZ17ECPScniW%2F1q1MJsluqSSkE3vZjftfrlkYdmzr35WSx7FHzKPNnScTOmY%2B0k8XtUpPqjPIHNCaY1kcpDncXD5hZWrDJMBWabg1GOrFLLgM1XNe8XE1y3qnL2hH1JWH31V3O1Ic8ESDM0BvlvybJJavvMbrLP2NKMR1VglNs2404SVx4lrRg7Zn%2BYanYbSpWEr%2BWuhwJkVRp2fZWhjU6yjIs%2FOQkqaKid1iL1nclf6hOqpKZWJdYIsjhRCYbjFCM501fDkFB6D2KSKBiz1UbJvwfLkM%2FnPfmvtsRrk2LJOjvdeuu5Q7BW4TvitQZep2qN5babrOmuc%2BrYK%2BYh1YF%2BJEGAk9v85pjAd53b6Hd2jVvzLCEYJUHXfD%2Bb4ZqfUikqEUQHz17VEqqidiUARgKP670%2FasR5pOlbQsaVq5p%2FtdX%2BmcFdeulkaQeoVbBySy0eNspsu13xx1m4TYpsfmgp931Yb2uob8D2lZaWf3QvbEd%2BMBZSDSdivynyP1aBLFSpfF0pho1i7yZ%2BFIPAMWlCiOpDduLqEniaTohJ%2BQ1vzNIUc9%2B4MwAUS1UDyrOq6Oi469LxAwufk7RVUMJeVmxpcQBwuwsDpsOFZVu1XOwmkWPDrpp4Kirckb1rfM6EJOEV%2BnmA7IGGh6GH5Rnniaenr5ykWxFothR7u7WId7NzSgLrMvAXJ34dpsexMG0U%2FPQTTd3UeAlRTOi1KUBA3bMpbsrdnt3AGUctzyQTPPMDodpG4DF2%2BpYp29fyn5tzgp6mBjv9Hk4%2BN3w1k8BI0R%2FwhPoW%2BvG8NnEgKkp2oug1NKjuSPOQMlIG3EB9tnUHy9662h2CbMZs1PRxG7ZH6Qpttw9wrX3AVuPd9uFdd%2FCGjMnG24LTMEpLaf2cl7W6wnzG728hG33%2FtS5MN7OITb1fal%2BlIh3LXrc%2BO2G2tAlXjQDBdfGIx8TX0%2Fjz4NjQdBQ00nwPDTeUFRmyAJgMjHk9VmwZZsIbkkJ0yzxslJ9KVvKhKjE1Vf8R44AgMGsMZl%2B3ugk3QN%2F7jimfyWFAeD5V70E%2Bfz2a7%2Bxsv1nvt71gmdY02%2B%2Ftea8xqa3s3mwf7j%2BHt2%2Fg7Z1w1QSb8zz6Bk8Le%2FsfsQhe4MIVAAA%3D%22%7D ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 .components_container__1en2ndq0 {
   max-width: 1200px;
   margin: 0 auto;
@@ -112,15 +235,15 @@
 }
 .components_tourCard__1en2ndqb {
   background: var(--colors-white__rmyl3a6);
-  border-radius: var(--radii-lg__rmyl3a11);
+  border-radius: 24px;
   overflow: hidden;
-  box-shadow: var(--shadows-md__rmyl3a14);
-  border: 3px solid var(--colors-gold__rmyl3a3);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  border: 2px solid var(--colors-grayLight__rmyl3a8);
   transition: all 0.3s ease;
 }
 .components_tourCard__1en2ndqb:hover {
   transform: translateY(-8px);
-  box-shadow: var(--shadows-lg__rmyl3a15);
+  box-shadow: 0 8px 32px rgba(95, 188, 188, 0.2);
   border-color: var(--colors-turquoise__rmyl3a0);
 }
 .components_tourCardContent__1en2ndqc {
@@ -166,17 +289,21 @@
 }
 .components_bookButton__1en2ndqj {
   width: 100%;
-  background: linear-gradient(135deg, var(--colors-gold__rmyl3a3) 0%, var(--colors-goldDark__rmyl3a4) 100%);
+  background: var(--colors-turquoise__rmyl3a0);
   color: var(--colors-white__rmyl3a6);
   padding: var(--spacing-md__rmyl3at) var(--spacing-xl__rmyl3av);
   font-size: var(--fontSizes-md__rmyl3al);
-  font-weight: var(--fontWeights-bold__rmyl3ah);
-  border-radius: var(--radii-md__rmyl3a10);
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  font-weight: var(--fontWeights-semiBold__rmyl3ag);
+  border-radius: var(--radii-full__rmyl3a12);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(95, 188, 188, 0.3);
 }
 .components_bookButton__1en2ndqj:hover {
-  background: linear-gradient(135deg, var(--colors-turquoise__rmyl3a0) 0%, var(--colors-turquoiseDark__rmyl3a1) 100%);
+  background: var(--colors-turquoiseDark__rmyl3a1);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(95, 188, 188, 0.4);
 }
 .components_footer__1en2ndqk {
   background: var(--colors-black__rmyl3a5);

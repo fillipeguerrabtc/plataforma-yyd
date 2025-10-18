@@ -101,14 +101,14 @@ export const toursGrid = style({
 
 export const tourCard = style({
   background: tokens.colors.white,
-  borderRadius: tokens.radii.lg,
+  borderRadius: '24px',
   overflow: 'hidden',
-  boxShadow: tokens.shadows.md,
-  border: `3px solid ${tokens.colors.gold}`,
+  boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+  border: `2px solid ${tokens.colors.grayLight}`,
   transition: 'all 0.3s ease',
   ':hover': {
     transform: 'translateY(-8px)',
-    boxShadow: tokens.shadows.lg,
+    boxShadow: '0 8px 32px rgba(95, 188, 188, 0.2)',
     borderColor: tokens.colors.turquoise,
   },
 });
@@ -163,16 +163,20 @@ export const tourDuration = style({
 
 export const bookButton = style({
   width: '100%',
-  background: `linear-gradient(135deg, ${tokens.colors.gold} 0%, ${tokens.colors.goldDark} 100%)`,
+  background: tokens.colors.turquoise,
   color: tokens.colors.white,
   padding: `${tokens.spacing.md} ${tokens.spacing.xl}`,
   fontSize: tokens.fontSizes.md,
-  fontWeight: tokens.fontWeights.bold,
-  borderRadius: tokens.radii.md,
-  textTransform: 'uppercase',
-  letterSpacing: '1px',
+  fontWeight: tokens.fontWeights.semiBold,
+  borderRadius: tokens.radii.full,
+  border: 'none',
+  cursor: 'pointer',
+  transition: 'all 0.3s ease',
+  boxShadow: '0 4px 12px rgba(95, 188, 188, 0.3)',
   ':hover': {
-    background: `linear-gradient(135deg, ${tokens.colors.turquoise} 0%, ${tokens.colors.turquoiseDark} 100%)`,
+    background: tokens.colors.turquoiseDark,
+    transform: 'translateY(-2px)',
+    boxShadow: '0 6px 16px rgba(95, 188, 188, 0.4)',
   },
 });
 
