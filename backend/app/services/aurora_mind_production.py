@@ -11,7 +11,7 @@ from datetime import datetime
 import numpy as np
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, text
-import openai
+from openai import AsyncOpenAI
 
 from app.models.aurora import AuroraKnowledge
 
@@ -52,8 +52,8 @@ class AuroraMindProduction:
         self.top_k = top_k
         self.similarity_threshold = similarity_threshold
         
-        # Initialize OpenAI client
-        openai.api_key = os.getenv("OPENAI_API_KEY", "")
+        # Initialize OpenAI async client
+        self.openai_client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY", ""))
         
     async def _create_pgvector_extension(self, db: AsyncSession):
         """Ensure pgvector extension exists"""
@@ -96,13 +96,13 @@ class AuroraMindProduction:
         """
         try:
             # Call OpenAI Embeddings API
-            response = await openai.Embedding.acreate(
+            response = await self.openai_client.embeddings.create(
                 model=self.embedding_model,
                 input=text
             )
             
             # Extract embedding
-            embedding = response['data'][0]['embedding']
+            embedding = response.data[0].embedding
             
             # Normalize
             embedding_array = np.array(embedding)
