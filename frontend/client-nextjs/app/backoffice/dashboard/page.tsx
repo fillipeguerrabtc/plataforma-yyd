@@ -54,19 +54,19 @@ export default function DashboardPage() {
   };
 
   const statCards = [
-    { label: 'Total Bookings', value: stats.totalBookings, icon: '📅', color: '#5FBCBC' },
-    { label: 'Total Revenue', value: `€${stats.totalRevenue.toFixed(2)}`, icon: '💰', color: '#E9C46A' },
-    { label: 'Total Leads', value: stats.totalLeads, icon: '📝', color: '#10B981' },
-    { label: 'Active Users', value: stats.activeUsers, icon: '👥', color: '#8B5CF6' },
+    { label: 'Total Bookings', value: stats.totalBookings, icon: '📅', color: '#00B5CC' },
+    { label: 'Total Revenue', value: `€${stats.totalRevenue.toFixed(2)}`, icon: '💰', color: '#FFD700' },
+    { label: 'Total Leads', value: stats.totalLeads, icon: '📝', color: '#33C5DD' },
+    { label: 'Active Users', value: stats.activeUsers, icon: '👥', color: '#00B5CC' },
   ];
 
   return (
     <DashboardLayout>
       <div>
-        <h1 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '8px', color: '#1A1A1A' }}>
+        <h1 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '8px', color: '#222222', fontFamily: "'Poppins', sans-serif" }}>
           Dashboard
         </h1>
-        <p style={{ color: '#6B7280', marginBottom: '32px' }}>
+        <p style={{ color: '#5C5C5C', marginBottom: '32px', fontFamily: "'Open Sans', sans-serif" }}>
           Welcome to YYD BackOffice. Here's an overview of your platform.
         </p>
 
@@ -82,18 +82,27 @@ export default function DashboardPage() {
               style={{
                 background: 'white',
                 padding: '24px',
-                borderRadius: '12px',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                border: `2px solid ${stat.color}15`
+                borderRadius: '16px',
+                boxShadow: '0 3px 10px rgba(0,0,0,0.08)',
+                border: `1px solid #E4E4E4`,
+                transition: 'all 0.3s ease-in-out'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = '0 6px 18px rgba(0,0,0,0.12)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = '0 3px 10px rgba(0,0,0,0.08)';
+                e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
                 <span style={{ fontSize: '32px', marginRight: '12px' }}>{stat.icon}</span>
-                <span style={{ fontSize: '14px', color: '#6B7280', fontWeight: '500' }}>
+                <span style={{ fontSize: '14px', color: '#5C5C5C', fontWeight: '500', fontFamily: "'Poppins', sans-serif" }}>
                   {stat.label}
                 </span>
               </div>
-              <div style={{ fontSize: '36px', fontWeight: 'bold', color: stat.color }}>
+              <div style={{ fontSize: '36px', fontWeight: 'bold', color: stat.color, fontFamily: "'Poppins', sans-serif" }}>
                 {stat.value}
               </div>
             </div>

@@ -16,9 +16,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   }, [router]);
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#F9FAFB' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: '#FAFAFA' }}>
       <Sidebar />
-      <div style={{ marginLeft: '260px', flex: 1, padding: '32px' }}>
+      <div style={{ marginLeft: '260px', flex: 1, padding: '40px' }}>
         {children}
       </div>
     </div>
