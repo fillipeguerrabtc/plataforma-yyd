@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from datetime import datetime
 
@@ -7,17 +7,18 @@ from app.db.session import get_db
 from app.schemas.user import UserCreate, User, Token
 from app.crud import user as user_crud
 from app.core.security import verify_password, create_access_token
+from app.api.v1.deps import get_current_user, require_admin
 
 router = APIRouter()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/backoffice/auth/login")
 
 
 @router.post("/register", response_model=User, status_code=status.HTTP_201_CREATED)
 def register_user(
     user_data: UserCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    _current_user: User = Depends(require_admin)
 ):
-    """Register a new BackOffice user (admin only in production)."""
+    """Register a new BackOffice user (admin only)."""
     existing_user = user_crud.get_user_by_email(db, email=user_data.email)
     if existing_user:
         raise HTTPException(
@@ -60,27 +61,6 @@ def login(
 
 
 @router.get("/me", response_model=User)
-def get_current_user(
-    token: str = Depends(oauth2_scheme),
-    db: Session = Depends(get_db)
-):
+def get_me(current_user: User = Depends(get_current_user)):
     """Get current logged-in user."""
-    from app.core.security import decode_access_token
-    from uuid import UUID
-    
-    payload = decode_access_token(token)
-    if not payload:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials"
-        )
-    
-    user_id = payload.get("sub")
-    if not user_id:
-        raise HTTPException(status_code=401, detail="Invalid token")
-    
-    user = user_crud.get_user(db, user_id=UUID(user_id))
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    return user
+    return current_user

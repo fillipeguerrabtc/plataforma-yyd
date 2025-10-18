@@ -19,17 +19,30 @@ Build a comprehensive platform based on a 26,120-line technical whitepaper with 
 - **Multilingual Support**: English, Portuguese (BR), Spanish
 
 ## Recent Changes
-- **2025-10-18**: Complete Frontend Redesign to Match Official YYD Website
-  - **14 New Components Created**: HeroSection, AwardsSection, FeaturesSection, StatsCounter, ComparisonTable, TestimonialsSection, WhyChooseSection, LeadCaptureForm, ContactSection, Footer, and improved TourCards
-  - **Exact Visual Match**: Turquoise #5FBCBC, Gold #E9C46A, Playfair Display + Lato fonts matching yesyoudeserve.tours
-  - **Hero Section**: Background image, Trustindex badge (257 reviews), ABC GMA feature, dual CTAs
-  - **Lead Capture**: Name, email, phone, source dropdown, privacy consent with validation
-  - **Conversion Funnel**: Comparison table, testimonials, why choose, contact options (WhatsApp/Messenger recommended)
-  - **Animations**: Smooth Framer Motion scroll animations on all sections
-  - **Responsive Design**: Mobile-first approach with breakpoints for all sections
-  - **Architect Approved**: PASS status, production-ready, no critical issues
-  - **Type Safety**: Full TypeScript, vanilla-extract CSS-in-TS, zero runtime overhead
-  - **Real Data**: 3 tour packages (Half-Day €340-400, Full-Day €420-520, All-Inclusive €580-1,650)
+- **2025-10-18**: COMPLETE BACKOFFICE SYSTEM BUILT
+  - **Frontend BackOffice**: Full administrative dashboard at `/backoffice`
+  - **6 Management Panels Created**: Dashboard, Site Config, Tours, Bookings, Leads, Users
+  - **Authentication**: JWT-based login with role-based access control (admin/manager/guide/staff)
+  - **Site Configuration Panel**: Edit ALL website content from official yesyoudeserve.tours (texts, images, videos)
+  - **Tours Management**: CRUD for all tour packages with pricing and visibility controls
+  - **Bookings Management**: View and manage all customer bookings with status filters
+  - **Leads Management**: Track all lead submissions from contact form with export capability
+  - **Users Management**: RBAC with 4 roles, user creation, and permission management
+  - **Dashboard**: Live metrics (bookings, revenue, leads), recent activity, KPIs
+  - **Backend APIs**: Complete CRUD endpoints for config, media, users, all tested
+  - **Database**: site_config, media_assets, users tables with real YYD data seeded
+  - **Access**: Login at `/backoffice/auth/login` - Email: `admin@yesyoudeserve.tours` / Password: `password`
+
+- **2025-10-18**: Official YYD Tours Created
+  - **Personalized Half-Day Tour** - €280, 4 hours
+  - **Personalized Full-Day Tour** - €420, 8 hours (BEST CHOICE)
+  - **All-Inclusive Experience** - €640, 8 hours (transfer + lunch + tickets + wine included)
+  
+- **2025-10-18**: Frontend Client Site
+  - **14 Components**: HeroSection, AwardsSection, FeaturesSection, StatsCounter, ComparisonTable, TestimonialsSection, WhyChooseSection, LeadCaptureForm, ContactSection, Footer
+  - **Visual Identity**: Exact match to yesyoudeserve.tours (Turquoise #5FBCBC, Gold #E9C46A, Playfair Display + Lato fonts)
+  - **Lead Capture Working**: Form posts to `/api/v1/leads/` with validation
+  - **Booking + Stripe**: Full payment flow with Stripe Elements integration
 
 ## Project Architecture
 
@@ -42,33 +55,57 @@ Build a comprehensive platform based on a 26,120-line technical whitepaper with 
 - **CORS**: Configured for Replit environment
 
 ### Frontend (Next.js 14 + Modern Stack)
-- **Client App**: Port 5000, Next.js 14 App Router with SSR
-- **BackOffice**: Vite + React (future migration to shared components)
+- **Client App**: Port 5000, Next.js 14 App Router at `/`
+- **BackOffice App**: Next.js 14 App Router at `/backoffice` (COMPLETE ADMIN PANEL)
 - **Framework**: Next.js 14 (App Router, React 18)
-- **Styling**: vanilla-extract (type-safe CSS-in-TS, zero runtime)
+- **Styling**: Inline styles for BackOffice, vanilla-extract for client
+- **Authentication**: JWT with localStorage, protected routes, role-based access
 - **Design Tokens**: YYD colors, fonts, spacing all typed and centralized
 - **Components**: Radix UI (Dialog, Dropdown) + Framer Motion animations
-- **Fonts**: Playfair Display (headings), Lato (body) via Google Fonts (exact match to official website)
-- **Colors**: Turquoise #5FBCBC, Gold #E9C46A, Black #1A1A1A (exact match to official website)
-- **Features**: SSR tours, animated cards, accessible booking modals, lead capture form, comparison table, testimonials
-- **Page Structure**: Hero → No Crowds → Awards → Features → Stats → Tours → Comparison → Testimonials → Why Choose → Lead Form → Contact → Footer
+- **Fonts**: Playfair Display (headings), Lato (body) via Google Fonts
+- **Colors**: Turquoise #5FBCBC, Gold #E9C46A, Black #1A1A1A
+- **Features**: SSR tours, booking flow, lead capture, site configuration, admin dashboard
+- **Client Structure**: Hero → No Crowds → Awards → Features → Stats → Tours → Comparison → Testimonials → Why Choose → Lead Form → Contact → Footer
+- **BackOffice Structure**: Login → Dashboard → Config → Tours → Bookings → Leads → Users
 
 ### Database Schema
 - **tour_products**: Real YYD tours with multilingual content (PT/EN/ES)
 - **bookings**: Tour reservations with Stripe integration
-- **users**: Customer and staff accounts
-- **guides**: Tour guide profiles
-- **vehicles**: Electric tuk-tuk fleet
-- **conversations**: CRM conversation tracking
-- **messages**: Chat history
-- **reviews**: Customer feedback
-- **embeddings**: Aurora IA knowledge base (pgvector - temporarily disabled)
+- **leads**: Contact form submissions (name, email, phone, source)
+- **users**: BackOffice users with RBAC (admin/manager/guide/staff)
+- **site_config**: All website content (hero, features, tours, contact, etc.) - editable from BackOffice
+- **media_assets**: Images and videos (URLs, alt text, metadata) - manageable from BackOffice
+- **guides**: Tour guide profiles (future)
+- **vehicles**: Electric tuk-tuk fleet (future)
+- **conversations**: CRM conversation tracking (future)
+- **messages**: Chat history (future)
+- **reviews**: Customer feedback (future)
+- **embeddings**: Aurora IA knowledge base (pgvector - future)
 
-### Real Tours
-1. **Sintra Magic Private Tour** - €220, 240 min, Cultural & Historical
-2. **Sunset at Cabo da Roca** - €180, 120 min, Romantic & Nature
-3. **Lisbon Electric Experience** - €160, 180 min, City Tours
-4. **Douro Intimate Wine Route** - €320, 480 min, Wine & Gastronomy
+### Official YYD Tours (from yesyoudeserve.tours)
+1. **Personalized Half-Day Tour** - €280, 4 hours
+   - Visit all monuments outside
+   - Cabo da Roca
+   - Personalized itinerary
+   - Optional wine tasting (€24/person)
+   
+2. **Personalized Full-Day Tour** - €420, 8 hours (BEST CHOICE ⭐)
+   - Everything in Half-Day
+   - Azenhas do Mar
+   - Cascais
+   - Optional lunch and monument tickets
+   - Wine tour available
+   
+3. **All-Inclusive Experience** - €640, 8 hours
+   - Everything included: transfer service, authentic Portuguese lunch, monument tickets, wine tasting
+   - No hidden costs
+   - Ultimate luxury experience
+
+### Legacy Tours (database)
+- **Sintra Magic Private Tour** - €220, 240 min
+- **Sunset at Cabo da Roca** - €180, 120 min
+- **Lisbon Electric Experience** - €160, 180 min
+- **Douro Intimate Wine Route** - €320, 480 min
 
 ## User Preferences
 - **No mock data**: Everything must be real and state-of-the-art
@@ -77,13 +114,35 @@ Build a comprehensive platform based on a 26,120-line technical whitepaper with 
 - **Mathematical rigor**: Aurora IA based on affective embeddings in ℝ³
 - **Complete BackOffice**: User management, financial management (RBAC), integrations configuration
 
+## BackOffice Access
+- **URL**: `/backoffice/auth/login`
+- **Admin Email**: `admin@yesyoudeserve.tours`
+- **Password**: `password`
+- **Features**: Dashboard, Site Config, Tours, Bookings, Leads, Users management
+
+## API Endpoints
+### Public Client APIs
+- `GET /api/v1/tours` - List all tours
+- `POST /api/v1/bookings` - Create booking
+- `POST /api/v1/bookings/{id}/payment-intent` - Create Stripe payment
+- `POST /api/v1/leads` - Submit lead form
+
+### BackOffice APIs (requires JWT)
+- `POST /api/v1/backoffice/auth/login` - Login
+- `GET /api/v1/backoffice/auth/me` - Get current user
+- `GET /api/v1/backoffice/config` - List all site configs
+- `PUT /api/v1/backoffice/config/{key}` - Update site config
+- `GET /api/v1/backoffice/media` - List all media assets
+- `POST /api/v1/backoffice/media` - Create media asset
+
 ## Next Steps
-1. ✅ **COMPLETED**: Frontend redesign matching official YYD website
-2. Wire lead capture form to backend API for data persistence
-3. Implement booking flow with Stripe payment processing
-4. Build BackOffice interface (user management, financial, integrations)
-5. Implement Aurora IA multilingual chatbot
-6. Add pgvector for affective embeddings
-7. Integrate Meta/WhatsApp/Stripe APIs
-8. Add event-driven architecture with Kafka
-9. Deploy to production
+1. ✅ **COMPLETED**: Frontend client matching official YYD website
+2. ✅ **COMPLETED**: Lead capture form integrated with backend
+3. ✅ **COMPLETED**: Booking flow with Stripe payment processing
+4. ✅ **COMPLETED**: BackOffice complete (Dashboard, Config, Tours, Bookings, Leads, Users)
+5. Make client site fully dynamic (pull all content from site_config API)
+6. Implement Aurora IA multilingual chatbot
+7. Add pgvector for affective embeddings
+8. Integrate Meta/WhatsApp APIs
+9. Add event-driven architecture with Kafka
+10. Deploy to production
