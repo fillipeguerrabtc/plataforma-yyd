@@ -62,12 +62,9 @@ export function BookingModal({ tour, open, onOpenChange }: BookingModalProps) {
     setLoading(true);
 
     try {
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || '';
-      const baseUrl = backendUrl || (typeof window !== 'undefined' ? window.location.origin : '');
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       
-      const createBookingUrl = backendUrl 
-        ? `${backendUrl}/api/v1/bookings/create`
-        : '/api/backend/v1/bookings/create';
+      const createBookingUrl = `${apiUrl}/api/v1/bookings/create`;
 
       const response = await fetch(createBookingUrl, {
         method: 'POST',
@@ -94,9 +91,7 @@ export function BookingModal({ tour, open, onOpenChange }: BookingModalProps) {
       setBookingId(booking.id);
       setBookingNumber(booking.booking_number);
 
-      const paymentUrl = backendUrl 
-        ? `${backendUrl}/api/v1/bookings/create-payment-intent`
-        : '/api/backend/v1/bookings/create-payment-intent';
+      const paymentUrl = `${apiUrl}/api/v1/bookings/create-payment-intent`;
 
       const paymentResponse = await fetch(paymentUrl, {
         method: 'POST',
