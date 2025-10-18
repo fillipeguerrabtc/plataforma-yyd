@@ -30,6 +30,8 @@ export const metadata: Metadata = {
   },
 };
 
+import AuroraChatWidget from './components/AuroraChatWidget';
+
 export default function RootLayout({
   children,
 }: {
@@ -37,7 +39,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${playball.variable} ${poppins.variable} ${openSans.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <AuroraChatWidget />
+      </body>
     </html>
   );
 }

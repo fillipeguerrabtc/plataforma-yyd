@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from app.api.v1.endpoints import (
     auth, tours, guides, vehicles, bookings, users, integrations, financial, leads,
     backoffice_auth, backoffice_config, backoffice_customers, backoffice_aurora,
-    aurora_chat, aurora_knowledge, integrations_webhooks
+    aurora_chat, aurora_knowledge, integrations_webhooks, aurora_seed
 )
 
 api_router = APIRouter()
@@ -21,6 +21,7 @@ api_router.include_router(leads.router, prefix="/leads", tags=["leads"])
 # Aurora IA APIs (Public - chat interface)
 api_router.include_router(aurora_chat.router, prefix="/aurora", tags=["aurora-chat"])
 api_router.include_router(aurora_knowledge.router, prefix="/aurora", tags=["aurora-knowledge"])
+api_router.include_router(aurora_seed.router, prefix="/aurora", tags=["aurora-seed"])
 
 # Integration Webhooks (WhatsApp, Facebook, Instagram)
 api_router.include_router(integrations_webhooks.router, prefix="", tags=["webhooks"])
