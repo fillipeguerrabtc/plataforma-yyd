@@ -202,7 +202,7 @@ class AuroraSense:
         diff = E_arr - E_star
         dV = -self.eta * diff.T @ self.K @ diff
         
-        is_stable = dV < 0
+        is_stable = bool(dV < 0)
         
         return float(dV), is_stable
     

@@ -74,10 +74,11 @@ async def chat_with_aurora(
             raise HTTPException(status_code=404, detail="Conversation not found")
         
         # Get current affective state
+        affective_data = conversation.affective_state if conversation.affective_state else [0.5, 0.5, 0.5]
         current_state = AffectiveVector(
-            conversation.affective_state[0] if conversation.affective_state else 0.5,
-            conversation.affective_state[1] if conversation.affective_state else 0.5,
-            conversation.affective_state[2] if conversation.affective_state else 0.5
+            float(affective_data[0]),
+            float(affective_data[1]),
+            float(affective_data[2])
         )
     else:
         # Create new conversation
@@ -110,7 +111,7 @@ async def chat_with_aurora(
     db.add(user_message)
     
     # Generate Aurora's response
-    conversation_context = conversation.context or {}
+    conversation_context: Dict = dict(conversation.context) if conversation.context else {}
     response: AuroraResponse = await aurora_core.generate_response(
         user_message=request.message,
         conversation_context=conversation_context,
@@ -125,8 +126,9 @@ async def chat_with_aurora(
         language=request.language
     )
     
-    conversation.affective_state = new_state.to_list()
-    conversation.updated_at = datetime.utcnow()
+    # Update conversation attributes using setattr to avoid SQLAlchemy Column type issues
+    setattr(conversation, 'affective_state', new_state.to_list())
+    setattr(conversation, 'updated_at', datetime.utcnow())
     
     # Store Aurora's message
     aurora_message = AuroraMessage(
@@ -213,7 +215,7 @@ async def delete_conversation(
     if not conversation:
         raise HTTPException(status_code=404, detail="Conversation not found")
     
-    conversation.is_active = False
+    setattr(conversation, 'is_active', False)
     await db.commit()
     
     return {"message": "Conversation ended successfully"}
