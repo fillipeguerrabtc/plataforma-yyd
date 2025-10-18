@@ -333,179 +333,52 @@
 .modal_confirmButton__197lol0c:hover {
   background: linear-gradient(135deg, var(--colors-turquoise__rmyl3a0) 0%, var(--colors-turquoiseDark__rmyl3a1) 100%);
 }
-/*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[15].oneOf[0].use[1]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[15].oneOf[0].use[2]!./node_modules/@vanilla-extract/webpack-plugin/virtualNextFileLoader/dist/vanilla-extract-webpack-plugin-virtualNextFileLoader.cjs.js!./node_modules/@vanilla-extract/webpack-plugin/vanilla.virtual.css?%7B%22fileName%22%3A%22app%2Fstyles%2Fcomponents.css.ts.vanilla.css%22%2C%22source%22%3A%22%23H4sIAAAAAAAAA8VYUW%2BjOBB%2B76%2Fwy0qJVFeQtNuUvpx2V7qXfTipK53uqTJgiFuDqW3aZE%2F972ebgE1ioLS7OlVRChk8M9%2FMfDPDRcKKipW4lOI%2BYaVEpMT8%2Fj7E5apMnwLw7xkABdrBF5LKbQTCVRBUu1tzk%2BekjEAAUC2ZvlOhNCVlrm89I76AUFQoUTcgze%2FvebGna8SXt2evZxeOzi1GqaMwNApjlDzmnNVlGgGqDEIc5hylRD2xCNdXKc7PDyoSRhkXUNb8qWZE4FZRsATBpyGhb4g%2FtoLhEoRB8GmpHTByUf%2Bhly2R3alXy56fw16CQAvGbAfFFqXspZM1VwLGHJVpZ8J6AJWvKh7qsgNnZcBJiago2kcgo9hEAlGSl1CZWYgIJOoBzPXtHFVjJvpVfmc56%2FStjb5D5DeHuG8xybfSXseMq%2BegDk8tWoX6isCsprRV%2BNNA5wb2nTDvRCvGluMgi6JDOBhw9weRFHf%2BXhp%2FM4U6FOQnbs%2FTN%2B7UtYCXu86f0ig3si8HRKz03%2BaOgHgnOfrCaBfqbGlLB8ZMSlYc%2B2etroywVId0Dq6qnflcqg%2FPY7QIzs3fRTjg4F0dy56PV1M%2B2hx5eIuLVH%2B1T8TmCaY9kSpBg4ubq2OzCkUwnTGfG2NUHitmGYn52uJem9o6dpWzO5xIwuzR1%2BZoA56pD7cyRvHv6fJp6ufMZnbO%2BFgmpqowWrHL6SQpuox68tp4EvabuWH3Wak4eN9KXR%2BM7DrDZqgx9K2TrObiT07SzjTUZ7Vc%2FWboS31DxWnqrsTagrooFb9wXGEkF%2FpomBFKz0FBSmXGYn2l9J%2BDMOPL5QD92UgIF2LJTiRXVlSeAKxd%2BIq49SA%2BaVpT3DZCmjYQ%2B6aanjHPqC7%2BLUlTXI5znk2MMHQ0RWCtGEMwStKjkDrktGr4RrUmQXQtRaqzUFXEawEwEngahmirjW0KT5%2BSMa4y1%2Fyrg%2FjPAm6q3QRpW%2FfDlQuVLx89XX%2FIyONWmhgrh1pML09OD%2BwzQDpVWk4y0d%2FEAO%2FrRB6oFG93jmHj2JuBn7RB4IK4JqT2IT9wthVu5wNiqN9Jw7qqME9MHgNAsVS9oH1WNR9NXadwfMMi4aTqNZZsEBUfPY4Y3B%2FGgBl0YTtdhRebWeD4bFezPBWd3bl%2FeHyohSTZHiZNgURAm4dhjOULbshmYLyc5duh0HxUeyx6qHcjuRogLQX0d3fu%2BOxF4C9OElum26kydRp%2F8YHhbm69ZKggdO8qEFDPbgqbVvrGH%2BCao15mkhmZ%2BY5S7VsQM%2Fb4pVaxt%2Fof3HVBL1XHE%2F%2BbVrl%2BRzrd4vTv7gK3%2FmULnMsgE5PDSBrZU8hbkI4dd%2FHUbGDP3v0SjvMF0Wni%2F8sa3rcwY0w6rwcexyctTxP9WEr05sBmqR8eGp1J%2F9mG52j78Ln3Q8l1LtIpnjpOsBnbpE%2B5avkE2zZRTKm3%2B3c%2Buii40d1MjNtj6wxlBy48GFiOLHYDUewFZsYrkYPqXnjYJD6drsd39YO5pPxHgVOCwMJZxa4%2F6znbGPrWl0rNFg5Twps9OgLNxnVrfvOj%2Feo93%2FdKZd547D934E3GrAHy9GT%2FOv8xe4dW3MGdVu2sDc6Tr%2By0stf%2FAHeJhPKzFQAA%22%7D ***!
-  \*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-.components_container__1en2ndq0 {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 var(--spacing-lg__rmyl3ar);
-}
-.components_header__1en2ndq1 {
-  background: linear-gradient(135deg, var(--colors-turquoise__rmyl3a0) 0%, var(--colors-turquoiseDark__rmyl3a1) 100%);
-  color: var(--colors-white__rmyl3a5);
-  padding: var(--spacing-lg__rmyl3ar) 0;
-  box-shadow: var(--shadows-brand__rmyl3a13);
-}
-.components_headerContent__1en2ndq2 {
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[15].oneOf[0].use[1]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[15].oneOf[0].use[2]!./node_modules/@vanilla-extract/webpack-plugin/virtualNextFileLoader/dist/vanilla-extract-webpack-plugin-virtualNextFileLoader.cjs.js!./node_modules/@vanilla-extract/webpack-plugin/vanilla.virtual.css?%7B%22fileName%22%3A%22app%2Fstyles%2Fwhatsapp.css.ts.vanilla.css%22%2C%22source%22%3A%22%23H4sIAAAAAAAAA4VUwW7jIBC99yu4rJRIIbLdNKm8l1VvPXel3Vs0MdhGwYAAx05X%2BfcFYuLUTdqLxQzvvRmeZrzsarAGlNrGw0trrRTbbQGyVFmC%2Fj0gpKRhlkmRo5L1lPx0qZ10sCZHB9AzjI2CgokKZz3fbnVz5I%2FQzT2M09JOQbyKmDZgCDOKw9GJc9r7BHBWCcwsbUyOCios1T5dgZpKNSRK2SClgBCX%2Fwo2uRobPgSFHRT7SstWEFxILnWUCoHBF7sG0iaQbiPdAyJsfdaWmlCHE1LQMcYaCGtNpPuI4bLll8bSbGD32NRAZJejBK1Uj7LEfXS1g9njZoGyNF2gNMkWKFmuzm212vi%2BlGTRw1IKiw17p7GcT7y52FyZxOcXaEdZVdtr8J%2BQMdjQhr1IfiFVI6mEhvHjNcngnSTHCC0C9B0zQWifu56TxCesBhHnDDh3z8gMomCcV6eH5XeDmtfyQHUY149Orb1Tq3tOPc1vq78Wo3YaVDtGbJ0HKd9tPTgTYz%2B8rqpmYu%2BqetFfDSUM0KyBHg%2FkzfpZ9fMg9%2B2DAureok13KG7aU%2FLjHAYzS6kdMxw5WPp3ht39gL%2BzKqaJwma6Kp9rfjFNo84%2BgE83n%2FzZ5dHn5OzrldND5nTb29Vzct%2Fb37S3sVA2FLr8d%2BI%2BOuH%2FkR4wHxAFAAA%3D%22%7D ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+.whatsapp_whatsappButton__caofp20 {
+  position: fixed;
+  bottom: var(--spacing-2xl__rmyl3aw);
+  left: var(--spacing-lg__rmyl3au);
   display: flex;
   align-items: center;
-  gap: var(--spacing-lg__rmyl3ar);
+  gap: var(--spacing-md__rmyl3at);
+  padding: var(--spacing-md__rmyl3at) var(--spacing-xl__rmyl3av);
+  background-color: var(--colors-whatsapp__rmyl3a7);
+  color: var(--colors-white__rmyl3a6);
+  border: none;
+  border-radius: var(--radii-full__rmyl3a12);
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+  cursor: pointer;
+  font-size: var(--fontSizes-md__rmyl3al);
+  font-weight: var(--fontWeights-semiBold__rmyl3ag);
+  font-family: var(--fonts-body__rmyl3ac);
+  z-index: 1000;
+  transition: all 0.2s ease;
 }
-.components_headerLogo__1en2ndq3 {
-  width: 80px;
-  height: 80px;
-  border-radius: var(--radii-full__rmyl3az);
-  background: var(--colors-white__rmyl3a5);
-  padding: var(--spacing-xs__rmyl3ao);
-  box-shadow: var(--shadows-sm__rmyl3a10);
+.whatsapp_whatsappButton__caofp20:hover {
+  box-shadow: 0 6px 24px rgba(37, 211, 102, 0.5);
 }
-.components_headerTitle__1en2ndq4 {
-  font-size: var(--fontSizes-4xl__rmyl3an);
-  font-weight: var(--fontWeights-extraBold__rmyl3af);
-  margin-bottom: var(--spacing-sm__rmyl3ap);
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-}
-.components_headerSubtitle__1en2ndq5 {
-  font-size: var(--fontSizes-lg__rmyl3aj);
-  font-weight: var(--fontWeights-light__rmyl3ab);
-  opacity: 0.95;
-}
-.components_main__1en2ndq6 {
-  flex: 1 1;
-  padding: var(--spacing-3xl__rmyl3au) 0;
-}
-.components_heroSection__1en2ndq7 {
-  text-align: center;
-  margin-bottom: var(--spacing-3xl__rmyl3au);
-}
-.components_heroTitle__1en2ndq8 {
-  font-size: var(--fontSizes-4xl__rmyl3an);
-  color: var(--colors-black__rmyl3a4);
-  margin-bottom: var(--spacing-md__rmyl3aq);
-}
-.components_heroSubtitle__1en2ndq9 {
-  font-size: var(--fontSizes-lg__rmyl3aj);
-  color: var(--colors-gray__rmyl3a7);
-  max-width: 800px;
-  margin: 0 auto;
-}
-.components_toursGrid__1en2ndqa {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  grid-gap: var(--spacing-xl__rmyl3as);
-  gap: var(--spacing-xl__rmyl3as);
-  margin-top: var(--spacing-2xl__rmyl3at);
-}
-.components_tourCard__1en2ndqb {
-  background: var(--colors-white__rmyl3a5);
-  border-radius: var(--radii-lg__rmyl3ay);
-  overflow: hidden;
-  box-shadow: var(--shadows-md__rmyl3a11);
-  border: 3px solid var(--colors-gold__rmyl3a2);
-  transition: all 0.3s ease;
-}
-.components_tourCard__1en2ndqb:hover {
-  transform: translateY(-8px);
-  box-shadow: var(--shadows-lg__rmyl3a12);
-  border-color: var(--colors-turquoise__rmyl3a0);
-}
-.components_tourCardContent__1en2ndqc {
-  padding: var(--spacing-xl__rmyl3as);
-}
-.components_tourTitle__1en2ndqd {
-  font-size: var(--fontSizes-2xl__rmyl3al);
-  color: var(--colors-black__rmyl3a4);
-  margin-bottom: var(--spacing-md__rmyl3aq);
-  font-weight: var(--fontWeights-extraBold__rmyl3af);
-}
-.components_tourCity__1en2ndqe {
-  color: var(--colors-turquoise__rmyl3a0);
-  font-weight: var(--fontWeights-semiBold__rmyl3ad);
-  font-size: var(--fontSizes-sm__rmyl3ah);
-  margin-bottom: var(--spacing-md__rmyl3aq);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-.components_tourDescription__1en2ndqf {
-  color: var(--colors-gray__rmyl3a7);
-  margin-bottom: var(--spacing-lg__rmyl3ar);
-  line-height: 1.8;
-  font-size: var(--fontSizes-sm__rmyl3ah);
-}
-.components_tourDetails__1en2ndqg {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-lg__rmyl3ar);
-  padding-top: var(--spacing-lg__rmyl3ar);
-  border-top: 2px solid var(--colors-grayLight__rmyl3a6);
-}
-.components_tourPrice__1en2ndqh {
-  font-size: var(--fontSizes-3xl__rmyl3am);
-  font-weight: var(--fontWeights-extraBold__rmyl3af);
-  color: var(--colors-turquoise__rmyl3a0);
-  font-family: var(--fonts-heading__rmyl3a9);
-}
-.components_tourDuration__1en2ndqi {
-  color: var(--colors-gray__rmyl3a7);
-  font-weight: var(--fontWeights-semiBold__rmyl3ad);
-}
-.components_bookButton__1en2ndqj {
-  width: 100%;
-  background: linear-gradient(135deg, var(--colors-gold__rmyl3a2) 0%, var(--colors-goldDark__rmyl3a3) 100%);
-  color: var(--colors-white__rmyl3a5);
-  padding: var(--spacing-md__rmyl3aq) var(--spacing-xl__rmyl3as);
-  font-size: var(--fontSizes-md__rmyl3ai);
-  font-weight: var(--fontWeights-bold__rmyl3ae);
-  border-radius: var(--radii-md__rmyl3ax);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-.components_bookButton__1en2ndqj:hover {
-  background: linear-gradient(135deg, var(--colors-turquoise__rmyl3a0) 0%, var(--colors-turquoiseDark__rmyl3a1) 100%);
-}
-.components_footer__1en2ndqk {
-  background: var(--colors-black__rmyl3a4);
-  color: var(--colors-white__rmyl3a5);
-  padding: var(--spacing-2xl__rmyl3at) 0;
-  margin-top: var(--spacing-4xl__rmyl3av);
-  text-align: center;
-}
-.components_footerText__1en2ndql {
-  font-size: var(--fontSizes-md__rmyl3ai);
-  margin-bottom: var(--spacing-sm__rmyl3ap);
-}
-.components_footerCities__1en2ndqm {
-  font-size: var(--fontSizes-xs__rmyl3ag);
-  color: var(--colors-grayDark__rmyl3a8);
-  margin-top: var(--spacing-md__rmyl3aq);
-}
-.components_loading__1en2ndqn {
-  text-align: center;
-  padding: var(--spacing-4xl__rmyl3av) var(--spacing-lg__rmyl3ar);
-}
-.components_loadingText__1en2ndqo {
-  font-size: var(--fontSizes-xl__rmyl3ak);
-  color: var(--colors-turquoise__rmyl3a0);
-  font-weight: var(--fontWeights-semiBold__rmyl3ad);
+.whatsapp_whatsappIcon__caofp21 {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
 }
 @media (max-width: 768px) {
-  .components_headerContent__1en2ndq2 {
-    flex-direction: column;
-    text-align: center;
+  .whatsapp_whatsappButton__caofp20 {
+    bottom: var(--spacing-lg__rmyl3au);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: var(--spacing-sm__rmyl3as) var(--spacing-lg__rmyl3au);
+    font-size: var(--fontSizes-sm__rmyl3ak);
   }
-  .components_headerTitle__1en2ndq4 {
-    font-size: var(--fontSizes-2xl__rmyl3al);
+  .whatsapp_whatsappIcon__caofp21 {
+    width: 20px;
+    height: 20px;
   }
-  .components_headerSubtitle__1en2ndq5 {
-    font-size: var(--fontSizes-sm__rmyl3ah);
-  }
-  .components_heroTitle__1en2ndq8 {
-    font-size: var(--fontSizes-2xl__rmyl3al);
-  }
-  .components_toursGrid__1en2ndqa {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-lg__rmyl3ar);
+}
+@media (max-width: 480px) {
+  .whatsapp_whatsappText__caofp22 {
+    display: none;
   }
 }
