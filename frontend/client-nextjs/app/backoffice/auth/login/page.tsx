@@ -20,7 +20,8 @@ export default function LoginPage() {
       formData.append('username', email);
       formData.append('password', password);
 
-      const res = await fetch('/api/v1/backoffice/auth/login', {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const res = await fetch(`${API_URL}/api/v1/backoffice/auth/login`, {
         method: 'POST',
         body: formData,
       });

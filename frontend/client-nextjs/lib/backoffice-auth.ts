@@ -11,6 +11,8 @@ export function removeBackOfficeToken(): void {
   localStorage.removeItem('backoffice_token');
 }
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
 export async function fetchWithAuth(url: string, options: RequestInit = {}) {
   const token = getBackOfficeToken();
   
@@ -19,7 +21,10 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}) {
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 
-  const response = await fetch(url, {
+  // Prepend API_URL if url starts with /api
+  const fullUrl = url.startsWith('/api') ? `${API_URL}${url}` : url;
+
+  const response = await fetch(fullUrl, {
     ...options,
     headers,
   });
