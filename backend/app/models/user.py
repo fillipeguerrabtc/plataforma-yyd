@@ -20,10 +20,10 @@ class User(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email = Column(String(255), unique=True, nullable=False, index=True)
     full_name = Column(String(255), nullable=False)
-    hashed_password = Column(String(255), nullable=False)
+    hashed_password = Column("password_hash", String(255), nullable=False)
     role = Column(String(50), default=UserRole.STAFF.value, nullable=False)
     
-    is_active = Column(Boolean, default=True, nullable=False)
+    is_active = Column("active", Boolean, default=True, nullable=False)
     is_verified = Column(Boolean, default=False, nullable=False)
     
     phone = Column(String(50))
