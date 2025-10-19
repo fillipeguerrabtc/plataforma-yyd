@@ -345,7 +345,7 @@ Respond in {language} language with a {response_type} tone."""
                     max_tokens=self.max_tokens
                 )
                 
-                text = response.choices[0].message.content
+                text = response.choices[0].message.content or ""
                 
                 # Criar candidato
                 candidate = ResponseCandidate(
