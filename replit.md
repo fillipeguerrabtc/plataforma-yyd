@@ -19,6 +19,16 @@ Build a comprehensive platform based on a 26,120-line technical whitepaper with 
 - **Multilingual Support**: English, Portuguese (BR), Spanish
 
 ## Recent Changes
+- **2025-10-19**: MONOREPO TYPESCRIPT CRIADO (yyd/)
+  - **Estrutura**: pnpm workspaces (apps/, packages/, tools/)
+  - **@yyd/proxy-sdk**: SDK para raciocínio via ChatGPT (economiza tokens Replit)
+  - **@yyd/shared**: Tipos TypeScript compartilhados (QuoteRequest, BookingRequest, etc.)
+  - **apps/ingest**: Scraper REAL de yesyoudeserve.tours → Prisma
+  - **tools/guard**: Sistema anti-OpenAI (força uso do proxy-sdk)
+  - **Prisma Schema**: Product, Booking, Customer, Integration, AccountsPayable/Receivable, TicketAvailability
+  - **Build Sistema**: TypeScript compilado, tudo buildado com sucesso
+  - **Documentação**: README.md completo com arquitetura e guias
+  
 - **2025-10-18**: COMPLETE BACKOFFICE SYSTEM BUILT
   - **Frontend BackOffice**: Full administrative dashboard at `/backoffice`
   - **6 Management Panels Created**: Dashboard, Site Config, Tours, Bookings, Leads, Users
@@ -46,6 +56,16 @@ Build a comprehensive platform based on a 26,120-line technical whitepaper with 
 
 ## Project Architecture
 
+### NEW: TypeScript Monorepo (yyd/)
+- **Package Manager**: pnpm with workspaces
+- **Build System**: TypeScript 5.6+ com builds paralelos
+- **Database ORM**: Prisma Client (PostgreSQL)
+- **Proxy SDK**: @yyd/proxy-sdk - ChatGPT reasoning para economizar tokens
+- **Shared Types**: @yyd/shared - tipos compartilhados entre apps
+- **Ingestão**: apps/ingest - scraper REAL de yesyoudeserve.tours
+- **Guard System**: tools/guard - proíbe uso direto de 'openai' (exceto proxy-sdk)
+- **Scripts**: `pnpm build`, `pnpm lint`, `pnpm prisma:gen`, `pnpm migrate`
+
 ### Backend (FastAPI)
 - **Framework**: FastAPI with Uvicorn
 - **ORM**: SQLAlchemy with PostgreSQL
@@ -68,7 +88,16 @@ Build a comprehensive platform based on a 26,120-line technical whitepaper with 
 - **Client Structure**: Hero → No Crowds → Awards → Features → Stats → Tours → Comparison → Testimonials → Why Choose → Lead Form → Contact → Footer
 - **BackOffice Structure**: Login → Dashboard → Config → Tours → Bookings → Leads → Users
 
-### Database Schema
+### Database Schema (Prisma)
+- **Product**: Catálogo tours (slug único, multilíngue, preços EUR, imagens, ativo)
+- **Booking**: Reservas (customerId, productId, date, seats, status, priceEur)
+- **Customer**: Clientes (name, email único, phone, locale)
+- **Integration**: Integrações (kind, name, config JSON, active)
+- **AccountsPayable**: Contas a pagar (vendor, amount, dueDate, status)
+- **AccountsReceivable**: Contas a receber (customerId, amount, dueDate, status)
+- **TicketAvailability**: Cache disponibilidade (productId, provider, date, status, raw JSON)
+
+### Legacy Database Schema (FastAPI/SQLAlchemy)
 - **tour_products**: Real YYD tours with multilingual content (PT/EN/ES)
 - **bookings**: Tour reservations with Stripe integration
 - **leads**: Contact form submissions (name, email, phone, source)
@@ -135,14 +164,24 @@ Build a comprehensive platform based on a 26,120-line technical whitepaper with 
 - `GET /api/v1/backoffice/media` - List all media assets
 - `POST /api/v1/backoffice/media` - Create media asset
 
+## Cérebro Proxy Strategy
+- **Objetivo**: Economizar tokens Replit usando ChatGPT subscription para raciocínio
+- **Arquitetura**: Node.js proxy (port 3000) → OpenAI GPT-4
+- **SDK**: @yyd/proxy-sdk exporta `reason(task, minimalContext)` com retry
+- **Guard**: tools/guard/scan.js proíbe uso direto de 'openai' no código
+- **Workflow**: ChatGPT planeja → Fillipe copia → Replit Agent executa operacionalmente
+
 ## Next Steps
 1. ✅ **COMPLETED**: Frontend client matching official YYD website
 2. ✅ **COMPLETED**: Lead capture form integrated with backend
 3. ✅ **COMPLETED**: Booking flow with Stripe payment processing
 4. ✅ **COMPLETED**: BackOffice complete (Dashboard, Config, Tours, Bookings, Leads, Users)
-5. Make client site fully dynamic (pull all content from site_config API)
-6. Implement Aurora IA multilingual chatbot
-7. Add pgvector for affective embeddings
-8. Integrate Meta/WhatsApp APIs
-9. Add event-driven architecture with Kafka
-10. Deploy to production
+5. ✅ **COMPLETED**: Monorepo TypeScript com proxy-sdk, shared, ingest, guard
+6. 🚧 **IN PROGRESS**: Database migrations Prisma (Product, Booking, Customer, etc.)
+7. Rodar apps/ingest para popular catálogo REAL no Prisma
+8. Reimplementar Aurora Core com tensor curvatura INTEGRADO (tasks 1-5 pendentes architect)
+9. Aurora Mind com pgvector ivfflat index + batch embeddings
+10. Pricing dinâmico EVD + Emotional Timing
+11. BackOffice integrations panel (Meta/WhatsApp/Stripe config)
+12. Event-driven architecture com Kafka
+13. Deploy to production

@@ -1,0 +1,19 @@
+{
+  "name": "yyd-monorepo",
+  "private": true,
+  "workspaces": ["packages/*","apps/*","tools/*"],
+  "scripts": {
+    "dev": "pnpm -r dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint && node tools/guard/scan.js",
+    "migrate": "prisma migrate deploy",
+    "prisma:gen": "prisma generate"
+  },
+  "devDependencies": {
+    "prisma": "^5.19.0",
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.19.0"
+  }
+}

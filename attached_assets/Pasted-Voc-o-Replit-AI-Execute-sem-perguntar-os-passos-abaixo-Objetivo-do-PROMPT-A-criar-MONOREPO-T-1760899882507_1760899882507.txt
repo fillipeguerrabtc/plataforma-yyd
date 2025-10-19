@@ -1,0 +1,268 @@
+Você é o Replit AI. Execute, sem perguntar, os passos abaixo. Objetivo do PROMPT A: criar MONOREPO TS + Prisma/Postgres + SDK do Cérebro Proxy + Guardas anti-"openai" + app de ingestão REAL do catálogo yesyoudeserve.tours. Ao concluir, responda EXATAMENTE: 
+PROMPT A OK — pronto para receber o PROMPT B.
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 0) POLÍTICAS OBRIGATÓRIAS
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- TODO raciocínio/decisão deve passar pelo CÉREBRO PROXY já existente (REASON_PROXY_URL → POST /reason).
+- PROIBIDO importar/usar "openai" diretamente neste monorepo. Crie guardas que falham build/lint se ocorrer.
+- Respostas do Proxy sempre JSON curto: { action, params, rationale_short? }.
+- Nada de mock: produtos virão por ingestão REAL do domínio yesyoudeserve.tours.
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 1) MONOREPO
+////////////////////////////////////////////////////////////////////////////////////////////////////
+Crie estrutura:
+
+yyd/
+  package.json (workspaces)
+  pnpm-workspace.yaml
+  .gitignore
+  .env.example
+  prisma/
+    schema.prisma
+  packages/
+    proxy-sdk/
+      package.json
+      tsconfig.json
+      src/index.ts
+    shared/
+      package.json
+      tsconfig.json
+      src/types.ts
+      src/schemas.ts
+  tools/
+    guard/
+      package.json
+      scan.js
+  apps/
+    backoffice/
+    client/
+    aurora-service/
+    ingest/
+      package.json
+      tsconfig.json
+      src/index.ts
+
+Crie package.json (root):
+{
+  "name": "yyd-monorepo",
+  "private": true,
+  "workspaces": ["packages/*","apps/*","tools/*"],
+  "scripts": {
+    "dev": "pnpm -r dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint && node tools/guard/scan.js",
+    "migrate": "prisma migrate deploy",
+    "prisma:gen": "prisma generate"
+  },
+  "devDependencies": {
+    "prisma": "^5.19.0",
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.19.0"
+  }
+}
+
+Crie pnpm-workspace.yaml incluindo packages/*, apps/*, tools/*.
+Crie .gitignore com: node_modules, .next, dist, .env, cache.json.
+
+Crie .env.example (placeholders, sem segredos reais):
+DATABASE_URL=postgres://user:pass@host:5432/db
+REASON_PROXY_URL=https://SEU-PROXY.replit.app
+STRIPE_SECRET_KEY=sk_test_ou_live
+NEXT_PUBLIC_APP_NAME=Yes You Deserve
+PORT=3000
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 2) PRISMA / POSTGRES (produtivo)
+////////////////////////////////////////////////////////////////////////////////////////////////////
+Crie prisma/schema.prisma:
+generator client { provider = "prisma-client-js" }
+datasource db { provider = "postgresql"; url = env("DATABASE_URL") }
+
+model Product {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  title        String
+  description  String
+  category     String
+  subcategory  String?
+  duration     String?
+  priceEur     Decimal  @db.Decimal(10,2)
+  currency     String   @default("EUR")
+  imageUrls    String[]
+  externalUrl  String?
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  Bookings     Booking[]
+}
+
+model Booking {
+  id           String   @id @default(cuid())
+  customerId   String
+  productId    String
+  product      Product  @relation(fields: [productId], references: [id])
+  date         DateTime
+  seats        Int
+  status       String   @default("pending")
+  priceEur     Decimal  @db.Decimal(10,2)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  phone     String?
+  locale    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Integration {
+  id        String   @id @default(cuid())
+  kind      String
+  name      String
+  config    Json
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AccountsPayable {
+  id        String   @id @default(cuid())
+  vendor    String
+  amount    Decimal  @db.Decimal(10,2)
+  dueDate   DateTime
+  status    String   @default("open")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AccountsReceivable {
+  id        String   @id @default(cuid())
+  customerId String
+  amount     Decimal  @db.Decimal(10,2)
+  dueDate    DateTime
+  status     String   @default("open")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model TicketAvailability {
+  id         String   @id @default(cuid())
+  productId  String
+  provider   String
+  date       DateTime
+  status     String
+  raw        Json
+  checkedAt  DateTime @default(now())
+}
+
+Rode:
+- pnpm i
+- pnpm prisma:gen
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 3) packages/proxy-sdk — SDK do Cérebro Proxy
+////////////////////////////////////////////////////////////////////////////////////////////////////
+packages/proxy-sdk/package.json:
+{
+  "name": "@yyd/proxy-sdk",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": { "build": "tsc -p tsconfig.json" },
+  "dependencies": { "node-fetch": "^3.3.2" },
+  "devDependencies": { "typescript": "^5.6.3" }
+}
+packages/proxy-sdk/tsconfig.json:
+{ "compilerOptions":{ "target":"ES2020","module":"ES2020","outDir":"dist","declaration":true,"strict":true,"moduleResolution":"Bundler","esModuleInterop":true }, "include":["src"] }
+packages/proxy-sdk/src/index.ts:
+import fetch from "node-fetch";
+const PROXY_URL = process.env.REASON_PROXY_URL;
+function sleep(ms:number){ return new Promise(r=>setTimeout(r,ms)); }
+export function ensureShortJson(obj:any,maxChars=1200){
+  const s = JSON.stringify(obj); if(s.length<=maxChars) return obj;
+  return { note:"truncated", keys:Object.keys(obj).slice(0,20) };
+}
+export async function reason(task:string, minimalContext:Record<string,any>, tries=3){
+  if(!PROXY_URL) throw new Error("REASON_PROXY_URL not set");
+  const body = { task, minimal_context: ensureShortJson(minimalContext) };
+  let last:any;
+  for(let i=0;i<tries;i++){
+    try{
+      const res = await fetch(`${PROXY_URL}/reason`,{ method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(body) });
+      if(!res.ok) throw new Error("Proxy error "+res.status);
+      const data = await res.json();
+      if(!data?.action || !data?.params) throw new Error("Invalid JSON from proxy");
+      return data;
+    }catch(e){ last=e; await sleep(400*Math.pow(2,i)); }
+  }
+  throw last;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 4) packages/shared — tipos
+////////////////////////////////////////////////////////////////////////////////////////////////////
+packages/shared/package.json e tsconfig.json iguais ao proxy-sdk.
+packages/shared/src/types.ts:
+export type QuoteRequest = { customer_id:string; tour_id:string; date:string; seats:number; };
+export type QuoteResponse = { price_eur:number; risk?:number; };
+export type BookingRequest = QuoteRequest & { payment_token?:string; };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 5) tools/guard — banir 'openai'
+////////////////////////////////////////////////////////////////////////////////////////////////////
+tools/guard/package.json:
+{ "name":"guard","version":"1.0.0","type":"module","scripts":{"start":"node scan.js"} }
+tools/guard/scan.js:
+import fs from "fs"; import path from "path";
+const ban = /['"]openai['"]/;
+function walk(dir,bad=[]){
+  for(const f of fs.readdirSync(dir)){
+    const p = path.join(dir,f);
+    if(p.includes("packages/proxy-sdk")) continue;
+    if(p.includes("node_modules")||p.includes(".github")) continue;
+    const st = fs.statSync(p);
+    if(st.isDirectory()) walk(p,bad);
+    else if(/\.(js|mjs|ts|tsx)$/.test(p)){
+      const src = fs.readFileSync(p,"utf8");
+      if(ban.test(src)) bad.push(p);
+    }
+  }
+  return bad;
+}
+const offenders = walk(process.cwd());
+if(offenders.length){ console.error("❌ Uso direto de 'openai' proibido:", offenders); process.exit(1); }
+console.log("✅ Nenhum uso direto de 'openai' encontrado.");
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 6) apps/ingest — Ingestão REAL do catálogo yesyoudeserve.tours
+////////////////////////////////////////////////////////////////////////////////////////////////////
+Objetivo: scrapear páginas reais do domínio yesyoudeserve.tours, extrair título, descrição, preço EUR, duração, imagens e URL, gerar slug, e upsert em Product. Usar cheerio, node-fetch, slugify, @prisma/client. Respeitar robots.txt e throttle (~2 req/s). URLs de origem ficarão em tabela Integration (kind="catalog_source") ou array inicial no código.
+
+apps/ingest/package.json:
+{
+  "name":"@yyd/ingest","version":"1.0.0","type":"module",
+  "scripts":{"start":"node dist/index.js","build":"tsc -p tsconfig.json"},
+  "dependencies":{"cheerio":"^1.0.0","node-fetch":"^3.3.2","slugify":"^1.6.6","@prisma/client":"^5.19.0"},
+  "devDependencies":{"typescript":"^5.6.3"}
+}
+apps/ingest/tsconfig.json: igual aos demais.
+apps/ingest/src/index.ts: implementar pipeline descrito acima com upsert via Prisma (slug único), logar contagens.
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 7) INSTALAR & BUILD
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- pnpm i
+- pnpm prisma:gen
+- pnpm -r --filter @yyd/* build
+
+Quando terminar TUDO acima, responda EXATAMENTE:
+PROMPT A OK — pronto para receber o PROMPT B.

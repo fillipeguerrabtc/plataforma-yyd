@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id           String    @id @default(cuid())
+  slug         String    @unique
+  title        String
+  description  String
+  category     String
+  subcategory  String?
+  duration     String?
+  priceEur     Decimal   @db.Decimal(10,2)
+  currency     String    @default("EUR")
+  imageUrls    String[]
+  externalUrl  String?
+  active       Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  Bookings     Booking[]
+}
+
+model Booking {
+  id           String   @id @default(cuid())
+  customerId   String
+  productId    String
+  product      Product  @relation(fields: [productId], references: [id])
+  date         DateTime
+  seats        Int
+  status       String   @default("pending")
+  priceEur     Decimal  @db.Decimal(10,2)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  phone     String?
+  locale    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Integration {
+  id        String   @id @default(cuid())
+  kind      String
+  name      String
+  config    Json
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AccountsPayable {
+  id        String   @id @default(cuid())
+  vendor    String
+  amount    Decimal  @db.Decimal(10,2)
+  dueDate   DateTime
+  status    String   @default("open")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AccountsReceivable {
+  id         String   @id @default(cuid())
+  customerId String
+  amount     Decimal  @db.Decimal(10,2)
+  dueDate    DateTime
+  status     String   @default("open")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model TicketAvailability {
+  id         String   @id @default(cuid())
+  productId  String
+  provider   String
+  date       DateTime
+  status     String
+  raw        Json
+  checkedAt  DateTime @default(now())
+}
