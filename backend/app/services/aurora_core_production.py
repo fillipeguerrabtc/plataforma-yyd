@@ -19,6 +19,8 @@ onde:
 import os
 from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass
+from datetime import datetime
+import numpy as np
 import openai
 from openai import AsyncOpenAI
 
@@ -28,6 +30,7 @@ from .aurora_tensor_curvature import get_tensor_curvature
 from .aurora_lyapunov import get_lyapunov
 from .aurora_metacognition import get_metacognition
 from .aurora_ethics import get_ethics, Action, DeontologyOperator
+from .aurora_continuous_learning import get_continuous_learning
 
 
 @dataclass
@@ -98,6 +101,7 @@ class AuroraCoreProduction:
         self.lyapunov = get_lyapunov()
         self.metacognition = get_metacognition()
         self.ethics = get_ethics()
+        self.learning = get_continuous_learning()  # ✅ APRENDIZADO AUTÔNOMO
         
         # Histórico emocional para análise temporal
         self.emotion_history: List = []
@@ -231,7 +235,34 @@ class AuroraCoreProduction:
         if not ethics_eval.is_permissible:
             should_defer = True
         
-        # 6. Criar resposta Aurora
+        # 6. REGISTRAR EXPERIÊNCIA PARA APRENDIZADO (Aurora aprende sozinha!)
+        # Estado = vetor afetivo + contexto comprimido
+        state_vector = np.concatenate([
+            user_affective_state.to_array(),
+            [best_candidate.final_score, len(conversation_context)]
+        ])
+        
+        # Registrar (recompensa será adicionada depois via feedback)
+        self.learning.record_experience(
+            state=state_vector,
+            action=best_candidate.text[:200],  # Primeiros 200 chars
+            reward=best_candidate.final_score,  # Score inicial (será atualizado com feedback real)
+            next_state=state_vector,  # Será atualizado na próxima interação
+            metadata={
+                'response_type': best_candidate.response_type,
+                'language': language,
+                'timestamp': datetime.utcnow().isoformat()
+            }
+        )
+        
+        # 7. AUTO-MELHORIA PERIÓDICA (a cada 100 interações)
+        learning_metrics = self.learning.get_learning_metrics()
+        if learning_metrics.total_experiences % 100 == 0 and learning_metrics.total_experiences > 0:
+            improvement = self.learning.autonomous_improvement_cycle()
+        else:
+            improvement = None
+        
+        # 8. Criar resposta Aurora
         return AuroraResponse(
             message=best_candidate.text,
             affective_vector=best_candidate.affective_vector,
@@ -258,7 +289,12 @@ class AuroraCoreProduction:
                 'ethics_permissible': ethics_eval.is_permissible,
                 'ethics_moral_score': ethics_eval.moral_score,
                 'should_defer_to_human': should_defer,
-                'advanced_analysis_enabled': True
+                'advanced_analysis_enabled': True,
+                # APRENDIZADO CONTÍNUO
+                'learning_total_experiences': learning_metrics.total_experiences,
+                'learning_avg_reward': learning_metrics.avg_reward,
+                'learning_exploration_rate': learning_metrics.exploration_rate,
+                'autonomous_improvement': improvement if improvement else None
             }
         )
     
