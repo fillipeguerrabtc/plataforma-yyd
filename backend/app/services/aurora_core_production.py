@@ -24,6 +24,10 @@ from openai import AsyncOpenAI
 
 from .aurora_sense_production import AffectiveVector, get_aurora_sense_production
 from .aurora_mind_production import get_aurora_mind_production
+from .aurora_tensor_curvature import get_tensor_curvature
+from .aurora_lyapunov import get_lyapunov
+from .aurora_metacognition import get_metacognition
+from .aurora_ethics import get_ethics, Action, DeontologyOperator
 
 
 @dataclass
@@ -90,6 +94,13 @@ class AuroraCoreProduction:
         # Get Aurora modules
         self.sense = get_aurora_sense_production()
         self.mind = get_aurora_mind_production()
+        self.tensor = get_tensor_curvature()
+        self.lyapunov = get_lyapunov()
+        self.metacognition = get_metacognition()
+        self.ethics = get_ethics()
+        
+        # Histórico emocional para análise temporal
+        self.emotion_history: List = []
     
     async def generate_response(
         self,
@@ -175,6 +186,51 @@ class AuroraCoreProduction:
         # 5. Selecionar melhor candidato (arg max)
         best_candidate = max(scored_candidates, key=lambda c: c.final_score)
         
+        # 5.1 ANÁLISES AVANÇADAS (Whitepaper)
+        
+        # Adicionar vetor ao histórico emocional
+        self.emotion_history.append(user_affective_state.to_array())
+        if len(self.emotion_history) > 100:
+            self.emotion_history = self.emotion_history[-100:]  # Keep last 100
+        
+        # Tensor de Curvatura - verificar estabilidade emocional
+        curvature_analysis = None
+        if len(self.emotion_history) >= 3:
+            curvature_analysis = self.tensor.analyze_emotional_trajectory(self.emotion_history)
+        
+        # Lyapunov - convergência para equilíbrio
+        lyapunov_analysis = None
+        if len(self.emotion_history) >= 2:
+            E_current = user_affective_state.to_array()
+            E_prev = self.emotion_history[-2]
+            E_dot = self.lyapunov.estimate_E_dot(E_prev, E_current, dt=1.0)
+            lyapunov_analysis = self.lyapunov.analyze(E_current, E_dot)
+        
+        # Meta-Cognição - consciência de 2ª ordem
+        meta_cognition = None
+        if len(self.emotion_history) >= 2:
+            E_current = user_affective_state.to_array()
+            E_prev = self.emotion_history[-2]
+            E_dot = (E_current - E_prev)
+            meta_cognition = self.metacognition.introspect(E_current, E_dot, conversation_context)
+        
+        # Ética - verificar permissibilidade moral
+        action = Action(
+            id=f"respond_{best_candidate.response_type}",
+            description=best_candidate.text[:100],
+            deontic_status=DeontologyOperator.PERMITTED,
+            affected_principles=[],
+            expected_utility=best_candidate.final_score
+        )
+        ethics_eval = self.ethics.evaluate_action(action, conversation_context)
+        
+        # Verificar se deve deferir para humano
+        should_defer = False
+        if meta_cognition and self.metacognition.should_defer_to_human(meta_cognition):
+            should_defer = True
+        if not ethics_eval.is_permissible:
+            should_defer = True
+        
         # 6. Criar resposta Aurora
         return AuroraResponse(
             message=best_candidate.text,
@@ -191,7 +247,18 @@ class AuroraCoreProduction:
                 'utility_score': self.λ3 * best_candidate.utility_score,
                 'user_affective_state': user_affective_state.to_dict(),
                 'language': language,
-                'num_candidates': len(candidates)
+                'num_candidates': len(candidates),
+                # ANÁLISES AVANÇADAS (Whitepaper)
+                'curvature_analysis': curvature_analysis if curvature_analysis else None,
+                'lyapunov_stable': lyapunov_analysis.is_stable if lyapunov_analysis else None,
+                'lyapunov_asymptotic': lyapunov_analysis.is_asymptotically_stable if lyapunov_analysis else None,
+                'metacognition_state': meta_cognition.meta_state.value if meta_cognition else None,
+                'metacognition_confidence': meta_cognition.confidence if meta_cognition else None,
+                'metacognition_coherence': meta_cognition.coherence if meta_cognition else None,
+                'ethics_permissible': ethics_eval.is_permissible,
+                'ethics_moral_score': ethics_eval.moral_score,
+                'should_defer_to_human': should_defer,
+                'advanced_analysis_enabled': True
             }
         )
     
