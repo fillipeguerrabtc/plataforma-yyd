@@ -1,0 +1,52 @@
+Você é o Replit AI. Objetivo do PROMPT B: criar os 3 apps (Backoffice, Client, Aurora-service) completos e produtivos, SEM mocks: lendo produtos reais do Postgres (via ingest), pagamentos Stripe (test), gerenciador de integrações, checker de disponibilidade de tickets, BI com explicação pela Aurora (via Proxy). PROIBIDO usar OpenAI direto. Ao concluir, rode tudo em dev, imprima as 3 URLs públicas e responda EXATAMENTE:
+PROMPT B OK — URLs: BACKOFFICE=<...> ; CLIENT=<...> ; AURORA=<...>
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 1) BACKOFFICE — Next.js (App Router, TS, Prisma)
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- Dependências: next, react, react-dom, @prisma/client, prisma, zod, node-fetch, stripe (para conciliação).
+- Páginas:
+  /login
+  /dashboard      → KPIs do BD + botão “Explicar com Aurora” (POST /api/explain → reason("classify_msg",{source:"finance",kpis:[...]}) e retorna rationale_short).
+  /products       → CRUD REAL (Product via Prisma). Campo externalUrl visível. Botão “Reingestar este produto” chama /api/ingest/run com URL única.
+  /reservations   → Lista Bookings + “Criar Reserva” (form: customer_id, product, date, seats). Cálculo de preço: POST /api/quote → reason("quote_price", {customer_id,tour_id,date,seats}) e grava priceEur no Booking.
+  /finance        → AP/AR do BD. Ação “Conciliar Pagamento” (POST /api/payments/reconcile) usando Stripe (test).
+  /integrations   → Manager (tabela Integration) com tipos: stripe, meta_whatsapp, ticket_provider, catalog_source. Form para adicionar/editar JSON de config. Botão “Executar Ingestão Agora” → /api/ingest/run (varre catalog_sources).
+- API Routes Backoffice (todas via @yyd/proxy-sdk quando houver raciocínio):
+  - POST /api/quote → usa reason("quote_price", …) → retorna { price_eur, risk }.
+  - POST /api/explain → usa reason("classify_msg", …) → retorna { rationale_short }.
+  - POST /api/ingest/run → executa apps/ingest (spawn/fork) e atualiza Product.
+  - POST /api/payments/reconcile → Stripe (test) e atualização de AP/AR.
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 2) CLIENT — Next.js (catálogo real + checkout)
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- Páginas:
+  /                  → lista Product real (Prisma).
+  /product/[slug]    → detalhe real (descrição, imagens, preço atual).
+  /checkout/[slug]   → formulário date/seats → POST /api/quote (client) → reason("quote_price", ...) → mostra price_eur. Botão “Pagar” → cria PaymentLink Stripe (test) e salva intenção no BD.
+- API do Client:
+  - POST /api/quote → mapeia params e chama @yyd/proxy-sdk.reason("quote_price", …) → { price_eur }.
+  - POST /api/pay   → cria PaymentLink Stripe (test) baseado no price_eur retornado.
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 3) AURORA-SERVICE — Express
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- Rotas:
+  POST /webhooks/booking-confirmed → { booking_id, customer_id, productId, date } → reason("classify_msg",{source:"booking",payload_min:{...}}) → { tag }.
+  POST /ops/check-ticket-availability → lê Integration.kind="ticket_provider" (URLs de parceiros); para cada URL, fetch + cheerio para extrair disponibilidade. Heurísticas textuais (ex.: “sold out”) devem ser classificadas via reason("classify_msg",{source:"tickets", text:...}) e gravadas em TicketAvailability. Disparar webhook para Backoffice (/api/tickets/update-availability).
+  GET  /ops/ping → reason("classify_msg",{source:"ops"}) e log a tag.
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 4) CONFIGURAÇÃO / SECRETS
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- Ler via Secrets: DATABASE_URL, REASON_PROXY_URL, STRIPE_SECRET_KEY (test), NEXT_PUBLIC_APP_NAME.
+- Proibir qualquer import "openai" (guard/lint).
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 5) RODAR E ENTREGAR
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- pnpm -r dev
+- Exibir as 3 URLs públicas finais (Backoffice, Client, Aurora).
+- Responder EXATAMENTE:
+PROMPT B OK — URLs: BACKOFFICE=<...> ; CLIENT=<...> ; AURORA=<...>
