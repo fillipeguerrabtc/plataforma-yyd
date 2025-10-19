@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from app.api.v1.endpoints import (
     auth, tours, guides, vehicles, bookings, users, integrations, financial, leads,
     backoffice_auth, backoffice_config, backoffice_customers, backoffice_aurora,
-    aurora_chat, aurora_knowledge, integrations_webhooks, aurora_seed
+    aurora_chat, aurora_knowledge, integrations_webhooks, aurora_seed, telemetry
 )
 
 api_router = APIRouter()
@@ -31,3 +31,6 @@ api_router.include_router(backoffice_auth.router, prefix="/backoffice/auth", tag
 api_router.include_router(backoffice_config.router, prefix="/backoffice", tags=["backoffice-config"])
 api_router.include_router(backoffice_customers.router, prefix="/backoffice", tags=["backoffice-customers"])
 api_router.include_router(backoffice_aurora.router, prefix="/backoffice", tags=["backoffice-aurora"])
+
+# Telemetry/Ops APIs
+api_router.include_router(telemetry.router, tags=["telemetry"])

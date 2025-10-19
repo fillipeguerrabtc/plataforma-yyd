@@ -1,13 +1,21 @@
 {
   "name": "yyd-monorepo",
   "private": true,
-  "workspaces": ["packages/*","apps/*","tools/*"],
+  "workspaces": [
+    "packages/*",
+    "apps/*",
+    "tools/*"
+  ],
   "scripts": {
     "dev": "pnpm -r dev",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint && node tools/guard/scan.js",
     "migrate": "prisma migrate deploy",
-    "prisma:gen": "prisma generate"
+    "prisma:gen": "prisma generate",
+    "telemetry": "node telemetry/collector.mjs",
+    "telemetry:report": "node telemetry/report.mjs",
+    "test:smoke": "node scripts/proxy-smoke.mjs",
+    "test:economy": "node scripts/economy-test.mjs"
   },
   "devDependencies": {
     "prisma": "^5.19.0",

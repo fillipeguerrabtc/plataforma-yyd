@@ -87,3 +87,27 @@ model TicketAvailability {
   raw        Json
   checkedAt  DateTime @default(now())
 }
+
+model MetricsHistory {
+  id                Int      @id @default(autoincrement())
+  timestamp         DateTime @default(now())
+  app               String
+  route             String
+  calls             Int
+  promptTokens      Int
+  completionTokens  Int
+  estCostTotal      Decimal  @db.Decimal(10,8)
+
+  @@index([timestamp])
+  @@index([app])
+  @@map("metrics_history")
+}
+
+model DailySummary {
+  date        String  @id
+  totalCalls  Int     @default(0)
+  totalTokens Int     @default(0)
+  totalCost   Decimal @default(0) @db.Decimal(10,8)
+
+  @@map("daily_summary")
+}

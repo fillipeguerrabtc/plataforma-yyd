@@ -1,0 +1,150 @@
+Você é o Replit AI. Execute, sem perguntas, o seguinte plano detalhado:
+
+Objetivo:
+1️⃣ Garantir que TODO raciocínio e IA passem pelo Cérebro Proxy (REASON_PROXY_URL).
+2️⃣ Travar o Replit contra qualquer uso direto de IA (sem tokens nem custos aqui).
+3️⃣ Adicionar monitoramento em tempo real de tokens e custo do Proxy.
+4️⃣ Adicionar histórico de telemetria (tokens, custo, rotas, apps) em banco SQLite.
+5️⃣ Gerar dashboard visual no Backoffice (/ops/metrics) e relatórios diários.
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 0) PREMISSAS
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// - O monorepo yyd/ foi criado (PROMPT A OK).
+// - O Proxy já roda e tem REASON_PROXY_URL nos Secrets.
+// - Não imprimir segredos.
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 1) TRAVAS ANTI-CUSTO DE IA (GUARD + NET-GUARD)
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Atualize tools/guard/scan.js para bloquear 'openai' e 'api.openai.com' (como no prompt anterior).
+// Crie yyd/tools/net-guard/runtime-block.mjs para bloquear qualquer fetch/http/https a domínios openai.
+// Importe esse módulo no bootstrap de todos os apps (backoffice, client, aurora-service).
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 2) TELEMETRIA LOCAL: BANCO HISTÓRICO (SQLite)
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Criar um DB SQLite local em yyd/telemetry/telemetry.db com tabelas:
+
+CREATE TABLE metrics_history (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+  app TEXT,
+  route TEXT,
+  calls INTEGER,
+  prompt_tokens INTEGER,
+  completion_tokens INTEGER,
+  est_cost_total REAL
+);
+
+CREATE TABLE daily_summary (
+  date TEXT PRIMARY KEY,
+  total_calls INTEGER,
+  total_tokens INTEGER,
+  total_cost REAL
+);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 3) COLETOR AUTOMÁTICO DE MÉTRICAS DO PROXY
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Criar script yyd/telemetry/collector.mjs que:
+import fetch from "node-fetch";
+import Database from "better-sqlite3";
+const db = new Database("./yyd/telemetry/telemetry.db");
+const PROXY_URL = process.env.REASON_PROXY_URL;
+
+async function collect() {
+  try {
+    const r = await fetch(`${PROXY_URL}/metrics`);
+    const m = await r.json();
+    db.prepare("INSERT INTO metrics_history (app, route, calls, prompt_tokens, completion_tokens, est_cost_total) VALUES (?,?,?,?,?,?)")
+      .run("proxy", "reason", m.calls, m.prompt_tokens, m.completion_tokens, m.est_cost_total);
+    db.prepare(`
+      INSERT INTO daily_summary (date, total_calls, total_tokens, total_cost)
+      VALUES (date('now'), ?, ?, ?)
+      ON CONFLICT(date) DO UPDATE SET
+        total_calls = total_calls + excluded.total_calls,
+        total_tokens = total_tokens + excluded.total_tokens,
+        total_cost  = total_cost  + excluded.total_cost;
+    `).run(m.calls, m.prompt_tokens + m.completion_tokens, m.est_cost_total);
+    console.log("📊 Métricas registradas:", new Date().toISOString());
+  } catch(e) {
+    console.error("Erro ao coletar métricas:", e.message);
+  }
+}
+setInterval(collect, 30000); // coleta a cada 30s
+
+// Adicionar script no package.json raiz: "telemetry": "node yyd/telemetry/collector.mjs"
+// Rodar em paralelo com "pnpm dev" no background.
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 4) DASHBOARD NO BACKOFFICE — /ops/metrics
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Em apps/backoffice/src/app/ops/metrics/page.tsx:
+// - Use server action para ler diretamente de yyd/telemetry/telemetry.db.
+// - Mostre cards: calls, tokens, custo total.
+// - Adicione gráfico temporal (chart.js) com histórico (últimas 24h).
+// - Mostre comparação diária (delta vs. ontem).
+// - Badge verde “USING CÉREBRO PROXY ✅” se o proxy responde OK.
+// - Badge vermelha “OPENAI DIRECT: BLOCKED 🔒” se net-guard ativo.
+// - Auto-refresh a cada 5s.
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 5) DASHBOARD HISTÓRICO — /ops/analytics
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Nova rota no Backoffice:
+// - Consulta tabela daily_summary.
+// - Renderiza gráfico de barras por dia (calls, tokens, custo total).
+// - Gráfico de pizza com percentual de uso por rota/app (baseado em metrics_history.app e .route).
+// - Adicione tabela detalhada exportável (CSV).
+// - Permitir filtro por data e app (proxy, backoffice, aurora).
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 6) SELF-CHECK — PROVA DE DEPENDÊNCIA
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Criar rota /ops/self-check:
+// - Executa reason("classify_msg",{source:"ops",text:"ping"}) via proxy-sdk.
+// - Exibe JSON de resposta.
+// - Em seguida tenta fetch("https://api.openai.com/v1/models") e espera erro “blocked by runtime net-guard”.
+// - Exibe resultado dos dois testes.
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 7) TESTE CONTROLADO DE ECONOMIA
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// - Ler /metrics BEFORE, salvar JSON.
+// - Executar node yyd/scripts/proxy-smoke.mjs 5x.
+// - Ler /metrics AFTER, salvar JSON.
+// - Calcular deltas (calls, tokens, custo).
+// - Registrar também os dados históricos da tabela metrics_history.
+// - Verificar no dashboard que custo e tokens aumentam APENAS no Proxy (nunca no Replit).
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 8) RELATÓRIO FINAL AUTOMÁTICO
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Criar script yyd/telemetry/report.mjs que:
+import Database from "better-sqlite3";
+const db = new Database("./yyd/telemetry/telemetry.db");
+const summary = db.prepare("SELECT * FROM daily_summary ORDER BY date DESC LIMIT 7").all();
+console.log("📆 Relatório de 7 dias:");
+for (const s of summary)
+  console.log(`${s.date}: ${s.total_calls} calls | ${s.total_tokens} tokens | €${s.total_cost.toFixed(6)} total`);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 9) SAÍDA FINAL ESPERADA
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// - Guard OK (sem openai).
+// - net-guard ativo.
+// - Proxy responde /metrics.
+// - /ops/metrics exibe métricas em tempo real.
+// - /ops/analytics exibe históricos e comparativos diários.
+// - /ops/self-check prova dependência e bloqueio.
+// - /telemetry/report mostra custo diário concentrado no Proxy (economia real no Replit).
+// - Nenhuma chamada a api.openai.com permitida no ambiente Replit.
+// - Tokens e custo visíveis apenas via Proxy (/metrics).
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 10) ENCERRAMENTO
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- Após concluir TUDO e verificar no dashboard que as métricas e relatórios estão funcionando,
+  responda EXATAMENTE:
+PROMPT INTERMEDIÁRIO OK — pronto para receber o PROMPT B.

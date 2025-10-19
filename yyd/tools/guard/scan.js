@@ -1,13 +1,14 @@
 import fs from "fs";
 import path from "path";
 
-const ban = /['"]openai['"]/;
+const ban = /['"]openai['"]|api\.openai\.com/;
 
 function walk(dir, bad = []) {
   for (const f of fs.readdirSync(dir)) {
     const p = path.join(dir, f);
     if (p.includes("packages/proxy-sdk")) continue;
     if (p.includes("tools/guard")) continue;
+    if (p.includes("tools/net-guard")) continue;
     if (p.includes("node_modules") || p.includes(".github")) continue;
     const st = fs.statSync(p);
     if (st.isDirectory()) {
