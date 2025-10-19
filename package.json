@@ -1,19 +1,18 @@
 {
-  "name": "workspace",
+  "name": "yyd-reasoning-proxy",
   "version": "1.0.0",
-  "description": "Plataforma Completa de Gerenciamento com CRM, IA, Integrações e Automações. Boutique de Experiencias Completa!",
-  "main": "index.js",
-  "directories": {
-    "doc": "docs"
-  },
+  "description": "Reasoning Proxy (ChatGPT como cérebro) + Executor (Replit) com JSON estrito e tokens mínimos",
+  "type": "module",
+  "main": "server.mjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.mjs"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "@stripe/react-stripe-js": "^5.2.0",
-    "@stripe/stripe-js": "^8.1.0"
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "node-fetch": "^3.3.2",
+    "openai": "^4.104.0",
+    "stripe": "^16.12.0"
   }
 }

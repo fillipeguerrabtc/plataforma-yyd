@@ -1,0 +1,14 @@
+{
+  "eyJ0YXNrIjoicXVvdGVfcHJpY2UiLCJtaW5pbWFs": {
+    "action": "quote_price",
+    "rationale_short": "",
+    "params": {
+      "customer_id": "42",
+      "tour_id": "sintra",
+      "date": "2025-11-15",
+      "seats": 2,
+      "price_eur": 100,
+      "risk": 0.1
+    }
+  }
+}

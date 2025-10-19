@@ -1,0 +1,269 @@
+Você é o Replit AI. Execute exatamente as instruções a seguir para criar e rodar um “Cérebro Proxy” (Node.js + OpenAI) com respostas em JSON curto, cache local e um endpoint de exemplo que usa o proxy. Siga a ordem. Não faça perguntas — apenas confirme cada etapa e prossiga.
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 0) PRÉ-REQUISITOS
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- Ambiente: Node.js
+- Secrets que DEVEM existir no Replit (Tools → Secrets):
+  - OPENAI_API_KEY  (rotacionada no painel da OpenAI; NUNCA imprimir o valor no console)
+  - OPENAI_MODEL    (opcional; usar "gpt-4o-mini" se não existir)
+  - STRIPE_SECRET_KEY (opcional; para ações de pagamento no executor)
+  - PORT            (opcional; usar 3000 se não existir)
+
+Se algum Secret não existir, criar um placeholder no .env.example, mas NÃO imprimir valores reais.
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 1) INICIALIZAÇÃO DO PROJETO
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- Se não existir package.json, rode:
+  - npm init -y
+
+- Instale as dependências:
+  - npm i express openai cors dotenv node-fetch stripe
+
+- Sobrescreva package.json com o conteúdo EXATO abaixo (inclui "type": "module" e script start):
+===== CRIAR/ATUALIZAR: package.json =====
+{
+  "name": "yyd-reasoning-proxy",
+  "version": "1.0.0",
+  "description": "Reasoning Proxy (ChatGPT como cérebro) + Executor (Replit) com JSON estrito e tokens mínimos",
+  "type": "module",
+  "main": "server.mjs",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "node-fetch": "^3.3.2",
+    "openai": "^4.57.0",
+    "stripe": "^16.6.0"
+  }
+}
+===== FIM =====
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 2) ARQUIVOS DO PROJETO
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+2.1) Criar diretório "logic" (se não existir).
+
+2.2) CRIAR: logic/reasoner.mjs
+----- INÍCIO DO ARQUIVO -----
+import OpenAI from "openai";
+
+const MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini"; // modelo custo/benefício
+
+// Função central de raciocínio: entrada mínima, saída JSON OBRIGATÓRIA.
+export async function reason({ task, minimal_context }) {
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+  const system = [
+    "Você é o Cérebro Proxy da YYD.",
+    "Saída OBRIGATORIAMENTE em JSON válido, curto e objetivo, segundo o schema.",
+    "NUNCA escreva texto fora do JSON. Não gere prosa.",
+    "Se faltar dados para agir, retorne action='other' com rationale_short dizendo o que falta."
+  ].join(" ");
+
+  // Schema mínimo que o Replit EXECUTARÁ localmente
+  const schema = {
+    type: "object",
+    properties: {
+      action: { type: "string", enum: ["quote_price", "create_booking", "classify_msg", "other"] },
+      rationale_short: { type: "string" },
+      params: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          customer_id: { type: "string" },
+          tour_id: { type: "string" },
+          date: { type: "string" },
+          seats: { type: "number" },
+          price_eur: { type: "number" },
+          risk: { type: "number" }
+        }
+      }
+    },
+    required: ["action","params"]
+  };
+
+  const messages = [
+    { role: "system", content: system },
+    { role: "user", content: JSON.stringify({ task, minimal_context, schema }) }
+  ];
+
+  // Structured Outputs -> força JSON; max_tokens baixo -> economia
+  const completion = await openai.chat.completions.create({
+    model: MODEL,
+    response_format: { type: "json_object" },
+    messages,
+    max_tokens: 250,
+    temperature: 0.2
+  });
+
+  const raw = completion.choices?.[0]?.message?.content || "{}";
+  let data;
+  try {
+    data = JSON.parse(raw);
+  } catch (e) {
+    data = { action: "other", rationale_short: "JSON inválido do modelo", params: {} };
+  }
+  if (!data.action || !data.params) {
+    data = { action: "other", rationale_short: "Schema ausente", params: {} };
+  }
+  return data;
+}
+----- FIM DO ARQUIVO -----
+
+2.3) CRIAR: logic/executor.mjs
+----- INÍCIO DO ARQUIVO -----
+import Stripe from "stripe";
+const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
+
+// Executor local: o Replit age (Stripe/DB/etc.). Mantemos tokens baixos pois aqui não há IA.
+export async function execute(decision) {
+  const { action, params } = decision || {};
+
+  if (action === "quote_price") {
+    const base = typeof params?.price_eur === "number" ? params.price_eur : 0;
+    const final_price = Math.max(0, Math.round(base * 100) / 100);
+    return { ok: true, action, data: { price_eur: final_price, risk: params?.risk ?? 0 } };
+  }
+
+  if (action === "create_booking") {
+    if (!stripe) return { ok: false, action, error: "Stripe não configurado" };
+    // Exemplo: aqui criaria PaymentIntent, salvaria reserva no DB etc.
+    return { ok: true, action, data: { booking_id: "bk_" + Date.now() } };
+  }
+
+  if (action === "classify_msg") {
+    return { ok: true, action, data: { tag: "sales" } };
+  }
+
+  return { ok: false, action: "other", error: "Ação desconhecida ou dados insuficientes." };
+}
+----- FIM DO ARQUIVO -----
+
+2.4) CRIAR: server.mjs
+----- INÍCIO DO ARQUIVO -----
+import "dotenv/config";
+import express from "express";
+import cors from "cors";
+import fs from "fs";
+import { reason } from "./logic/reasoner.mjs";
+import { execute } from "./logic/executor.mjs";
+
+const app = express();
+app.use(cors());
+app.use(express.json({ limit: "200kb" }));
+
+// Cache simples em arquivo para economizar tokens em prompts repetidos
+const CACHE_FILE = "./cache.json";
+let cache = fs.existsSync(CACHE_FILE) ? JSON.parse(fs.readFileSync(CACHE_FILE)) : {};
+const saveCache = () => fs.writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2));
+const keyOf = (obj) => Buffer.from(JSON.stringify(obj)).toString("base64").slice(0, 40);
+
+// 1) Endpoint do CÉREBRO PROXY (consome tokens, mas com limites e JSON estrito)
+app.post("/reason", async (req, res) => {
+  try {
+    const { task, minimal_context } = req.body || {};
+    const key = keyOf({ task, minimal_context });
+    if (cache[key]) return res.json(cache[key]);
+
+    const result = await reason({ task, minimal_context });
+    cache[key] = result;
+    saveCache();
+    res.json(result);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: String(e) });
+  }
+});
+
+// 2) Exemplo de endpoint que USA o proxy e EXECUTA localmente
+app.post("/quote", async (req, res) => {
+  try {
+    const { customer_id, tour_id, date, seats } = req.body || {};
+    const decision = await reason({
+      task: "quote_price",
+      minimal_context: { customer_id, tour_id, date, seats }
+    });
+    const result = await execute(decision);
+    res.json(result);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: String(e) });
+  }
+});
+
+// Healthcheck
+app.get("/", (req, res) => res.send("YYD Reasoning Proxy + Executor ON"));
+
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log("Server running on port", port));
+----- FIM DO ARQUIVO -----
+
+2.5) CRIAR: .env.example
+----- INÍCIO DO ARQUIVO -----
+# Configure estes via "Secrets" do Replit (não commitar .env real):
+OPENAI_API_KEY=rotacione_sua_chave_no_painel_da_openai
+OPENAI_MODEL=gpt-4o-mini
+STRIPE_SECRET_KEY=sk_test_ou_live_opcional
+PORT=3000
+----- FIM DO ARQUIVO -----
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 3) EXECUÇÃO
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- Rode: npm run start
+- Aguarde: "Server running on port 3000"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 4) TESTES RÁPIDOS
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- Teste o healthcheck no navegador:
+  GET  /        →  "YYD Reasoning Proxy + Executor ON"
+
+- Teste o cérebro (via curl no Shell do Replit ou HTTP client):
+  POST /reason
+  Body (JSON):
+  {
+    "task": "quote_price",
+    "minimal_context": { "customer_id": "42", "tour_id": "sintra", "date": "2025-11-15", "seats": 2 }
+  }
+  → Resposta: JSON curto obrigatório (action + params).
+
+- Teste o uso do cérebro + execução local:
+  POST /quote
+  Body (JSON):
+  {
+    "customer_id": "42",
+    "tour_id": "sintra",
+    "date": "2025-11-15",
+    "seats": 2
+  }
+  → Resposta: { ok: true, action: "quote_price", data: { price_eur: <número>, risk: <número> } }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 5) OBSERVAÇÕES DE CUSTO
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- O proxy usa response_format: { type: "json_object" }, max_tokens 250 e temperature 0.2 → respostas curtas.
+- O Replit não envia prompts longos; só “task + minimal_context”.
+- Há cache em arquivo (cache.json) para requests repetidos.
+- Para baratear ainda mais, deixar OPENAI_MODEL = "gpt-4o-mini" (ou outro mini de sua preferência).
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 6) PRONTO
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+- Confirme “Server running on port 3000”.
+- Informe a URL pública do Replit (webview) para consumo pelo seu front-end ou automações.
+- Não logue valor de OPENAI_API_KEY. Nunca exponha segredos no console.
+
+FIM
