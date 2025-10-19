@@ -3,19 +3,13 @@
   "private": true,
   "workspaces": [
     "packages/*",
-    "apps/*",
-    "tools/*"
+    "apps/*"
   ],
   "scripts": {
     "dev": "pnpm -r dev",
     "build": "pnpm -r build",
-    "lint": "pnpm -r lint && node tools/guard/scan.js",
-    "migrate": "prisma migrate deploy",
     "prisma:gen": "prisma generate",
-    "telemetry": "node telemetry/collector.mjs",
-    "telemetry:report": "node telemetry/report.mjs",
-    "test:smoke": "node scripts/proxy-smoke.mjs",
-    "test:economy": "node scripts/economy-test.mjs"
+    "db:push": "prisma db push"
   },
   "devDependencies": {
     "prisma": "^5.19.0",

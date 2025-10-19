@@ -16,47 +16,11 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Backend"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Reasoning Proxy"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
 args = "Client"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
 args = "Backoffice"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Aurora"
-
-[[workflows.workflow]]
-name = "Backend"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "cd backend && python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
-waitForPort = 8000
-
-[workflows.workflow.metadata]
-outputType = "console"
-
-[[workflows.workflow]]
-name = "Reasoning Proxy"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "node server.mjs"
-waitForPort = 3000
-
-[workflows.workflow.metadata]
-outputType = "console"
 
 [[workflows.workflow]]
 name = "Client"
@@ -64,7 +28,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd yyd/apps/client && DATABASE_URL=$DATABASE_URL REASON_PROXY_URL=$REASON_PROXY_URL npm run dev"
+args = "cd yyd/apps/client && npm run dev"
 waitForPort = 5000
 
 [workflows.workflow.metadata]
@@ -76,20 +40,8 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd yyd/apps/backoffice && DATABASE_URL=$DATABASE_URL REASON_PROXY_URL=$REASON_PROXY_URL npm run dev"
+args = "cd yyd/apps/backoffice && npm run dev"
 waitForPort = 3001
-
-[workflows.workflow.metadata]
-outputType = "console"
-
-[[workflows.workflow]]
-name = "Aurora"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "cd yyd/apps/aurora-service && DATABASE_URL=$DATABASE_URL REASON_PROXY_URL=$REASON_PROXY_URL npm run dev"
-waitForPort = 3003
 
 [workflows.workflow.metadata]
 outputType = "console"
@@ -103,13 +55,5 @@ localPort = 3001
 externalPort = 3001
 
 [[ports]]
-localPort = 3003
-externalPort = 3003
-
-[[ports]]
 localPort = 5000
 externalPort = 80
-
-[[ports]]
-localPort = 45479
-externalPort = 3002

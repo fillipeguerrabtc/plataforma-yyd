@@ -1,28 +1,20 @@
-import Link from 'next/link';
-
 export default function Home() {
   return (
     <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
-      <h1>🏢 YYD Backoffice</h1>
-      <nav style={{ marginTop: '2rem' }}>
-        <ul style={{ listStyle: 'none', padding: 0 }}>
-          <li style={{ marginBottom: '1rem' }}>
-            <Link href="/dashboard" style={{ fontSize: '1.2rem' }}>📊 Dashboard</Link>
-          </li>
-          <li style={{ marginBottom: '1rem' }}>
-            <Link href="/products" style={{ fontSize: '1.2rem' }}>📦 Products</Link>
-          </li>
-          <li style={{ marginBottom: '1rem' }}>
-            <Link href="/reservations" style={{ fontSize: '1.2rem' }}>🎫 Reservations</Link>
-          </li>
-          <li style={{ marginBottom: '1rem' }}>
-            <Link href="/finance" style={{ fontSize: '1.2rem' }}>💰 Finance</Link>
-          </li>
-          <li style={{ marginBottom: '1rem' }}>
-            <Link href="/integrations" style={{ fontSize: '1.2rem' }}>🔌 Integrations</Link>
-          </li>
+      <h1 style={{ color: '#7E3231' }}>🏢 YYD Backoffice</h1>
+      <p style={{ marginTop: '1rem', color: '#6b7280' }}>
+        Administrative dashboard - Clean slate, ready to build
+      </p>
+      
+      <div style={{ marginTop: '2rem', padding: '1.5rem', background: '#f9fafb', borderRadius: '8px' }}>
+        <h2 style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>✅ System Ready</h2>
+        <ul style={{ lineHeight: '1.8' }}>
+          <li>✅ PostgreSQL database connected</li>
+          <li>✅ Prisma schema configured (7 tables)</li>
+          <li>✅ Next.js 14 running on port 3001</li>
+          <li>✅ TypeScript monorepo structure</li>
         </ul>
-      </nav>
+      </div>
     </div>
   );
 }

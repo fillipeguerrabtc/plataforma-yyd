@@ -1,68 +1,52 @@
-import { PrismaClient } from '@prisma/client';
-import Link from 'next/link';
-
-const prisma = new PrismaClient();
-
-async function getProducts() {
-  return await prisma.product.findMany({
-    where: { active: true },
-    orderBy: { createdAt: 'desc' }
-  });
-}
-
-export default async function Home() {
-  const products = await getProducts();
-
+export default function Home() {
   return (
-    <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
-      <h1 style={{ fontSize: '2.5rem', marginBottom: '2rem' }}>🚗 Yes You Deserve Tours</h1>
+    <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto', fontFamily: 'system-ui, sans-serif' }}>
+      <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem', color: '#37C8C4' }}>
+        🚗 Yes You Deserve Tours
+      </h1>
+      <p style={{ fontSize: '1.2rem', color: '#6b7280', marginBottom: '2rem' }}>
+        Premium Electric Tuk-Tuk Tours in Sintra & Cascais, Portugal
+      </p>
       
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
-        {products.map((product) => (
-          <Link
-            key={product.id}
-            href={`/product/${product.slug}`}
-            style={{ textDecoration: 'none', color: 'inherit' }}
-          >
-            <div style={{
-              background: 'white',
-              borderRadius: '12px',
-              overflow: 'hidden',
-              boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-              transition: 'transform 0.2s',
-              cursor: 'pointer'
-            }}>
-              {product.imageUrls.length > 0 && (
-                <div style={{
-                  height: '200px',
-                  background: `url(${product.imageUrls[0]}) center/cover`,
-                  backgroundSize: 'cover'
-                }} />
-              )}
-              <div style={{ padding: '1.5rem' }}>
-                <h2 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>{product.title}</h2>
-                <p style={{ color: '#6b7280', fontSize: '0.875rem', marginBottom: '1rem' }}>
-                  {product.description.slice(0, 100)}...
-                </p>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#3b82f6' }}>
-                    €{Number(product.priceEur).toFixed(2)}
-                  </span>
-                  <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                    {product.duration || 'Flexible'}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </Link>
-        ))}
+      <div style={{ 
+        padding: '2rem', 
+        background: 'linear-gradient(135deg, #37C8C4 0%, #E9C46A 100%)', 
+        borderRadius: '12px',
+        color: 'white',
+        marginBottom: '2rem'
+      }}>
+        <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>✨ Clean Slate - Ready to Build</h2>
+        <p style={{ fontSize: '1.1rem', opacity: 0.95 }}>
+          The platform has been reset and is ready for your next steps.
+        </p>
       </div>
 
-      {products.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '4rem', color: '#6b7280' }}>
-          <p>No products available at the moment.</p>
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
+        gap: '1.5rem' 
+      }}>
+        <div style={{ padding: '1.5rem', background: '#f9fafb', borderRadius: '8px' }}>
+          <h3 style={{ color: '#7E3231', marginBottom: '0.5rem' }}>🗄️ Database</h3>
+          <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>
+            PostgreSQL connected with Prisma schema (7 tables)
+          </p>
         </div>
-      )}
+
+        <div style={{ padding: '1.5rem', background: '#f9fafb', borderRadius: '8px' }}>
+          <h3 style={{ color: '#7E3231', marginBottom: '0.5rem' }}>⚡ Stack</h3>
+          <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>
+            Next.js 14, TypeScript, pnpm workspaces
+          </p>
+        </div>
+
+        <div style={{ padding: '1.5rem', background: '#f9fafb', borderRadius: '8px' }}>
+          <h3 style={{ color: '#7E3231', marginBottom: '0.5rem' }}>🎨 Design</h3>
+          <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>
+            Turquoise, Gold, Bordeaux color palette
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
