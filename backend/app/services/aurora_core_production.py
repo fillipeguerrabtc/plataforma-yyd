@@ -132,16 +132,13 @@ class AuroraCoreProduction:
         )
         
         # 2. Recuperar contexto relevante do knowledge base (RAG)
-        from app.db.session import SessionLocal
-        db = SessionLocal()
-        try:
+        from app.db.session import async_session_maker
+        async with async_session_maker() as db:
             rag_context, sources = await self.mind.retrieve_context(
                 db,
                 user_message,
                 max_tokens=2000
             )
-        finally:
-            await db.close()
         
         # 3. Gerar múltiplas respostas candidatas
         candidates = await self._generate_candidates(

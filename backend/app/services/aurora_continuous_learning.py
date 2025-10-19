@@ -196,7 +196,7 @@ class AuroraContinuousLearning:
         self,
         batch_size: int = 256,
         epochs: int = 4
-    ) -> Dict[str, float]:
+    ) -> Dict[str, Any]:
         """
         Atualização PPO-lite
         
@@ -276,7 +276,7 @@ class AuroraContinuousLearning:
             current_perf = task.get('performance', 0.0)
             
             # Threshold é 90% do baseline
-            if task_id in self.baseline_performance:
+            if task_id and task_id in self.baseline_performance:
                 threshold = 0.9 * self.baseline_performance[task_id]
                 
                 if current_perf < threshold:
