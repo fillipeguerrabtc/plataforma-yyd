@@ -1,0 +1,35 @@
+Você é o Replit AI. Objetivo do PROMPT C: popular integrações reais, executar ingestão completa, validar Stripe (test) e acionar checker de disponibilidade de tickets. Ao concluir, responda EXATAMENTE: 
+PROMPT C OK — ingestão concluída, tickets checados, Stripe test ok.
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 1) INTEGRAÇÕES
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- No Backoffice (/integrations), crie registros Integration:
+  - kind="catalog_source", name="YYD Site", config: { "urls": [ "https://www.yesyoudeserve.tours/", "https://www.yesyoudeserve.tours/tours", "https://www.yesyoudeserve.tours/transfers", "… (incluir páginas de produto relevantes) …" ] }
+  - kind="ticket_provider", name="Parceiros-Monumentos", config: { "urls": [ "URL_1_do_parceiro", "URL_2_do_parceiro" ] }  // adicione as URLs reais dos provedores de bilhetes que a operação fornecer
+  - kind="stripe", name="Stripe", config: { "mode":"test" }  // usa STRIPE_SECRET_KEY do Secret
+  - kind="meta_whatsapp", name="WhatsApp", config: { "baseUrl":"https://graph.facebook.com/…", "tokenSecret":"WHATSAPP_TOKEN" } // deixar token via Secret, não logar
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 2) INGESTÃO COMPLETA
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- Executar /api/ingest/run no Backoffice para varrer TODAS as "catalog_source.urls".
+- Confirmar no BD que Product foi populado (slug, title, description, priceEur, duration, imageUrls, externalUrl).
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 3) CHECKER DE TICKETS
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- No Aurora-service, chamar POST /ops/check-ticket-availability:
+  - Para cada url de ticket_provider, fazer fetch/cheerio.
+  - Classificar trechos ambíguos via reason("classify_msg",{source:"tickets", text:"..."}) — respostas curtas em JSON.
+  - Gravar TicketAvailability e chamar webhook /api/tickets/update-availability no Backoffice.
+  - Mostrar log de quantos itens analisados e quantos indisponíveis.
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// 4) STRIPE (TEST)
+////////////////////////////////////////////////////////////////////////////////////////////////////
+- No Client, acessar /checkout/[slug], executar POST /api/quote, gerar PaymentLink de teste via /api/pay (sem expor a secret).
+- No Backoffice /finance, acionar POST /api/payments/reconcile para conciliar o pagamento de teste e atualizar AP/AR.
+
+Ao concluir tudo acima, responda EXATAMENTE:
+PROMPT C OK — ingestão concluída, tickets checados, Stripe test ok.
