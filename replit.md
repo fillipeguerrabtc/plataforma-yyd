@@ -97,11 +97,18 @@ Based on 26,120-line technical whitepaper:
 - **Integrations**: Meta/WhatsApp/Stripe configuration
 - **Multilingual**: PT-BR (admin), EN (client), ES (fallback)
 
+## Documentation Available
+Technical specifications saved locally for reference:
+- **docs/00-genesis-philosophy.md** - Business model, personas, visual identity, Aurora overview
+- **docs/01-technical-foundation.md** - Database schema, APIs, integrations, security, design system
+- **docs/yyd-whitepaper.txt** - Full 26,000+ line technical whitepaper (complete reference)
+
 ## User Preferences
 - **No mock data**: Everything must be real
 - **Simple first**: Build incrementally, avoid over-engineering
 - **Direct communication**: User provides specific instructions
 - **Token economy**: User brings specifications, agent executes
+- **Documentation-driven**: Technical specs in docs/ folder, consult when needed
 
 ## Next Steps
-Ready to build based on user direction. The foundation is clean and minimal - perfect starting point for focused, intentional development.
+Ready to build based on user direction. The foundation is clean and minimal with complete technical documentation available for reference.
