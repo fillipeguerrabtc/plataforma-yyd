@@ -99,6 +99,7 @@ Based on 26,120-line technical whitepaper:
 
 ## Documentation Available
 Technical specifications saved locally for reference:
+- **docs/yyd-brand-identity.md** - REAL brand analysis from live website (logo, colors, fonts, products, prices)
 - **docs/00-genesis-philosophy.md** - Business model, personas, visual identity, Aurora overview
 - **docs/01-technical-foundation.md** - Database schema, APIs, integrations, security, design system
 - **docs/yyd-whitepaper.txt** - Full 26,000+ line technical whitepaper (complete reference)
