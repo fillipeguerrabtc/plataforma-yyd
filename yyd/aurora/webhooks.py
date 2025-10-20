@@ -70,13 +70,25 @@ async def process_twilio_whatsapp_message(from_number: str, text: str):
     try:
         from affective_mathematics import AffectiveAnalyzer
         from intelligence import aurora_intelligence
+        from langdetect import detect, LangDetectException
         
-        # Detect language from message
+        # Auto-detect language from message
         language = "pt"  # Default to Portuguese
-        if any(word in text.lower() for word in ["hello", "hi", "tour", "book"]):
-            language = "en"
-        elif any(word in text.lower() for word in ["hola", "tour", "reserva"]):
-            language = "es"
+        try:
+            detected = detect(text)
+            # Map language codes to our supported languages
+            if detected == "en":
+                language = "en"
+            elif detected == "es":
+                language = "es"
+            elif detected == "pt":
+                language = "pt"
+            else:
+                # For other languages, default to English
+                language = "en"
+            print(f"🌍 Language detected: {language} (from: {detected})")
+        except LangDetectException:
+            print(f"⚠️  Could not detect language, using default: {language}")
         
         # Analyze affective state
         analyzer = AffectiveAnalyzer()
