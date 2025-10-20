@@ -272,6 +272,12 @@ yyd/
 - Bull (job queues)
 
 ## Recent Changes (Session Log)
+- 2025-01-20: **TASK 0 COMPLETE** - RBAC Foundation + Audit Logging (27/27 routes protected, approved by Architect)
+  - Centralized RBAC policies: lib/rbac.ts (admin/director/finance/guide/support)
+  - Audit logging: lib/audit.ts (logCRUD, logAuth, logPermissionDenied with IP/UA capture)
+  - JWT security: Hardcoded fallback REMOVED, production enforces JWT_SECRET_KEY
+  - All Backoffice API routes protected with requirePermission/requireResourceAccess
+  - Known improvements (non-blocking): ownership filtering, error HTTP mapping
 - 2025-01-20: Login backoffice fixed (jsonwebtoken → jose)
 - 2025-01-20: Aurora autonomy implemented (keyword fallback, no OpenAI required)
 - 2025-01-20: WhatsApp webhook functional (port 8008)
