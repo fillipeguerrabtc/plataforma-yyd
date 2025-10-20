@@ -6,7 +6,8 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const product = await prisma.product.findUnique({
+    // Try to find by ID first, then by slug
+    let product = await prisma.product.findUnique({
       where: { id: params.id },
       include: {
         seasonPrices: {
@@ -18,6 +19,22 @@ export async function GET(
         options: true,
       },
     });
+
+    // If not found by ID, try finding by slug
+    if (!product) {
+      product = await prisma.product.findFirst({
+        where: { slug: params.id },
+        include: {
+          seasonPrices: {
+            orderBy: { startMonth: 'asc' },
+          },
+          activities: {
+            orderBy: { sortOrder: 'asc' },
+          },
+          options: true,
+        },
+      });
+    }
 
     if (!product) {
       return NextResponse.json({ error: 'Tour not found' }, { status: 404 });
