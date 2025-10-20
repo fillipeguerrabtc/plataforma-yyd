@@ -1,0 +1,223 @@
+REPLIT AGENT — PROMPT ÚNICO
+Objetivo: Replicar FIELMENTE a identidade visual da Yes, You Deserve! (https://www.yesyoudeserve.tours) e entregar um “design system” utilizável nas 3 apps (Backoffice, Cliente e Aurora) SEM MOCK. Você vai:
+1) detectar automaticamente fontes, paleta, espaçamentos, bordas e estilos de botões do site;
+2) gerar tokens centralizados (JSON + CSS vars + Tailwind);
+3) publicar uma lib de componentes React (buttons, headings, badges, cards, CTAs WhatsApp, banners Trustindex);
+4) entregar uma página de demonstração que reproduz o “hero” e a seção “Packages”.
+
+⚠️ Regras
+- Não inventar cores ou fontes: primeiro tente extrair do site. Se a extração falhar, use os “fallbacks APROXIMADOS” abaixo e deixe pronto um comando `npm run brand:update` que volta a tentar extrair do site e substituir os tokens.
+- Nada de “mock UI kit”: tudo deve estar plugável e pronto para produção.
+- Sem chamadas diretas a `openai` aqui; este prompt é apenas identidade visual.
+
+========================================
+1) Estrutura do monorepo (se não existir)
+========================================
+Crie (ou adapte) esta estrutura:
+- /packages/ui             -> biblioteca de componentes
+- /packages/design         -> tokens, extração e build de CSS vars/Tailwind
+- /apps/client             -> app Next.js (página de demo da identidade)
+- /apps/backoffice         -> app Next.js (usará a mesma lib)
+- /apps/aurora-portal      -> app Next.js (usará a mesma lib)
+- /tooling                 -> scripts utilitários (node/puppeteer)
+- package.json             -> workspaces + scripts
+
+Inicialize workspaces (se necessário) e adicione devDeps: typescript, ts-node, tailwindcss, postcss, autoprefixer, class-variance-authority, tailwind-merge, @tailwindcss/typography, @radix-ui/react-slot, lucide-react, sass, puppeteer, colorthief, chroma-js.
+
+========================================
+2) Script de EXTRAÇÃO automática (Puppeteer)
+========================================
+Crie `/tooling/extract-brand.ts` que:
+- Abre `https://www.yesyoudeserve.tours` com Puppeteer.
+- Coleta:
+  • Fontes carregadas: varra as rules `@font-face` e `link[rel=stylesheet]` → nomes, URLs.  
+  • Tipografia: computed styles de H1, H2, H3, p, small; letter-spacing e line-height.  
+  • Paleta: colete cores de botões primários (CTA turquesa), botões contorno branco, botão WhatsApp verde, headings cursivos, texto corpo, títulos de seções, fundo de seções; use também ColorThief sobre screenshots (hero, packages).  
+  • Bordas, radius, sombras e pills (botões arredondados) dos CTAs.  
+  • Gradientes (hero CTA turquesa parece gradient suave top→bottom).
+
+- Normalize em tokens e salve em `/packages/design/brand.json` com shape:
+{
+  "fonts": {
+    "display": { "name": "<detected cursive>", "fallback": "cursive" },
+    "body":    { "name": "<detected body>",   "fallback": "system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif" }
+  },
+  "colors": {
+    "primary": { "50":"#...", "100":"#...", "...":"...", "DEFAULT":"#..." },
+    "primaryGradient": { "from":"#...", "to":"#..." },
+    "accent":  "#...",     // azul claro de links/decor
+    "whatsapp":"#25D366",  // CTA WhatsApp (padrão de marca)
+    "text":    "#222222",
+    "muted":   "#6B7280",
+    "bg":      "#FFFFFF",
+    "section": "#F5F5F5",
+    "stroke":  "#0F172A"   // traços pretos finos (divider)
+  },
+  "radii": { "none":"0", "sm":"4px", "md":"8px", "lg":"12px", "pill":"9999px" },
+  "shadows": { "card":"0 8px 24px rgba(0,0,0,.08)", "soft":"0 4px 12px rgba(0,0,0,.06)" },
+  "spacing": { "xs":"4px", "sm":"8px", "md":"12px", "lg":"16px", "xl":"24px", "2xl":"32px" },
+  "typescale": {
+    "h1": { "size":"clamp(36px, 5vw, 56px)", "weight":600, "tracking":"0.01em" },
+    "h1Display": { "size":"clamp(42px, 6vw, 64px)", "weight":400, "cursive":true },
+    "h2": { "size":"clamp(30px, 4vw, 40px)", "weight":600 },
+    "p":  { "size":"18px", "lineHeight":"1.6" },
+    "small": { "size":"14px", "lineHeight":"1.5" }
+  },
+  "buttons": {
+    "solid":   { "radius":"pill", "shadow":"soft", "height":"52px", "px":"28px" },
+    "outline": { "radius":"pill", "border":"2px", "height":"52px", "px":"28px" },
+    "whatsapp":{ "radius":"pill", "shadow":"card", "height":"56px", "px":"28px" }
+  }
+}
+
+- Baixe as webfonts (se permitido) para `/packages/design/fonts/` e gere o `@font-face` local; se não puder, descubra equivalentes do Google Fonts.
+
+- Gere `/packages/design/brand.css` com CSS variables a partir do JSON:
+:root {
+  --yyd-color-primary: <...>;
+  --yyd-color-primary-from: <...>;
+  --yyd-color-primary-to: <...>;
+  --yyd-color-accent: <...>;
+  --yyd-color-whatsapp: #25D366;
+  --yyd-color-text: #222222;
+  --yyd-color-muted: #6B7280;
+  --yyd-color-bg: #FFFFFF;
+  --yyd-color-section: #F5F5F5;
+  --yyd-radius-pill: 9999px;
+  --yyd-shadow-card: 0 8px 24px rgba(0,0,0,.08);
+  /* etc. */
+}
+E exporte classes utilitárias para gradiente do CTA:
+.yyd-cta {
+  background: linear-gradient(180deg, var(--yyd-color-primary-from), var(--yyd-color-primary-to));
+  color: #fff; border-radius: var(--yyd-radius-pill); box-shadow: var(--yyd-shadow-soft);
+}
+
+- Gere `/packages/design/tailwind.config.ts` usando os tokens.
+
+Crie também `scripts`:
+- `npm run brand:extract` → roda extract-brand.ts e atualiza tokens.
+- `npm run brand:build` → compila brand.css + copia fontes.
+- `npm run brand:update` → extract + build.
+
+========================================
+3) Fallbacks APROXIMADOS (usar SÓ se extração falhar)
+========================================
+Se o scraping não conseguir ler as cores/fontes, escreva `brand.json` com estes valores aproximados (observados das screenshots oficiais):
+
+fonts:
+- display (cursiva dos títulos/logotipo): tente primeiro detectar; fallback: "Great Vibes", "Allura", "Dancing Script" (carregar via Google Fonts), com `font-weight: 400`.
+- body: "Poppins" 400/600 ou "Inter" 400/600.
+
+colors (aproximação segura):
+- primary DEFAULT: #1FB7C4
+- primary from:     #2CC7D3
+- primary to:       #16A2B2
+- accent (links títulos teal claro): #38C5E5
+- whatsapp: #25D366
+- text: #222222
+- muted: #6B7280
+- bg: #FFFFFF
+- section: #F5F5F5
+- stroke (linhas pretas decorativas): #111111
+
+radii/shadows:
+- pill: 9999px; md: 8px; lg: 12px
+- shadow card: 0 8px 24px rgba(0,0,0,.08); soft: 0 4px 12px rgba(0,0,0,.06)
+
+========================================
+4) Biblioteca de Componentes (packages/ui)
+========================================
+Implemente em React + TypeScript + Tailwind (usando nossos tokens):
+
+- <YYDHeading variant="display|h1|h2|h3" glow?:boolean>
+  • “display” usa a fonte cursiva e tamanho grande; “h1–h3” usam fonte body 600.
+- <YYDButton variant="primary|outline|whatsapp" size="md|lg" iconLeft? iconRight?>
+  • primary usa `yyd-cta` (gradiente); outline: fundo transparente, borda branca (#fff) sobre fotos, texto branco; whatsapp: fundo #25D366, ícone do WhatsApp, sombra forte.
+- <YYDBadge variant="trustindex"> estrela + “EXCELLENT” (estilo Trustindex).
+- <YYDCard shadow="card|soft" radius="lg" >
+- <YYDHero> (com background-image e overlay leve), aceita children Heading + Buttons.
+- <YYDPackagesTable> com 3 colunas (Half-Day | Personalized Full-Day | All-Inclusive), células expansíveis (+).
+
+Todos pegam tokens de `/packages/design/brand.css`/Tailwind. Exporte um `ThemeProvider` que injeta fontes via `<link rel="preload">` ou `@font-face` local.
+
+========================================
+5) Página de demonstração (apps/client)
+========================================
+Crie `/apps/client/src/app/page.tsx` reproduzindo:
+- HERO:  
+  • logo no topo à esquerda (use imagem provisória /public/logo-yyd.png).  
+  • título display (cursiva): “Private Tuk Tuk Tours In Sintra & Cascais – Explore Like A Local!”  
+  • subtítulo (texto corpo).  
+  • Botões: “Explore Our Tours” (primary gradiente), “Talk To Our Team” (outline branco).  
+  • Badge Trustindex (5★, “256 reviews”).  
+  • “As Seen On: Good Morning America” com selo circular amarelo.
+
+- SEÇÃO “How We Simplify Your Experience”: heading com partes em cursiva/accent e parágrafo.
+
+- SEÇÃO “Packages”: tabela com 3 colunas e linhas expansíveis conforme screenshots; no rodapé mostra preços “Starting at €280/€420/€640”.
+
+- CTA fixo WhatsApp “Talk With A Human” (pill verde) no canto inferior esquerdo (position: sticky em mobile).
+
+- Rodapé com reviews (carrossel simples) e botões WhatsApp / Messenger / E-mail.
+
+Tudo responsivo (mobile-first). Em telas grandes, use max-width 1200px e gutters 24px.
+
+========================================
+6) Fonts
+========================================
+- Se a extração encontrou as webfonts originais, instale-as localmente e gere `@font-face`.  
+- Se não, carregue ‘Great Vibes’ (display) + ‘Poppins’ (body) do Google Fonts como fallback até a atualização via `brand:update`.
+
+========================================
+7) Acessibilidade & Performance
+========================================
+- Contraste mínimo WCAG AA em botões/links. Adapte o tom de turquesa se necessário (use chroma-js para garantir contraste ≥ 4.5 no texto normal).
+- Prefetch das fontes; `font-display: swap`.
+- Next/Image para imagens, tamanhos responsivos e lazy.
+
+========================================
+8) Scripts no root package.json
+========================================
+"scripts": {
+  "brand:extract": "ts-node tooling/extract-brand.ts",
+  "brand:build": "node tooling/build-brand.js",          // gere brand.css a partir do JSON
+  "brand:update": "npm run brand:extract && npm run brand:build",
+  "dev:client": "turbo run dev --filter=client",
+  "dev:backoffice": "turbo run dev --filter=backoffice",
+  "dev:aurora": "turbo run dev --filter=aurora-portal",
+  "build": "turbo run build",
+  "lint": "turbo run lint"
+}
+
+(Se turbo não estiver instalado, substitua por scripts individuais de cada app.)
+
+========================================
+9) Done criteria (o que eu espero ver rodando)
+========================================
+- `/packages/design/brand.json` preenchido a partir do site (ou com fallbacks, + aviso no console explicando por quê).
+- `/packages/design/brand.css` e `tailwind.config.ts` gerados e consumidos.
+- `/packages/ui` exporta <YYDHeading>, <YYDButton>, <YYDBadge>, <YYDCard>, <YYDHero>, <YYDPackagesTable>.
+- `/apps/client` sobe em http://localhost:3000/ reproduzindo:
+  • Hero com título cursivo, CTAs gradiente e outline, badge Trustindex.  
+  • Tabela “Packages” com preços “Starting at €280 / €420 / €640”.  
+  • CTA WhatsApp verde fixo.  
+- Comando `npm run brand:update` tenta novamente coletar cores e fontes reais do site e atualiza tokens.
+
+========================================
+10) Executar agora
+========================================
+1) Instale deps, crie os pacotes, gere tokens e suba a app de demo:
+   - Configure workspaces, crie diretórios e arquivos conforme instruções.
+   - Implemente `extract-brand.ts`.
+   - Rode `npm run brand:update`.
+   - Suba `apps/client`: `npm run dev:client`.
+
+2) Me devolva no console:
+   - Resumo das fontes detectadas (nomes exatos).
+   - Paleta final (HEX) dos tokens.
+   - Print das primeiras 20 linhas de `/packages/design/brand.json`.
+   - URL local da página de demo (porta).
+   - Se usou fallbacks, diga especificamente o motivo e como o próximo `brand:update` vai tentar de novo.
+
+IMPORTANTE: tudo numa única PR interna, com README curto em `/packages/design/README.md` explicando como outros times aplicam a identidade (import de CSS vars, Tailwind preset e exemplos de uso dos componentes).
