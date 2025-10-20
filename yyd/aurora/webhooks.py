@@ -42,10 +42,10 @@ async def twilio_whatsapp_webhook(request: Request):
         form_data = await request.form()
         
         # Extract Twilio webhook data
-        from_number = form_data.get("From", "")
-        to_number = form_data.get("To", "")
-        body = form_data.get("Body", "")
-        message_sid = form_data.get("MessageSid", "")
+        from_number = str(form_data.get("From", ""))
+        to_number = str(form_data.get("To", ""))
+        body = str(form_data.get("Body", ""))
+        message_sid = str(form_data.get("MessageSid", ""))
         
         print(f"📥 Twilio WhatsApp message received:")
         print(f"   From: {from_number}")
@@ -196,7 +196,7 @@ async def whatsapp_webhook(request: Request):
 
 async def process_whatsapp_message(message: Dict[str, Any], value: Dict[str, Any]):
     """Process incoming WhatsApp message"""
-    from_number = message.get("from")
+    from_number = str(message.get("from", ""))
     message_type = message.get("type")
     message_id = message.get("id")
     
