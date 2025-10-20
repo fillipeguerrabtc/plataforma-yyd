@@ -85,7 +85,20 @@ export default function AuroraChatWidget() {
     <>
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 w-96 h-[500px] bg-white border-2 border-black rounded-lg shadow-2xl flex flex-col z-50">
+        <div style={{
+          position: 'fixed',
+          bottom: '6rem',
+          right: '1.5rem',
+          width: '24rem',
+          height: '500px',
+          backgroundColor: 'white',
+          border: '2px solid black',
+          borderRadius: '0.5rem',
+          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+          display: 'flex',
+          flexDirection: 'column',
+          zIndex: 9999
+        }}>
           {/* Header */}
           <div className="bg-black text-white p-4 rounded-t-lg flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -167,7 +180,23 @@ export default function AuroraChatWidget() {
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 w-16 h-16 bg-black text-white rounded-full shadow-2xl flex items-center justify-center hover:bg-gray-800 transition-all z-50 hover:scale-110"
+        style={{
+          position: 'fixed',
+          bottom: '1.5rem',
+          right: '1.5rem',
+          width: '4rem',
+          height: '4rem',
+          background: 'black',
+          color: 'white',
+          borderRadius: '9999px',
+          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+          border: 'none',
+          cursor: 'pointer'
+        }}
         title="Chat com Aurora"
       >
         {isOpen ? (

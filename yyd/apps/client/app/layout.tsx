@@ -1,5 +1,11 @@
 import './globals.css';
 import type { Metadata } from 'next';
+import dynamic from 'next/dynamic';
+
+const GlobalClientInterface = dynamic(
+  () => import('@/components/GlobalClientInterface'),
+  { ssr: false }
+);
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://yesyoudeserve.com'),
@@ -90,6 +96,7 @@ export default function RootLayout({
       </head>
       <body className="antialiased" style={{ fontFamily: 'Poppins, sans-serif' }}>
         {children}
+        <GlobalClientInterface />
       </body>
     </html>
   );

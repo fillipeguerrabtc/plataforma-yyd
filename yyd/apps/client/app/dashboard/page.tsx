@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import AuroraChatWidget from '@/components/AuroraChatWidget';
 
 interface Booking {
   id: string;
@@ -304,7 +303,7 @@ export default function CustomerDashboard() {
       </div>
 
       {/* Aurora Chat Widget - Always visible */}
-      <AuroraChatWidget />
+      
     </>
   );
 }

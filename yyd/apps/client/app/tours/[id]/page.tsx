@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import AuroraChatWidget from '@/components/AuroraChatWidget';
 
 interface Product {
   id: string;
@@ -247,7 +246,7 @@ export default function TourDetailPage() {
       </div>
 
       {/* Aurora Chat Widget */}
-      <AuroraChatWidget />
+      
     </>
   );
 }

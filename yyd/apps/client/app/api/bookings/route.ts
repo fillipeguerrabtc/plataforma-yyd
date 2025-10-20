@@ -5,6 +5,15 @@ import { getCustomerFromRequest } from '@/lib/customer-auth';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    console.log('📥 Booking request received:', {
+      productId: body.productId,
+      date: body.date,
+      numberOfPeople: body.numberOfPeople,
+      hasCustomerId: !!body.customerId,
+      hasEmail: !!body.customerEmail,
+      season: body.season
+    });
+    
     const {
       productId,
       date,
@@ -27,6 +36,7 @@ export async function POST(request: NextRequest) {
     
     // Validate required fields
     if (!productId || !date || !numberOfPeople) {
+      console.error('❌ Missing required fields:', { productId, date, numberOfPeople });
       return NextResponse.json(
         { error: 'Campos obrigatórios faltando' },
         { status: 400 }
@@ -36,6 +46,12 @@ export async function POST(request: NextRequest) {
     // If customerId is provided (frontend created customer), use it
     // Otherwise require customerName and customerEmail
     if (!auth && !providedCustomerId && (!customerName || !customerEmail)) {
+      console.error('❌ Missing customer info:', { 
+        isAuth: !!auth, 
+        hasCustomerId: !!providedCustomerId, 
+        hasName: !!customerName, 
+        hasEmail: !!customerEmail 
+      });
       return NextResponse.json(
         { error: 'Nome e email são obrigatórios para reservas' },
         { status: 400 }
@@ -133,9 +149,12 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    console.log('✅ Booking created successfully:', booking.id);
     return NextResponse.json({ booking });
   } catch (error: any) {
-    console.error('Error creating booking:', error);
+    console.error('❌ ERROR creating booking:', error);
+    console.error('Error details:', error.message);
+    console.error('Error stack:', error.stack);
     return NextResponse.json(
       { error: 'Failed to create booking: ' + error.message },
       { status: 500 }
