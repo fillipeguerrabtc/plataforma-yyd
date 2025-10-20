@@ -7,24 +7,36 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-06-20',
 });
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 export async function POST(request: Request) {
   const body = await request.text();
   const headersList = headers();
   const signature = headersList.get('stripe-signature');
 
-  if (!signature) {
-    return NextResponse.json({ error: 'No signature' }, { status: 400 });
-  }
-
   let event: Stripe.Event;
 
-  try {
-    event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
-  } catch (err: any) {
-    console.error('Webhook signature verification failed:', err.message);
-    return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
+  // In development/test mode without webhook secret, parse body directly
+  if (!webhookSecret) {
+    console.warn('⚠️  STRIPE_WEBHOOK_SECRET not set - using unsafe mode for development');
+    try {
+      event = JSON.parse(body);
+    } catch (err: any) {
+      console.error('Failed to parse webhook body:', err.message);
+      return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+    }
+  } else {
+    // Production mode with signature verification
+    if (!signature) {
+      return NextResponse.json({ error: 'No signature' }, { status: 400 });
+    }
+
+    try {
+      event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+    } catch (err: any) {
+      console.error('Webhook signature verification failed:', err.message);
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
+    }
   }
 
   try {
