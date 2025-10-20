@@ -26,7 +26,22 @@ The platform is built as a monorepo containing client and backoffice application
 - **Authentication**: Passwordless JWT customer authentication (email-only) and RBAC for backoffice users.
 - **Email System**: Nodemailer and Bull workers manage multilingual email templates (PT/EN/ES) and PDF voucher generation.
 - **SEO**: Production-ready with dynamic sitemaps, robots.ts, and comprehensive metadata (OpenGraph, Twitter Cards).
-- **Aurora IA (Intelligence Layer)**: A FastAPI service integrating Affective Mathematics ℝ³ for emotion analysis, GPT-4o-mini for conversational AI, and pgvector for semantic search on a knowledge base. Supports human handoff detection and dynamic tone selection. Integrated with WhatsApp and Facebook Messenger webhooks.
+- **Aurora IA (Intelligence Layer)**: A FastAPI service integrating:
+  - **Affective Mathematics ℝ³**: VAD emotion analysis (Valence, Arousal, Dominance)
+  - **7-Layer Memory System**: 
+    - SC (Sensory Context): 30s cache for raw input
+    - WM (Working Memory): 6h TTL for conversation context
+    - EM (Episodic Memory): 18 months with LGPD anonymization
+    - SM (Semantic Memory): pgvector 1536D knowledge base with text-embedding-3-small
+    - PM (Procedural Memory): Versioned procedures
+    - AM (Aggregate Memory): 90-day analytics windows
+    - TM (Template Memory): Response templates
+  - **RAG with pgvector**: Hybrid scoring (λ₁=0.4 affective + λ₂=0.35 semantic + λ₃=0.25 utility)
+  - **Progressive Autonomy**: ChatGPT used LESS as knowledge base grows (0.85 confidence threshold)
+  - **GPT-4o-mini**: Conversational AI with affective-aware fallback
+  - **Human Handoff**: 3 detection rules (negative emotion, low confidence, explicit request)
+  - **CRM Integration**: Lead creation and handoff management APIs
+  - **WhatsApp & Facebook Messenger**: Webhook integrations for multi-channel support
 - **Financial System**: Comprehensive APIs and UI for Accounts Payable, Accounts Receivable, and reconciliation with cash flow analysis.
 - **Monument Tickets API**: Manages availability and booking through external providers with caching.
 - **BI Analytics**: Utilizes Recharts for visualizing revenue trends, product performance, and revenue distribution.

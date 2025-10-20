@@ -73,18 +73,25 @@ async def health_check():
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
     """
-    Process chat message with Aurora IA
+    Process chat message with Aurora IA - NEW RAG + 7-Layer Memory System
     
     Features:
-    - GPT-4 powered responses with personality
-    - Multilingual support (PT, EN, ES)
+    - 7-layer memory hierarchy (SC/WM/EM/SM/AM/TM/PM)
+    - RAG with pgvector semantic search
+    - Hybrid scoring (λ₁=0.4 affective + λ₂=0.35 semantic + λ₃=0.25 utility)
+    - Progressive autonomy (ChatGPT used LESS as KB grows)
     - Affective state analysis (ℝ³ mathematics)
-    - Context-aware responses
     - Human handoff detection
     """
     try:
         from affective_mathematics import AffectiveAnalyzer
-        from intelligence import aurora_intelligence
+        from rag import decision_engine
+        from memory import MemoryManager
+        import uuid
+        
+        # Generate session ID if not provided
+        session_id = request.context.get('session_id', str(uuid.uuid4())) if request.context else str(uuid.uuid4())
+        conversation_id = request.context.get('conversation_id', str(uuid.uuid4())) if request.context else str(uuid.uuid4())
         
         # Extract latest user message
         user_message = request.messages[-1].content if request.messages else ""
@@ -92,35 +99,74 @@ async def chat(request: ChatRequest):
         # Analyze affective state using ℝ³ mathematics
         analyzer = AffectiveAnalyzer()
         customer_state = analyzer.analyze_text(user_message, request.language)
+        emotional_dict = customer_state.to_dict()
         
-        # Static tour context (fallback until embeddings + OpenAI credits added)
-        context = {
-            "tours": [
-                {"name": "Sintra Highlights", "price": 60, "duration": 4},
-                {"name": "Cascais Coastal", "price": 50, "duration": 3},
-                {"name": "Sintra & Cascais Full Day", "price": 120, "duration": 8},
-            ],
-            "customer_name": None,
-            "booking_history": []
-        }
-        
-        # Generate intelligent response using GPT-4 (with fallback if no credits)
-        response_data = aurora_intelligence.generate_response(
+        # Store in memory layers
+        memory_manager = MemoryManager()
+        memory_manager.store_conversation_snapshot(
+            session_id=session_id,
+            conversation_id=conversation_id,
+            customer_id=request.customer_id,
             messages=[{"role": msg.role, "content": msg.content} for msg in request.messages],
-            language=request.language,
-            customer_state=customer_state,
-            context=context
+            emotional_state=emotional_dict
         )
         
+        # Build conversation context from working memory
+        conversation_context = {
+            "session_id": session_id,
+            "conversation_id": conversation_id,
+            "intent": request.context.get('intent') if request.context else None,
+            "message_count": len(request.messages)
+        }
+        
+        # Generate response using RAG + autonomous decision engine
+        response_data = await decision_engine.generate_response(
+            query=user_message,
+            emotional_state=emotional_dict,
+            conversation_context=conversation_context,
+            locale=request.language,
+            messages=[{"role": msg.role, "content": msg.content} for msg in request.messages]
+        )
+        
+        # Detect handoff conditions
+        requires_handoff = False
+        handoff_reason = None
+        
+        # Rule 1: Very negative emotion (valence < -0.6)
+        if emotional_dict.get('valence', 0) < -0.6:
+            requires_handoff = True
+            handoff_reason = "negative_emotion"
+        
+        # Rule 2: Low confidence in response
+        elif response_data.get('confidence', 1.0) < 0.5:
+            requires_handoff = True
+            handoff_reason = "low_confidence"
+        
+        # Rule 3: Explicit request for human
+        elif any(keyword in user_message.lower() for keyword in ['speak to human', 'talk to person', 'real person', 'falar com humano', 'pessoa real', 'hablar con humano']):
+            requires_handoff = True
+            handoff_reason = "explicit_request"
+        
+        # Suggested actions based on source
+        suggested_actions = []
+        if response_data['source'] == 'knowledge_base':
+            suggested_actions.append("explore_tours")
+        elif requires_handoff:
+            suggested_actions.append("handoff_to_human")
+        else:
+            suggested_actions.append("continue_conversation")
+        
         return ChatResponse(
-            message=response_data["message"],
+            message=response_data['message'],
             language=request.language,
-            affective_state=customer_state.to_dict(),
-            suggested_actions=response_data["suggested_actions"],
-            requires_human_handoff=response_data["requires_handoff"]
+            affective_state=emotional_dict,
+            suggested_actions=suggested_actions,
+            requires_human_handoff=requires_handoff
         )
     except Exception as e:
         print(f"❌ Chat endpoint error: {str(e)}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 # Affective state endpoint
@@ -148,21 +194,170 @@ async def calculate_affective_state(text: str, language: str = "en"):
 @app.post("/embeddings")
 async def generate_embeddings(texts: List[str]):
     """Generate vector embeddings using OpenAI"""
-    # TODO: Implement OpenAI embeddings
-    return {
-        "embeddings": [],
-        "model": "text-embedding-3-small"
-    }
+    try:
+        from rag import EmbeddingGenerator
+        
+        generator = EmbeddingGenerator()
+        embeddings = await generator.batch_generate(texts)
+        
+        return {
+            "embeddings": embeddings,
+            "model": "text-embedding-3-small",
+            "count": len(embeddings)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Embedding error: {str(e)}")
 
 # Semantic search endpoint
 @app.post("/search")
-async def semantic_search(query: str, limit: int = 5):
+async def semantic_search(query: str, locale: str = "en", category: Optional[str] = None, limit: int = 5):
     """Search knowledge base using vector similarity"""
-    # TODO: Implement pgvector similarity search
-    return {
-        "query": query,
-        "results": []
-    }
+    try:
+        from rag import RAGRetriever
+        
+        retriever = RAGRetriever()
+        results = await retriever.search(query, locale=locale, category=category, top_k=limit)
+        
+        return {
+            "query": query,
+            "locale": locale,
+            "category": category,
+            "results": [
+                {
+                    "id": r.id,
+                    "content": r.content,
+                    "similarity": r.similarity,
+                    "confidence": r.confidence,
+                    "category": r.category
+                }
+                for r in results
+            ]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Search error: {str(e)}")
+
+# API for backoffice integration
+class LeadCreate(BaseModel):
+    customer_id: Optional[str] = None
+    conversation_id: Optional[str] = None
+    name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    whatsapp: Optional[str] = None
+    channel: str
+    channel_id: Optional[str] = None
+    interest: Optional[str] = None
+    emotional_state: Optional[Dict] = None
+    notes: Optional[str] = None
+
+class HandoffCreate(BaseModel):
+    conversation_id: str
+    lead_id: Optional[str] = None
+    reason: str
+    emotional_state: Optional[Dict] = None
+    confidence: float
+    notes: Optional[str] = None
+
+@app.post("/api/aurora/leads")
+async def create_lead(lead: LeadCreate):
+    """Create a new lead from Aurora conversation"""
+    try:
+        from memory import DatabaseConnection
+        from psycopg2.extras import Json
+        
+        query = """
+            INSERT INTO aurora_leads 
+            (id, "customerId", "conversationId", name, email, phone, whatsapp, 
+             channel, "channelId", interest, status, "emotionalState", notes, "createdAt", "updatedAt")
+            VALUES (gen_random_uuid()::text, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'new', %s, %s, NOW(), NOW())
+            RETURNING id
+        """
+        result = DatabaseConnection.execute_query(
+            query,
+            (lead.customer_id, lead.conversation_id, lead.name, lead.email, lead.phone,
+             lead.whatsapp, lead.channel, lead.channel_id, lead.interest,
+             Json(lead.emotional_state or {}), lead.notes),
+            fetch="one"
+        )
+        
+        return {
+            "success": True,
+            "lead_id": result['id'] if result else None,
+            "message": "Lead created successfully"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create lead: {str(e)}")
+
+@app.post("/api/aurora/handoffs")
+async def create_handoff(handoff: HandoffCreate):
+    """Register a handoff request to human agent"""
+    try:
+        from memory import DatabaseConnection
+        from psycopg2.extras import Json
+        
+        query = """
+            INSERT INTO aurora_handoffs
+            (id, "conversationId", "leadId", reason, "emotionalState", confidence, 
+             status, notes, "createdAt", "updatedAt")
+            VALUES (gen_random_uuid()::text, %s, %s, %s, %s, %s, 'pending', %s, NOW(), NOW())
+            RETURNING id
+        """
+        result = DatabaseConnection.execute_query(
+            query,
+            (handoff.conversation_id, handoff.lead_id, handoff.reason,
+             Json(handoff.emotional_state or {}), handoff.confidence, handoff.notes),
+            fetch="one"
+        )
+        
+        return {
+            "success": True,
+            "handoff_id": result['id'] if result else None,
+            "message": "Handoff request created"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create handoff: {str(e)}")
+
+@app.get("/api/aurora/handoffs/pending")
+async def get_pending_handoffs():
+    """Get all pending handoff requests for backoffice"""
+    try:
+        from memory import DatabaseConnection
+        
+        query = """
+            SELECT h.*, 
+                   l.name as lead_name, 
+                   l.email as lead_email,
+                   l.channel as lead_channel
+            FROM aurora_handoffs h
+            LEFT JOIN aurora_leads l ON h."leadId" = l.id
+            WHERE h.status = 'pending'
+            ORDER BY h."createdAt" DESC
+            LIMIT 50
+        """
+        results = DatabaseConnection.execute_query(query)
+        
+        return {
+            "handoffs": results,
+            "count": len(results)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch handoffs: {str(e)}")
+
+@app.post("/api/aurora/memory/cleanup")
+async def cleanup_memory():
+    """Run memory maintenance (cleanup expired entries)"""
+    try:
+        from memory import MemoryManager
+        
+        manager = MemoryManager()
+        manager.cleanup_expired()
+        
+        return {
+            "success": True,
+            "message": "Memory cleanup completed"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Cleanup failed: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn

@@ -374,9 +374,14 @@ model AuroraKnowledge {
   answerEn    String   @db.Text
   answerPt    String   @db.Text
   answerEs    String   @db.Text
+  embeddingEn Unsupported("vector(1536)")?
+  embeddingPt Unsupported("vector(1536)")?
+  embeddingEs Unsupported("vector(1536)")?
   tags        String[]
   priority    Int      @default(0)
   active      Boolean  @default(true)
+  usageCount  Int      @default(0)
+  lastUsedAt  DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -397,11 +402,211 @@ model AuroraConfig {
   learningRate         Decimal  @default(0.3) @db.Decimal(3, 2)
   emotionalMemory      Json?
   behaviorSettings     Json?
+  handoffThreshold     Decimal  @default(0.5) @db.Decimal(3, 2)
+  empathyLevel         Int      @default(7)
+  debugMode            Boolean  @default(false)
   active               Boolean  @default(true)
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
 
   @@map("aurora_configs")
+}
+
+model AuroraSensoryContext {
+  id          String   @id @default(cuid())
+  sessionId   String
+  content     String   @db.Text
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime
+
+  @@index([sessionId])
+  @@index([expiresAt])
+  @@map("aurora_sensory_context")
+}
+
+model AuroraWorkingMemory {
+  id              String   @id @default(cuid())
+  sessionId       String
+  conversationId  String?
+  contextWindow   Json
+  activeEntities  Json?
+  currentIntent   String?
+  emotionalState  Json?
+  createdAt       DateTime @default(now())
+  expiresAt       DateTime
+
+  @@index([sessionId])
+  @@index([conversationId])
+  @@index([expiresAt])
+  @@map("aurora_working_memory")
+}
+
+model AuroraEpisodicMemory {
+  id              String   @id @default(cuid())
+  customerId      String?
+  sessionId       String
+  conversationId  String?
+  eventType       String
+  content         String   @db.Text
+  emotionalVector Json
+  outcome         String?
+  importance      Decimal  @default(0.5) @db.Decimal(3, 2)
+  anonymizedAt    DateTime?
+  metadata        Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([customerId])
+  @@index([sessionId])
+  @@index([conversationId])
+  @@index([eventType])
+  @@index([createdAt])
+  @@map("aurora_episodic_memory")
+}
+
+model AuroraSemanticMemory {
+  id            String   @id @default(cuid())
+  contentEn     String   @db.Text
+  contentPt     String   @db.Text
+  contentEs     String   @db.Text
+  embeddingEn   Unsupported("vector(1536)")?
+  embeddingPt   Unsupported("vector(1536)")?
+  embeddingEs   Unsupported("vector(1536)")?
+  category      String
+  subcategory   String?
+  tags          String[]
+  sourceType    String
+  sourceId      String?
+  confidence    Decimal  @default(1.0) @db.Decimal(3, 2)
+  usageCount    Int      @default(0)
+  lastUsedAt    DateTime?
+  version       Int      @default(1)
+  active        Boolean  @default(true)
+  metadata      Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([category])
+  @@index([tags])
+  @@index([sourceType, sourceId])
+  @@index([active])
+  @@map("aurora_semantic_memory")
+}
+
+model AuroraProceduralMemory {
+  id            String   @id @default(cuid())
+  procedureName String
+  version       Int
+  trigger       String
+  conditions    Json
+  actions       Json
+  priority      Int      @default(0)
+  successRate   Decimal  @default(0) @db.Decimal(5, 2)
+  executionCount Int     @default(0)
+  lastExecutedAt DateTime?
+  active        Boolean  @default(true)
+  metadata      Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([procedureName, version])
+  @@index([procedureName])
+  @@index([trigger])
+  @@index([active])
+  @@map("aurora_procedural_memory")
+}
+
+model AuroraAggregateMemory {
+  id          String   @id @default(cuid())
+  periodType  String
+  periodStart DateTime
+  periodEnd   DateTime
+  metric      String
+  value       Decimal  @db.Decimal(10, 2)
+  count       Int
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  @@unique([periodType, periodStart, metric])
+  @@index([periodType])
+  @@index([periodStart])
+  @@index([metric])
+  @@map("aurora_aggregate_memory")
+}
+
+model AuroraTemplateMemory {
+  id            String   @id @default(cuid())
+  templateName  String
+  locale        String
+  category      String
+  templateText  String   @db.Text
+  variables     String[]
+  usageCount    Int      @default(0)
+  lastUsedAt    DateTime?
+  active        Boolean  @default(true)
+  metadata      Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([templateName, locale])
+  @@index([category])
+  @@index([locale])
+  @@index([active])
+  @@map("aurora_template_memory")
+}
+
+model AuroraLead {
+  id              String   @id @default(cuid())
+  customerId      String?
+  conversationId  String?
+  name            String?
+  email           String?
+  phone           String?
+  whatsapp        String?
+  channel         String
+  channelId       String?
+  interest        String?
+  status          String   @default("new")
+  emotionalState  Json?
+  notes           String?  @db.Text
+  assignedTo      String?
+  convertedAt     DateTime?
+  metadata        Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([customerId])
+  @@index([conversationId])
+  @@index([channel])
+  @@index([status])
+  @@index([createdAt])
+  @@map("aurora_leads")
+}
+
+model AuroraHandoff {
+  id              String   @id @default(cuid())
+  conversationId  String
+  leadId          String?
+  reason          String
+  emotionalState  Json?
+  confidence      Decimal  @db.Decimal(3, 2)
+  assignedTo      String?
+  status          String   @default("pending")
+  acceptedAt      DateTime?
+  acceptedBy      String?
+  resolvedAt      DateTime?
+  notes           String?  @db.Text
+  metadata        Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([conversationId])
+  @@index([leadId])
+  @@index([status])
+  @@index([assignedTo])
+  @@index([createdAt])
+  @@map("aurora_handoffs")
 }
 
 model Fleet {
