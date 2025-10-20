@@ -380,3 +380,138 @@ model AuroraKnowledge {
   @@index([tags])
   @@map("aurora_knowledge")
 }
+
+model AuroraConfig {
+  id                   String   @id @default(cuid())
+  name                 String   @unique
+  autonomyLevel        String   @default("assisted")
+  maxBookingValue      Decimal  @default(500) @db.Decimal(10, 2)
+  requireHumanApproval Boolean  @default(true)
+  affectiveActivation  Decimal  @default(0.7) @db.Decimal(3, 2)
+  affectiveCordial     Decimal  @default(0.9) @db.Decimal(3, 2)
+  affectiveSincerity   Decimal  @default(0.85) @db.Decimal(3, 2)
+  learningRate         Decimal  @default(0.3) @db.Decimal(3, 2)
+  emotionalMemory      Json?
+  behaviorSettings     Json?
+  active               Boolean  @default(true)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@map("aurora_configs")
+}
+
+model Fleet {
+  id                String    @id @default(cuid())
+  vehicleType       String
+  licensePlate      String    @unique
+  model             String
+  year              Int
+  color             String?
+  capacity          Int       @default(6)
+  batteryCapacity   Int?
+  batteryHealth     Int?
+  lastMaintenanceAt DateTime?
+  nextMaintenanceAt DateTime?
+  mileage           Int       @default(0)
+  insuranceExpiry   DateTime?
+  status            String    @default("active")
+  notes             String?   @db.Text
+  imageUrl          String?
+  active            Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([status])
+  @@index([vehicleType])
+  @@map("fleet")
+}
+
+model MonumentTicket {
+  id                String   @id @default(cuid())
+  bookingId         String?
+  monumentName      String
+  ticketType        String
+  quantity          Int
+  priceEur          Decimal  @db.Decimal(10, 2)
+  visitDate         DateTime
+  ticketReference   String?
+  provider          String   @default("parques_sintra")
+  status            String   @default("pending")
+  externalData      Json?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  purchasedAt       DateTime?
+  cancelledAt       DateTime?
+
+  @@index([bookingId])
+  @@index([visitDate])
+  @@index([status])
+  @@map("monument_tickets")
+}
+
+model Review {
+  id             String   @id @default(cuid())
+  bookingId      String   @unique
+  customerId     String
+  productId      String
+  rating         Int
+  npsScore       Int?
+  comment        String?  @db.Text
+  language       String   @default("en")
+  helpful        Int      @default(0)
+  source         String?
+  publishedAt    DateTime?
+  moderatedBy    String?
+  status         String   @default("pending")
+  responseText   String?  @db.Text
+  respondedAt    DateTime?
+  respondedBy    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([productId])
+  @@index([customerId])
+  @@index([rating])
+  @@index([status])
+  @@map("reviews")
+}
+
+model SystemLog {
+  id         String   @id @default(cuid())
+  level      String
+  category   String
+  action     String
+  userId     String?
+  entityType String?
+  entityId   String?
+  message    String   @db.Text
+  metadata   Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  @@index([level])
+  @@index([category])
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("system_logs")
+}
+
+model CustomerAuth {
+  id           String    @id @default(cuid())
+  customerId   String    @unique
+  email        String    @unique
+  passwordHash String
+  verified     Boolean   @default(false)
+  verifiedAt   DateTime?
+  resetToken   String?
+  resetExpiry  DateTime?
+  lastLoginAt  DateTime?
+  loginCount   Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([email])
+  @@map("customer_auth")
+}
