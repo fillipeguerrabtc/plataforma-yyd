@@ -13,7 +13,12 @@ from datetime import datetime
 
 router = APIRouter(prefix="/webhooks", tags=["webhooks"])
 
-# WhatsApp Configuration
+# Twilio WhatsApp Configuration (Sandbox)
+TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID", "")
+TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN", "")
+TWILIO_WHATSAPP_NUMBER = os.getenv("TWILIO_WHATSAPP_NUMBER", "whatsapp:+14155238886")  # Sandbox default
+
+# WhatsApp Configuration (Facebook Business API)
 WHATSAPP_ACCESS_TOKEN = os.getenv("WHATSAPP_ACCESS_TOKEN", "")
 WHATSAPP_PHONE_NUMBER_ID = os.getenv("WHATSAPP_PHONE_NUMBER_ID", "")
 WHATSAPP_VERIFY_TOKEN = os.getenv("WHATSAPP_VERIFY_TOKEN", "aurora_verify_2024")
@@ -23,7 +28,123 @@ WHATSAPP_API_URL = "https://graph.facebook.com/v18.0"
 FACEBOOK_ACCESS_TOKEN = os.getenv("FACEBOOK_PAGE_ACCESS_TOKEN", "")
 FACEBOOK_VERIFY_TOKEN = os.getenv("FACEBOOK_VERIFY_TOKEN", "aurora_verify_2024")
 
-# ============ WhatsApp Webhook ============
+# ============ Twilio WhatsApp Webhook (Sandbox) ============
+
+@router.post("/twilio/whatsapp")
+async def twilio_whatsapp_webhook(request: Request):
+    """
+    Twilio WhatsApp Sandbox webhook endpoint
+    
+    Receives messages from Twilio WhatsApp Sandbox and processes with Aurora IA
+    Webhook URL: https://your-domain.repl.co/webhooks/twilio/whatsapp
+    """
+    try:
+        form_data = await request.form()
+        
+        # Extract Twilio webhook data
+        from_number = form_data.get("From", "")
+        to_number = form_data.get("To", "")
+        body = form_data.get("Body", "")
+        message_sid = form_data.get("MessageSid", "")
+        
+        print(f"📥 Twilio WhatsApp message received:")
+        print(f"   From: {from_number}")
+        print(f"   To: {to_number}")
+        print(f"   Body: {body}")
+        print(f"   SID: {message_sid}")
+        
+        # Process with Aurora IA
+        await process_twilio_whatsapp_message(from_number, body)
+        
+        # Return TwiML response (empty for now)
+        return {
+            "status": "ok",
+            "message_sid": message_sid
+        }
+    except Exception as e:
+        print(f"❌ Twilio WhatsApp webhook error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+async def process_twilio_whatsapp_message(from_number: str, text: str):
+    """Process incoming Twilio WhatsApp message with Aurora IA"""
+    try:
+        from affective_mathematics import AffectiveAnalyzer
+        from intelligence import aurora_intelligence
+        
+        # Detect language from message
+        language = "pt"  # Default to Portuguese
+        if any(word in text.lower() for word in ["hello", "hi", "tour", "book"]):
+            language = "en"
+        elif any(word in text.lower() for word in ["hola", "tour", "reserva"]):
+            language = "es"
+        
+        # Analyze affective state
+        analyzer = AffectiveAnalyzer()
+        customer_state = analyzer.analyze_text(text, language)
+        
+        # Generate intelligent response
+        messages = [{"role": "user", "content": text}]
+        context = {
+            "tours": [
+                {"name": "Sintra Highlights", "price": 60, "duration": 4},
+                {"name": "Cascais Coastal", "price": 50, "duration": 3},
+                {"name": "Sintra & Cascais Full Day", "price": 120, "duration": 8},
+            ],
+            "platform": "whatsapp",
+            "channel": "twilio_sandbox"
+        }
+        
+        response_data = aurora_intelligence.generate_response(
+            messages=messages,
+            language=language,
+            customer_state=customer_state,
+            context=context
+        )
+        
+        # Send response back via Twilio
+        await send_twilio_whatsapp_message(from_number, response_data["message"])
+        
+        print(f"✅ Processed message with affective state: {customer_state.to_dict()}")
+        print(f"   Response sent: {response_data['message'][:100]}...")
+        
+    except Exception as e:
+        print(f"❌ Error processing Twilio message: {str(e)}")
+        # Send fallback response
+        fallback_msg = "Olá! Sou Aurora 🤖 Estou tendo problemas técnicos, mas logo estarei pronta para ajudá-lo!"
+        await send_twilio_whatsapp_message(from_number, fallback_msg)
+
+async def send_twilio_whatsapp_message(to_number: str, text: str):
+    """Send WhatsApp message via Twilio API"""
+    if not TWILIO_ACCOUNT_SID or not TWILIO_AUTH_TOKEN:
+        print("⚠️  Twilio credentials not configured")
+        return
+    
+    try:
+        # Use Twilio REST API
+        url = f"https://api.twilio.com/2010-04-01/Accounts/{TWILIO_ACCOUNT_SID}/Messages.json"
+        
+        data = {
+            "From": TWILIO_WHATSAPP_NUMBER,
+            "To": to_number,
+            "Body": text
+        }
+        
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                url,
+                data=data,
+                auth=(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+            )
+            
+            if response.status_code in [200, 201]:
+                print(f"✅ Twilio WhatsApp message sent to {to_number}")
+            else:
+                print(f"❌ Twilio send failed: {response.status_code} - {response.text}")
+                
+    except Exception as e:
+        print(f"❌ Error sending Twilio message: {str(e)}")
+
+# ============ WhatsApp Webhook (Facebook Business API) ============
 
 @router.get("/whatsapp")
 async def whatsapp_webhook_verify(
