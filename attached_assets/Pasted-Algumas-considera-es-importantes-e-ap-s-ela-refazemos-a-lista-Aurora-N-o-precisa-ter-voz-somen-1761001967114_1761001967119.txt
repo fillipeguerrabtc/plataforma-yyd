@@ -1,0 +1,31 @@
+Algumas considerações importantes e após ela refazemos a lista:
+
+Aurora:
+
+Não precisa ter voz, somente atendimento e vendas via chat, seja o chat do site que WhatsApp e Facebook.
+Aurora não precisa participar da gestão do backoffice, apenas vendas de tours e automação dos calendários e reservas no backoffice para que saibam tudo que a Aurora está vendendo e organizem os tours, tuk tuks e guias necessários.
+
+Backoffice:
+
+Nosso backoffice tem que ter as funções completas de ERP+CRM+IA juntos!
+
+Produtos: poder adicionar/editar/relover produtos atuais e adicionar novos produtos. Poder também alterar a lista de Atividades opcionais que os clientes podem escolher. Poder escolher quantas atividades/monhmentos estarão disponíveis para cada tipo de tour.
+
+Pessoas: gerenciar todo o quadro de funcionários e guias. Poder adicionar/editar/remover pessoas. Gerenciar permissões de acesso no backoffice (quem pode ver o que). Os guias terão uma visão muito mais restrita que os funcionários da YYD por exemplo.
+
+Financeiro. Gerenciar todo o fluxo de caixa e o financeiro da empresa completo. Gerenciar folhas de pagamento de funcionários, guias e fornecedores. Gerenciar pagamentos recebidos pelo Stripe. Gerenciar TUDO que for financeiro.
+
+Integrações: área onde podemos adicionar/editar/remover integrações externas tipo Stripe, WhatsApp, OpenAI.....
+
+Aurora: menu de configuração de comportamentos da Aurora, ton de respostas, adicionar/editar/remover automações pra ela. Adicionar/editar/remover conteúdo da knowledge base dela, assim podemos ir populando ela manualmente também pra acelerar sempre mais o processo de aprendizado autônomo dela com knowledge base própria e usar sempre menos o chatgpt.
+
+Clientes:
+
+Área cliente deve constar TODA A IDENTIDADE VISUAL IDÊNTICA AO site https://www.yesyoudeserve.tours e todos os seus sublinks.
+Tem que constar todos os produtos que constam no site da YYD com as MESMS CARACTERÍSTICAS, mesmos preços e mesmas quantidades de pessoas. Faça uma pesquisa profunda no site e sublinks do site deles pra fazer igual.
+O cliente tem que poder escolher um tour, personalizar o tour e efetuar o pagamento e receber o email de confirmação da reserva.
+Tem que ter uma área reservada para o cliente logar só com o e-mail e ver/editar as reservas feitas e também ver o histórico de reservas passadas.
+Área de contato para o cliente mandar pedidos de informações, aqui também mandar e-mail automático dizendo que recebemos o contato dele e responderemos em breve.
+Coloque na área clientes também mais informações do site e sublinks do site da YYD como: reviews de clientes, fotos de tours, tem até um blog dentro do site da YYD com vários tours e várias gotas, olha o site COMPLETO pra ver tudo!
+
+Agora faça uma lista novamente considerando tudo isso que falei acima por favor
