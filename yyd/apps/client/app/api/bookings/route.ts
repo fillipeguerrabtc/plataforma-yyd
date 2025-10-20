@@ -17,6 +17,9 @@ export async function POST(request: NextRequest) {
       customerEmail,
       customerPhone,
       customerLocale,
+      customerId: providedCustomerId, // Frontend may send this
+      addons, // Frontend sends add-ons
+      season, // Frontend sends season
     } = body;
 
     // Check if customer is authenticated
@@ -30,7 +33,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!auth && (!customerName || !customerEmail)) {
+    // If customerId is provided (frontend created customer), use it
+    // Otherwise require customerName and customerEmail
+    if (!auth && !providedCustomerId && (!customerName || !customerEmail)) {
       return NextResponse.json(
         { error: 'Nome e email são obrigatórios para reservas' },
         { status: 400 }
@@ -69,8 +74,8 @@ export async function POST(request: NextRequest) {
         : parseFloat(price.priceEur.toString());
     }
 
-    // Determine season
-    const season = month >= 6 && month <= 9 ? 'peak' : 'high';
+    // Determine season (use provided or calculate)
+    const bookingSeason = season || (month >= 6 && month <= 9 ? 'peak' : 'high');
 
     // Get or create customer
     let customerId: string;
@@ -78,6 +83,9 @@ export async function POST(request: NextRequest) {
     if (auth) {
       // Use authenticated customer
       customerId = auth.customerId;
+    } else if (providedCustomerId) {
+      // Use customer ID provided by frontend
+      customerId = providedCustomerId;
     } else {
       // Create or find customer
       let customer = await prisma.customer.findUnique({
@@ -115,7 +123,7 @@ export async function POST(request: NextRequest) {
         specialRequests: specialRequests || null,
         selectedActivities: selectedActivities || [],
         priceEur,
-        season,
+        season: bookingSeason,
         status: 'pending',
         locale: customerLocale || 'en',
       },
@@ -125,7 +133,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(booking);
+    return NextResponse.json({ booking });
   } catch (error: any) {
     console.error('Error creating booking:', error);
     return NextResponse.json(
