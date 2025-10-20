@@ -99,6 +99,8 @@ async function main() {
       excludedEn: [
         'Entry/admission to monuments (if choosing Option 1)',
         'Wine tasting (€24/person additional)',
+        'Transfer service (additional cost)',
+        'Lunch (not included)',
       ],
       excludedPt: [
         'Entrada para monumentos (se escolher Opção 1)',

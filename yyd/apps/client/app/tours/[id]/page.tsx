@@ -36,10 +36,11 @@ interface Tour {
   }>;
 }
 
-const EXCLUDED_ITEMS_PRICES = {
+const EXCLUDED_ITEMS_PRICES: Record<string, number> = {
   lunch: 20,
   monument_tickets: 25,
   wine_tasting: 24,
+  transfer_service: 15,
 };
 
 export default function TourDetailPage() {
@@ -64,6 +65,12 @@ export default function TourDetailPage() {
       calculatePrice();
     }
   }, [tour, selectedDate, numberOfPeople, selectedExcludedItems]);
+
+  useEffect(() => {
+    if (tour && selectedOption) {
+      setSelectedActivities([]);
+    }
+  }, [selectedOption]);
 
   const fetchTour = async () => {
     try {
@@ -110,11 +117,20 @@ export default function TourDetailPage() {
   };
 
   const handleActivityToggle = (activityId: string) => {
-    setSelectedActivities(prev => 
-      prev.includes(activityId) 
-        ? prev.filter(id => id !== activityId)
-        : [...prev, activityId]
-    );
+    if (!canSelectActivities()) return;
+    
+    const maxActivities = getMaxActivities();
+    
+    setSelectedActivities(prev => {
+      if (prev.includes(activityId)) {
+        return prev.filter(id => id !== activityId);
+      } else {
+        if (prev.length >= maxActivities) {
+          return prev;
+        }
+        return [...prev, activityId];
+      }
+    });
   };
 
   const handleExcludedItemToggle = (item: string) => {
@@ -147,8 +163,40 @@ export default function TourDetailPage() {
     return Math.min(...tour.seasonPrices.map(sp => Number(sp.priceEur)));
   };
 
+  const isHalfDayTour = () => {
+    return tour?.slug.includes('half-day') || tour?.durationHours === 4;
+  };
+
   const isFullDayTour = () => {
-    return tour?.slug.includes('full-day') || tour?.durationHours === 8;
+    return tour?.slug.includes('full-day') && tour?.durationHours === 8 && !tour?.slug.includes('all-inclusive');
+  };
+
+  const isAllInclusive = () => {
+    return tour?.slug.includes('all-inclusive');
+  };
+
+  const canSelectActivities = () => {
+    if (isAllInclusive()) return false;
+    if (!selectedOption) return false;
+    return true;
+  };
+
+  const getMaxActivities = () => {
+    if (isHalfDayTour()) {
+      const option1 = tour?.options.find((_, idx) => idx === 0);
+      const option2 = tour?.options.find((_, idx) => idx === 1);
+      
+      if (selectedOption === option1?.id) return 1;
+      if (selectedOption === option2?.id) return 3;
+    }
+    
+    if (isFullDayTour()) return 3;
+    
+    return 0;
+  };
+
+  const showExcludedAsOptionals = () => {
+    return isHalfDayTour() || isFullDayTour();
   };
 
   if (loading) {
@@ -177,6 +225,15 @@ export default function TourDetailPage() {
       </>
     );
   }
+
+  const maxActivities = getMaxActivities();
+  const activitiesHelperText = isHalfDayTour() 
+    ? (selectedOption === tour.options[0]?.id 
+        ? 'Select 1 activity to complement your monument visit' 
+        : 'Select up to 3 activities for your scenic route')
+    : isFullDayTour()
+    ? 'Select up to 3 activities for your full-day experience'
+    : '';
 
   return (
     <>
@@ -248,12 +305,14 @@ export default function TourDetailPage() {
                 </ul>
               </div>
 
-              {/* What's NOT Included */}
+              {/* What's NOT Included / Optional Add-ons */}
               {tour.excludedEn && tour.excludedEn.length > 0 && (
                 <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
-                  <h2 className="text-2xl font-bold text-black mb-4 font-montserrat">Not Included</h2>
+                  <h2 className="text-2xl font-bold text-black mb-4 font-montserrat">
+                    {showExcludedAsOptionals() ? 'Optional Add-ons' : 'Not Included'}
+                  </h2>
                   
-                  {isFullDayTour() ? (
+                  {showExcludedAsOptionals() ? (
                     <>
                       <p className="text-gray-600 mb-6 text-sm">
                         The following items are not included in the base price. You can add them to your booking:
@@ -273,22 +332,21 @@ export default function TourDetailPage() {
                                   : 'border-gray-200 hover:border-[#1FB7C4]/50'
                               }`}
                             >
-                              <div className="flex items-start gap-3">
+                              <div className="flex items-center gap-3">
                                 <input
                                   type="checkbox"
                                   checked={selectedExcludedItems.includes(excluded)}
                                   onChange={() => handleExcludedItemToggle(excluded)}
-                                  className="mt-1 w-5 h-5 text-[#1FB7C4] focus:ring-[#1FB7C4] rounded"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="w-5 h-5 text-[#1FB7C4] focus:ring-[#1FB7C4] rounded cursor-pointer"
                                 />
-                                <div className="flex-1">
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-gray-700 font-medium">{excluded}</span>
-                                    {itemPrice && (
-                                      <span className="text-[#1FB7C4] font-bold text-sm">
-                                        +€{itemPrice}/person
-                                      </span>
-                                    )}
-                                  </div>
+                                <div className="flex-1 flex items-center justify-between">
+                                  <span className="text-gray-700 font-medium">{excluded}</span>
+                                  {itemPrice && (
+                                    <span className="text-[#1FB7C4] font-bold text-sm">
+                                      +€{itemPrice}/person
+                                    </span>
+                                  )}
                                 </div>
                               </div>
                             </div>
@@ -310,9 +368,12 @@ export default function TourDetailPage() {
               )}
 
               {/* Tour Options */}
-              {tour.options && tour.options.length > 0 && (
+              {tour.options && tour.options.length > 0 && !isAllInclusive() && (
                 <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
                   <h2 className="text-2xl font-bold text-black mb-4 font-montserrat">Choose Your Experience</h2>
+                  <p className="text-gray-600 mb-6 text-sm">
+                    {isHalfDayTour() && 'Select how you want to explore Sintra on your half-day tour:'}
+                  </p>
                   <div className="space-y-3">
                     {tour.options.map((option) => (
                       <div
@@ -329,7 +390,8 @@ export default function TourDetailPage() {
                             type="radio"
                             checked={selectedOption === option.id}
                             onChange={() => setSelectedOption(option.id)}
-                            className="mt-1 w-5 h-5 text-[#1FB7C4] focus:ring-[#1FB7C4]"
+                            onClick={(e) => e.stopPropagation()}
+                            className="mt-1 w-5 h-5 text-[#1FB7C4] focus:ring-[#1FB7C4] cursor-pointer"
                           />
                           <div className="flex-1">
                             <h3 className="font-bold text-lg text-black mb-2">{option.nameEn}</h3>
@@ -343,35 +405,63 @@ export default function TourDetailPage() {
               )}
 
               {/* Activities */}
-              {tour.activities && tour.activities.length > 0 && (
+              {tour.activities && tour.activities.length > 0 && !isAllInclusive() && (
                 <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
                   <h2 className="text-2xl font-bold text-black mb-4 font-montserrat">Available Activities</h2>
-                  <p className="text-gray-600 mb-6 text-sm">Select the activities you'd like to include in your tour:</p>
+                  {activitiesHelperText && (
+                    <p className="text-gray-600 mb-6 text-sm">
+                      {activitiesHelperText}
+                      {maxActivities > 0 && selectedOption && (
+                        <span className="font-semibold ml-1">
+                          ({selectedActivities.length}/{maxActivities} selected)
+                        </span>
+                      )}
+                    </p>
+                  )}
+                  {!selectedOption && (
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                      <p className="text-yellow-800 text-sm font-medium">
+                        ⚠️ Please select an experience option above first to choose activities
+                      </p>
+                    </div>
+                  )}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {tour.activities.map((activity) => (
-                      <div
-                        key={activity.id}
-                        onClick={() => handleActivityToggle(activity.id)}
-                        className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
-                          selectedActivities.includes(activity.id) 
-                            ? 'border-[#1FB7C4] bg-[#1FB7C4]/5' 
-                            : 'border-gray-200 hover:border-[#1FB7C4]/50'
-                        }`}
-                      >
-                        <div className="flex items-start gap-3">
-                          <input
-                            type="checkbox"
-                            checked={selectedActivities.includes(activity.id)}
-                            onChange={() => handleActivityToggle(activity.id)}
-                            className="mt-1 w-5 h-5 text-[#1FB7C4] focus:ring-[#1FB7C4] rounded"
-                          />
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-black mb-1 text-sm">{activity.nameEn}</h4>
-                            <p className="text-xs text-gray-600">{activity.descriptionEn}</p>
+                    {tour.activities.map((activity) => {
+                      const isSelected = selectedActivities.includes(activity.id);
+                      const isDisabled = !canSelectActivities() || 
+                        (!isSelected && selectedActivities.length >= maxActivities);
+                      
+                      return (
+                        <div
+                          key={activity.id}
+                          onClick={() => !isDisabled && handleActivityToggle(activity.id)}
+                          className={`border-2 rounded-lg p-4 transition-all ${
+                            isDisabled 
+                              ? 'opacity-50 cursor-not-allowed border-gray-200' 
+                              : 'cursor-pointer'
+                          } ${
+                            isSelected 
+                              ? 'border-[#1FB7C4] bg-[#1FB7C4]/5' 
+                              : 'border-gray-200 hover:border-[#1FB7C4]/50'
+                          }`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => !isDisabled && handleActivityToggle(activity.id)}
+                              onClick={(e) => e.stopPropagation()}
+                              disabled={isDisabled}
+                              className="mt-1 w-5 h-5 text-[#1FB7C4] focus:ring-[#1FB7C4] rounded cursor-pointer disabled:cursor-not-allowed"
+                            />
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-black mb-1 text-sm">{activity.nameEn}</h4>
+                              <p className="text-xs text-gray-600">{activity.descriptionEn}</p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}

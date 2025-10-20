@@ -1,31 +1,27 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 
 export default function LayoutClient({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Check if user is authenticated
+    setMounted(true);
     const userStr = localStorage.getItem('yyd-user');
     setIsAuthenticated(!!userStr);
-    setIsLoading(false);
-  }, [pathname]);
+    
+    if (!userStr && pathname !== '/login') {
+      router.push('/login');
+    }
+  }, [pathname, router]);
 
   const isLoginPage = pathname === '/login';
-  const showSidebar = isAuthenticated && !isLoginPage;
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#1FB7C4] border-t-transparent"></div>
-      </div>
-    );
-  }
+  const showSidebar = mounted && isAuthenticated && !isLoginPage;
 
   return (
     <div className="flex min-h-screen">
