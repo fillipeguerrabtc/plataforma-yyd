@@ -48,10 +48,12 @@ export const auroraQueue = new Queue('aurora-tasks', {
 // Job types
 export interface EmailJob {
   to: string;
-  subject: string;
+  subject?: string;
   template: 'booking-confirmation' | 'booking-reminder' | 'booking-cancelled' | 'voucher';
-  data: any;
-  locale: string;
+  bookingId: string;
+  locale?: string;
+  voucherPdf?: string; // base64 encoded PDF
+  data?: any;
 }
 
 export interface ReminderJob {
