@@ -4,7 +4,8 @@ const nextConfig = {
     serverActions: {
       allowedOrigins: ["*"]
     }
-  }
+  },
+  allowedDevOrigins: ["*.replit.dev"]
 };
 
 export default nextConfig;
