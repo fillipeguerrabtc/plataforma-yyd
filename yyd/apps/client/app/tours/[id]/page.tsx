@@ -177,8 +177,9 @@ export default function TourDetailPage() {
 
   const canSelectActivities = () => {
     if (isAllInclusive()) return false;
-    if (!selectedOption) return false;
-    return true;
+    if (isFullDayTour()) return true;
+    if (isHalfDayTour()) return !!selectedOption;
+    return false;
   };
 
   const getMaxActivities = () => {
@@ -227,13 +228,21 @@ export default function TourDetailPage() {
   }
 
   const maxActivities = getMaxActivities();
-  const activitiesHelperText = isHalfDayTour() 
-    ? (selectedOption === tour.options[0]?.id 
-        ? 'Select 1 activity to complement your monument visit' 
-        : 'Select up to 3 activities for your scenic route')
-    : isFullDayTour()
-    ? 'Select up to 3 activities for your full-day experience'
-    : '';
+  const activitiesHelperText = () => {
+    if (isHalfDayTour()) {
+      if (selectedOption === tour?.options[0]?.id) {
+        return 'Select 1 activity to complement your monument visit';
+      }
+      if (selectedOption === tour?.options[1]?.id) {
+        return 'Select up to 3 activities for your scenic route';
+      }
+      return '';
+    }
+    if (isFullDayTour()) {
+      return 'Select up to 3 activities for your full-day experience';
+    }
+    return '';
+  };
 
   return (
     <>
@@ -408,17 +417,17 @@ export default function TourDetailPage() {
               {tour.activities && tour.activities.length > 0 && !isAllInclusive() && (
                 <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
                   <h2 className="text-2xl font-bold text-black mb-4 font-montserrat">Available Activities</h2>
-                  {activitiesHelperText && (
+                  {activitiesHelperText() && (
                     <p className="text-gray-600 mb-6 text-sm">
-                      {activitiesHelperText}
-                      {maxActivities > 0 && selectedOption && (
+                      {activitiesHelperText()}
+                      {maxActivities > 0 && canSelectActivities() && (
                         <span className="font-semibold ml-1">
                           ({selectedActivities.length}/{maxActivities} selected)
                         </span>
                       )}
                     </p>
                   )}
-                  {!selectedOption && (
+                  {isHalfDayTour() && !selectedOption && (
                     <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
                       <p className="text-yellow-800 text-sm font-medium">
                         ⚠️ Please select an experience option above first to choose activities
