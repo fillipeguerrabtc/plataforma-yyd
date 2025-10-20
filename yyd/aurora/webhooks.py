@@ -225,12 +225,79 @@ async def process_whatsapp_message(message: Dict[str, Any], value: Dict[str, Any
     elif message_type == "location":
         text = "[Location shared]"
     
-    # TODO: Process with Aurora IA chat engine
-    # TODO: Generate intelligent response
-    # TODO: Update conversation history in database
+    # Process with Aurora IA RAG + 7-layer memory system
+    try:
+        from affective_mathematics import AffectiveAnalyzer
+        from rag import decision_engine
+        from memory import MemoryManager
+        from langdetect import detect, LangDetectException
+        import uuid
+        
+        # Auto-detect language
+        language = "pt"
+        try:
+            detected = detect(text)
+            if detected in ["en", "pt", "es"]:
+                language = detected
+        except LangDetectException:
+            pass
+        
+        # Analyze affective state
+        analyzer = AffectiveAnalyzer()
+        customer_state = analyzer.analyze_text(text, language)
+        emotional_dict = customer_state.to_dict()
+        
+        # Create persistent conversation ID based on channel + sender
+        # This ensures all messages from same sender map to same conversation
+        import hashlib
+        conversation_id = hashlib.md5(f"whatsapp_{from_number}".encode()).hexdigest()
+        session_id = conversation_id
+        
+        memory_manager = MemoryManager()
+        memory_manager.store_conversation_snapshot(
+            session_id=session_id,
+            conversation_id=conversation_id,
+            customer_id=from_number,
+            messages=[{"role": "user", "content": text}],
+            emotional_state=emotional_dict
+        )
+        
+        # Generate intelligent response using RAG
+        response_data = await decision_engine.generate_response(
+            query=text,
+            emotional_state=emotional_dict,
+            conversation_context={"session_id": session_id, "conversation_id": conversation_id},
+            locale=language,
+            messages=[{"role": "user", "content": text}]
+        )
+        
+        response_text = response_data['message']
+        
+        # Detect handoff conditions
+        from handoff_detection import detect_handoff, create_handoff_record
+        
+        requires_handoff, handoff_reason = detect_handoff(
+            user_message=text,
+            emotional_state=emotional_dict,
+            response_confidence=response_data.get('confidence', 1.0)
+        )
+        
+        # Create handoff record if needed
+        if requires_handoff:
+            await create_handoff_record(
+                conversation_id=conversation_id,
+                lead_id=None,
+                reason=handoff_reason,
+                emotional_state=emotional_dict,
+                confidence=response_data.get('confidence', 1.0),
+                notes=f"WhatsApp auto-detected from {from_number}: {text[:100]}"
+            )
+        
+    except Exception as e:
+        print(f"❌ Error processing WhatsApp message with Aurora: {e}")
+        response_text = "Olá! Sou Aurora 🤖 Estou tendo problemas técnicos temporários. Por favor, tente novamente em alguns momentos!"
     
     # Send response back to WhatsApp
-    response_text = f"Olá! Aurora IA aqui 🤖. Recebi sua mensagem: '{text}'. Em breve terei inteligência completa para ajudá-lo!"
     await send_whatsapp_message(from_number, response_text)
 
 async def send_whatsapp_message(to_number: str, text: str):
@@ -304,11 +371,79 @@ async def process_facebook_message(event: Dict[str, Any]):
     
     print(f"💬 Facebook message from {sender_id}: {text}")
     
-    # TODO: Process with Aurora IA
-    # TODO: Update conversation history
+    # Process with Aurora IA RAG + 7-layer memory system
+    try:
+        from affective_mathematics import AffectiveAnalyzer
+        from rag import decision_engine
+        from memory import MemoryManager
+        from langdetect import detect, LangDetectException
+        import uuid
+        
+        # Auto-detect language
+        language = "pt"
+        try:
+            detected = detect(text)
+            if detected in ["en", "pt", "es"]:
+                language = detected
+        except LangDetectException:
+            pass
+        
+        # Analyze affective state
+        analyzer = AffectiveAnalyzer()
+        customer_state = analyzer.analyze_text(text, language)
+        emotional_dict = customer_state.to_dict()
+        
+        # Create persistent conversation ID based on channel + sender  
+        # This ensures all messages from same sender map to same conversation
+        import hashlib
+        conversation_id = hashlib.md5(f"facebook_{sender_id}".encode()).hexdigest()
+        session_id = conversation_id
+        
+        memory_manager = MemoryManager()
+        memory_manager.store_conversation_snapshot(
+            session_id=session_id,
+            conversation_id=conversation_id,
+            customer_id=sender_id,
+            messages=[{"role": "user", "content": text}],
+            emotional_state=emotional_dict
+        )
+        
+        # Generate intelligent response using RAG
+        response_data = await decision_engine.generate_response(
+            query=text,
+            emotional_state=emotional_dict,
+            conversation_context={"session_id": session_id, "conversation_id": conversation_id},
+            locale=language,
+            messages=[{"role": "user", "content": text}]
+        )
+        
+        response_text = response_data['message']
+        
+        # Detect handoff conditions
+        from handoff_detection import detect_handoff, create_handoff_record
+        
+        requires_handoff, handoff_reason = detect_handoff(
+            user_message=text,
+            emotional_state=emotional_dict,
+            response_confidence=response_data.get('confidence', 1.0)
+        )
+        
+        # Create handoff record if needed
+        if requires_handoff:
+            await create_handoff_record(
+                conversation_id=conversation_id,
+                lead_id=None,
+                reason=handoff_reason,
+                emotional_state=emotional_dict,
+                confidence=response_data.get('confidence', 1.0),
+                notes=f"Facebook auto-detected from {sender_id}: {text[:100]}"
+            )
+        
+    except Exception as e:
+        print(f"❌ Error processing Facebook message with Aurora: {e}")
+        response_text = "Olá! Sou Aurora 🤖 Estou tendo problemas técnicos temporários. Por favor, tente novamente!"
     
     # Send response
-    response_text = f"Olá! Aurora IA aqui 🤖. Recebi sua mensagem via Facebook: '{text}'. Em breve estarei totalmente operacional!"
     await send_facebook_message(sender_id, response_text)
 
 async def send_facebook_message(recipient_id: str, text: str):

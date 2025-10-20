@@ -3,13 +3,14 @@ Aurora IA - Multilingual AI Concierge for Yes, You Deserve!
 Powered by OpenAI GPT-4 + Affective Mathematics in ℝ³
 """
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 import os
 from datetime import datetime
 import json
+import asyncio
 from webhooks import router as webhooks_router
 
 app = FastAPI(
@@ -106,7 +107,7 @@ async def chat(request: ChatRequest):
         memory_manager.store_conversation_snapshot(
             session_id=session_id,
             conversation_id=conversation_id,
-            customer_id=request.customer_id,
+            customer_id=request.customer_id or "anonymous",
             messages=[{"role": msg.role, "content": msg.content} for msg in request.messages],
             emotional_state=emotional_dict
         )
@@ -128,24 +129,25 @@ async def chat(request: ChatRequest):
             messages=[{"role": msg.role, "content": msg.content} for msg in request.messages]
         )
         
-        # Detect handoff conditions
-        requires_handoff = False
-        handoff_reason = None
+        # Detect handoff conditions using centralized system
+        from handoff_detection import detect_handoff, create_handoff_record
         
-        # Rule 1: Very negative emotion (valence < -0.6)
-        if emotional_dict.get('valence', 0) < -0.6:
-            requires_handoff = True
-            handoff_reason = "negative_emotion"
+        requires_handoff, handoff_reason = detect_handoff(
+            user_message=user_message,
+            emotional_state=emotional_dict,
+            response_confidence=response_data.get('confidence', 1.0)
+        )
         
-        # Rule 2: Low confidence in response
-        elif response_data.get('confidence', 1.0) < 0.5:
-            requires_handoff = True
-            handoff_reason = "low_confidence"
-        
-        # Rule 3: Explicit request for human
-        elif any(keyword in user_message.lower() for keyword in ['speak to human', 'talk to person', 'real person', 'falar com humano', 'pessoa real', 'hablar con humano']):
-            requires_handoff = True
-            handoff_reason = "explicit_request"
+        # Create handoff record if needed
+        if requires_handoff:
+            await create_handoff_record(
+                conversation_id=conversation_id,
+                lead_id=None,  # TODO: Link to lead if exists
+                reason=handoff_reason,
+                emotional_state=emotional_dict,
+                confidence=response_data.get('confidence', 1.0),
+                notes=f"Auto-detected during chat: {user_message[:100]}"
+            )
         
         # Suggested actions based on source
         suggested_actions = []
@@ -282,7 +284,7 @@ async def create_lead(lead: LeadCreate):
         
         return {
             "success": True,
-            "lead_id": result['id'] if result else None,
+            "lead_id": result.get('id') if result else None,
             "message": "Lead created successfully"
         }
     except Exception as e:
@@ -311,7 +313,7 @@ async def create_handoff(handoff: HandoffCreate):
         
         return {
             "success": True,
-            "handoff_id": result['id'] if result else None,
+            "handoff_id": result.get('id') if result else None,
             "message": "Handoff request created"
         }
     except Exception as e:
@@ -337,8 +339,8 @@ async def get_pending_handoffs():
         results = DatabaseConnection.execute_query(query)
         
         return {
-            "handoffs": results,
-            "count": len(results)
+            "handoffs": results or [],
+            "count": len(results) if results else 0
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch handoffs: {str(e)}")
@@ -358,6 +360,164 @@ async def cleanup_memory():
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Cleanup failed: {str(e)}")
+
+@app.websocket("/ws/chat")
+async def websocket_chat(websocket: WebSocket):
+    """
+    WebSocket endpoint for real-time streaming chat with Aurora
+    
+    Client sends JSON:
+    {
+        "message": "user message",
+        "language": "en|pt|es",
+        "customer_id": "optional",
+        "session_id": "optional",
+        "conversation_id": "optional"
+    }
+    
+    Server streams JSON responses:
+    {
+        "type": "token|complete|error|affective_state",
+        "content": "...",
+        "metadata": {...}
+    }
+    """
+    await websocket.accept()
+    
+    try:
+        from affective_mathematics import AffectiveAnalyzer
+        from rag import decision_engine
+        from memory import MemoryManager
+        import uuid
+        
+        print(f"✅ WebSocket connection established: {websocket.client}")
+        
+        while True:
+            # Receive message from client
+            data = await websocket.receive_json()
+            
+            user_message = data.get("message", "")
+            language = data.get("language", "en")
+            customer_id = data.get("customer_id") or "anonymous"
+            session_id = data.get("session_id") or str(uuid.uuid4())
+            conversation_id = data.get("conversation_id") or str(uuid.uuid4())
+            
+            if not user_message:
+                await websocket.send_json({
+                    "type": "error",
+                    "content": "Message cannot be empty"
+                })
+                continue
+            
+            try:
+                # 1. Analyze affective state
+                analyzer = AffectiveAnalyzer()
+                customer_state = analyzer.analyze_text(user_message, language)
+                emotional_dict = customer_state.to_dict()
+                
+                # Send affective state to client
+                await websocket.send_json({
+                    "type": "affective_state",
+                    "content": emotional_dict,
+                    "metadata": {
+                        "emotion": analyzer.classify_emotion(customer_state)
+                    }
+                })
+                
+                # 2. Store in memory
+                memory_manager = MemoryManager()
+                messages_context = [{"role": "user", "content": user_message}]
+                
+                memory_manager.store_conversation_snapshot(
+                    session_id=session_id,
+                    conversation_id=conversation_id,
+                    customer_id=customer_id,
+                    messages=messages_context,
+                    emotional_state=emotional_dict
+                )
+                
+                # 3. Build context
+                conversation_context = {
+                    "session_id": session_id,
+                    "conversation_id": conversation_id,
+                    "message_count": 1
+                }
+                
+                # 4. Get response using RAG decision engine
+                response_data = await decision_engine.generate_response(
+                    query=user_message,
+                    emotional_state=emotional_dict,
+                    conversation_context=conversation_context,
+                    locale=language,
+                    messages=messages_context
+                )
+                
+                # Simulate streaming for smooth UX (split response into tokens)
+                full_response = response_data['message']
+                tokens = full_response.split()
+                
+                for token in tokens:
+                    await websocket.send_json({
+                        "type": "token",
+                        "content": token + " ",
+                        "metadata": {
+                            "source": response_data.get("source"),
+                            "confidence": response_data.get("confidence")
+                        }
+                    })
+                    
+                    # Small delay for smooth streaming effect
+                    await asyncio.sleep(0.03)
+                
+                # 5. Detect handoff using centralized system
+                from handoff_detection import detect_handoff, create_handoff_record
+                
+                requires_handoff, handoff_reason = detect_handoff(
+                    user_message=user_message,
+                    emotional_state=emotional_dict,
+                    response_confidence=response_data.get('confidence', 1.0)
+                )
+                
+                # Create handoff record if needed
+                if requires_handoff:
+                    await create_handoff_record(
+                        conversation_id=conversation_id,
+                        lead_id=None,
+                        reason=handoff_reason,
+                        emotional_state=emotional_dict,
+                        confidence=response_data.get('confidence', 1.0),
+                        notes=f"WebSocket auto-detected: {user_message[:100]}"
+                    )
+                
+                # 6. Send completion message
+                await websocket.send_json({
+                    "type": "complete",
+                    "content": full_response,
+                    "metadata": {
+                        "requires_handoff": requires_handoff,
+                        "handoff_reason": handoff_reason,
+                        "affective_state": emotional_dict,
+                        "language": language
+                    }
+                })
+                
+            except Exception as e:
+                print(f"❌ WebSocket processing error: {e}")
+                import traceback
+                traceback.print_exc()
+                
+                await websocket.send_json({
+                    "type": "error",
+                    "content": str(e),
+                    "metadata": {}
+                })
+                
+    except WebSocketDisconnect:
+        print(f"🔌 WebSocket disconnected: {websocket.client}")
+    except Exception as e:
+        print(f"❌ WebSocket error: {e}")
+        import traceback
+        traceback.print_exc()
 
 if __name__ == "__main__":
     import uvicorn
