@@ -17,6 +17,7 @@ export default function Sidebar() {
     { href: '/tours', label: 'Tours', icon: '🗺️' },
     { href: '/financial', label: 'Financeiro', icon: '💰' },
     { href: '/analytics', label: 'BI Analytics', icon: '📈' },
+    { href: '/settings/emails', label: 'Config. Emails', icon: '📧' },
     { href: '/integrations', label: 'Integrações', icon: '🔗' },
     { href: '/aurora', label: 'Aurora IA', icon: '🤖' },
   ];
