@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { loadStripe } from '@stripe/stripe-js';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY || '');
@@ -20,6 +20,7 @@ interface TourAddon {
 export default function BookTourPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   
   const [tour, setTour] = useState<any>(null);
   const [addons, setAddons] = useState<TourAddon[]>([]);
@@ -45,6 +46,60 @@ export default function BookTourPage() {
     fetchData();
   }, [params.id]);
 
+  // Read query parameters and populate form
+  useEffect(() => {
+    if (!searchParams) return;
+    
+    const date = searchParams.get('date');
+    const people = searchParams.get('people');
+    const excluded = searchParams.get('excluded');
+    
+    if (date) {
+      setFormData(prev => ({ 
+        ...prev, 
+        date,
+        numberOfPeople: people ? parseInt(people) : 2,
+      }));
+    }
+    
+    // Map excluded items to addon codes
+    if (excluded && addons.length > 0) {
+      const excludedItems = excluded.split(',').filter(Boolean);
+      const addonMap: Record<string, boolean> = {};
+      
+      excludedItems.forEach(item => {
+        const itemLower = item.toLowerCase();
+        if (itemLower.includes('wine')) {
+          addonMap['wine_tasting'] = true;
+        }
+        if (itemLower.includes('transfer')) {
+          addonMap['transfer_service'] = true;
+        }
+        if (itemLower.includes('lunch')) {
+          addonMap['lunch'] = true;
+        }
+        if (itemLower.includes('monument')) {
+          addonMap['monument_tickets'] = true;
+        }
+      });
+      
+      setSelectedAddons(addonMap);
+    }
+  }, [searchParams, addons]);
+
+  // Update season whenever date changes
+  useEffect(() => {
+    if (formData.date) {
+      const selectedDate = new Date(formData.date);
+      const month = selectedDate.getMonth() + 1;
+      let season = 'low';
+      if (month >= 5 && month <= 10) season = 'high';
+      if (month === 12 || month === 1) season = 'peak';
+      
+      setFormData(prev => ({ ...prev, season }));
+    }
+  }, [formData.date]);
+
   const fetchData = async () => {
     try {
       const [tourRes, addonsRes] = await Promise.all([
@@ -57,14 +112,6 @@ export default function BookTourPage() {
 
       setTour(tourData);
       setAddons(addonsData.addons || []);
-
-      // Set season based on current date
-      const month = new Date().getMonth() + 1;
-      if (month >= 5 && month <= 10) {
-        setFormData(prev => ({ ...prev, season: 'high' }));
-      } else if (month === 12 || month === 1) {
-        setFormData(prev => ({ ...prev, season: 'peak' }));
-      }
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -79,12 +126,26 @@ export default function BookTourPage() {
     }));
   };
 
+  const getBasePrice = () => {
+    if (!tour) return 0;
+    
+    const seasonPrice = tour.seasonPrices?.find((sp: any) => 
+      sp.season === formData.season &&
+      formData.numberOfPeople >= sp.minPeople &&
+      (sp.maxPeople === null || formData.numberOfPeople <= sp.maxPeople)
+    );
+    
+    if (!seasonPrice) return 0;
+    
+    return seasonPrice.pricePerPerson 
+      ? seasonPrice.priceEur * formData.numberOfPeople 
+      : seasonPrice.priceEur;
+  };
+
   const calculateTotal = () => {
     if (!tour) return 0;
 
-    // Base tour price
-    const seasonPrice = tour.seasonPrices?.find((sp: any) => sp.season === formData.season);
-    let total = seasonPrice?.priceEur || 0;
+    let total = getBasePrice();
 
     // Add-ons
     addons.forEach(addon => {
@@ -405,7 +466,7 @@ export default function BookTourPage() {
                   <div className="flex justify-between">
                     <span className="text-gray-600">Base price</span>
                     <span className="font-semibold">
-                      €{tour?.seasonPrices?.find((sp: any) => sp.season === formData.season)?.priceEur || 0}
+                      €{getBasePrice()}
                     </span>
                   </div>
                   {addons.filter(a => selectedAddons[a.code]).map(addon => (
