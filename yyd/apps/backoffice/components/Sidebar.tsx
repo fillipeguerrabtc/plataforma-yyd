@@ -98,9 +98,9 @@ export default function Sidebar() {
                 color: isActive ? '#23C0E3' : '#ffffff',
                 background: isActive ? 'rgba(35, 192, 227, 0.15)' : 'transparent',
                 borderLeft: isActive ? '3px solid #23C0E3' : '3px solid transparent',
-                textShadow: isActive ? 'none' : '0px 1px 2px rgba(0,0,0,0.5)',
+                textShadow: isActive ? 'none' : '0px 2px 4px rgba(0,0,0,0.9)',
                 fontSize: '0.9rem',
-                fontWeight: isActive ? '600' : 'normal',
+                fontWeight: isActive ? '600' : '500',
                 transition: 'all 0.2s',
               }}
             >
