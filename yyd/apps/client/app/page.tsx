@@ -242,7 +242,7 @@ export default async function Home() {
                   Fastest way to reach us. Click below to start chatting now.
                 </p>
                 <a
-                  href="http://wa.link/y0m3y9"
+                  href="https://wa.me/14155238886"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-block bg-green-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-600 transition"

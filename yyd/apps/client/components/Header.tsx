@@ -45,7 +45,7 @@ export default function Header() {
               Contact
             </Link>
             <a
-              href="http://wa.link/y0m3y9"
+              href="https://wa.me/14155238886"
               target="_blank"
               rel="noopener noreferrer"
               className="btn-yyd-whatsapp"
@@ -98,7 +98,7 @@ export default function Header() {
                 Contact
               </Link>
               <a
-                href="http://wa.link/y0m3y9"
+                href="https://wa.me/14155238886"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-yyd-whatsapp inline-block text-center"

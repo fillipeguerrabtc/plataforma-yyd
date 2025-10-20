@@ -28,7 +28,9 @@ export default function LoginPage() {
 
       if (response.ok) {
         localStorage.setItem('yyd-user', JSON.stringify(data.user));
-        router.replace('/');
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 100);
       } else {
         setError(data.error || 'Login failed');
       }

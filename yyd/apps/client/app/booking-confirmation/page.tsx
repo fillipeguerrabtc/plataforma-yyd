@@ -169,7 +169,7 @@ export default function BookingConfirmationPage() {
                   Return to Home
                 </Link>
                 <a
-                  href="http://wa.link/y0m3y9"
+                  href="https://wa.me/14155238886"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-green-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-600 transition"
@@ -253,7 +253,7 @@ export default function BookingConfirmationPage() {
                   Try Again
                 </Link>
                 <a
-                  href="http://wa.link/y0m3y9"
+                  href="https://wa.me/14155238886"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-green-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-600 transition"
