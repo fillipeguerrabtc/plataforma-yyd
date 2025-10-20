@@ -135,8 +135,8 @@ pnpm dev                  # Run all apps in dev mode
 - Performance metrics por tour
 - `/analytics` page no backoffice
 
-### **AURORA IA - CORE IMPLEMENTATION** ✅ (NOVA IMPLEMENTAÇÃO!)
-- **FastAPI Service**: Port 8000, health check, CORS, workflow configurado
+### **AURORA IA - INTELLIGENCE LAYER COMPLETA** ✅ (NOVA IMPLEMENTAÇÃO!)
+- **FastAPI Service**: Port 8000 RUNNING, health check, CORS, workflow configurado
 - **WhatsApp Webhook**: GET/POST /webhooks/whatsapp (verification + message handling)
 - **Facebook Messenger Webhook**: GET/POST /webhooks/facebook (verification + message handling)
 - **Affective Mathematics ℝ³ COMPLETA**:
@@ -147,10 +147,21 @@ pnpm dev                  # Run all apps in dev mode
   - Emotion classification usando distance metric em ℝ³
   - Emotional trajectory analysis (total distance, velocity, volatility, valence trend)
   - Aurora response tone selection (welcoming, enthusiastic, empathetic, professional)
-- **/chat endpoint** com affective analysis integrado
-- **Human handoff logic** (valence < -0.6, confidence < 0.3, explicit request)
-- **/affective-state endpoint** FULLY IMPLEMENTED
-- **Requirements**: FastAPI, uvicorn, OpenAI, pgvector, SQLAlchemy, numpy (all installed)
+- **GPT-4 Integration COMPLETA**:
+  - AuroraIntelligence class com personality prompts trilíngues
+  - Affective context injection into GPT-4 prompts
+  - Human handoff detection (valence < -0.6, confidence < 0.3, explicit request)
+  - Suggested actions generation
+  - Fallback system (funciona sem OpenAI credits)
+- **Embeddings + pgvector SETUP**:
+  - EmbeddingsService class com OpenAI embeddings
+  - Knowledge base schema (aurora_knowledge table)
+  - Semantic search implementation
+  - Knowledge initialization script (tours, FAQs, policies, recommendations)
+  - ⚠️ **Requires OpenAI credits** - User needs to add credits to enable full functionality
+- **/chat endpoint** com GPT-4 + affective analysis integrado
+- **/affective-state endpoint** FULLY FUNCTIONAL
+- **Requirements**: FastAPI, uvicorn, OpenAI, pgvector, SQLAlchemy, numpy, psycopg2-binary (all installed)
 
 ## 🚧 PENDING FEATURES (~10-15% restante)
 

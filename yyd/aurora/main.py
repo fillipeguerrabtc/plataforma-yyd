@@ -76,13 +76,15 @@ async def chat(request: ChatRequest):
     Process chat message with Aurora IA
     
     Features:
+    - GPT-4 powered responses with personality
     - Multilingual support (PT, EN, ES)
     - Affective state analysis (ℝ³ mathematics)
     - Context-aware responses
     - Human handoff detection
     """
     try:
-        from affective_mathematics import AffectiveAnalyzer, select_aurora_response_tone
+        from affective_mathematics import AffectiveAnalyzer
+        from intelligence import aurora_intelligence
         
         # Extract latest user message
         user_message = request.messages[-1].content if request.messages else ""
@@ -91,34 +93,34 @@ async def chat(request: ChatRequest):
         analyzer = AffectiveAnalyzer()
         customer_state = analyzer.analyze_text(user_message, request.language)
         
-        # Select Aurora's response tone
-        response_tone = select_aurora_response_tone(customer_state)
+        # Static tour context (fallback until embeddings + OpenAI credits added)
+        context = {
+            "tours": [
+                {"name": "Sintra Highlights", "price": 60, "duration": 4},
+                {"name": "Cascais Coastal", "price": 50, "duration": 3},
+                {"name": "Sintra & Cascais Full Day", "price": 120, "duration": 8},
+            ],
+            "customer_name": None,
+            "booking_history": []
+        }
         
-        # Classify customer emotion
-        customer_emotion = analyzer.classify_emotion(customer_state)
-        
-        # TODO: Implement OpenAI GPT-4 integration with affective context
-        # TODO: Implement embeddings search for relevant tour information
-        
-        # Generate response (placeholder - will be GPT-4)
-        response_text = f"Olá! Aurora IA aqui 🤖. Analisei seu estado afetivo (tom: {response_tone}, emoção: {customer_emotion}). Recebi: '{user_message}'. Em breve terei GPT-4 completo!"
-        
-        # Determine if human handoff needed
-        requires_handoff = (
-            customer_state.valence < -0.6 or  # Very negative
-            customer_state.confidence < 0.3 or  # Uncertain
-            "falar com humano" in user_message.lower() or
-            "talk to human" in user_message.lower()
+        # Generate intelligent response using GPT-4 (with fallback if no credits)
+        response_data = aurora_intelligence.generate_response(
+            messages=[{"role": msg.role, "content": msg.content} for msg in request.messages],
+            language=request.language,
+            customer_state=customer_state,
+            context=context
         )
         
         return ChatResponse(
-            message=response_text,
+            message=response_data["message"],
             language=request.language,
             affective_state=customer_state.to_dict(),
-            suggested_actions=["view_tours", "book_now", "learn_more"],
-            requires_human_handoff=requires_handoff
+            suggested_actions=response_data["suggested_actions"],
+            requires_human_handoff=response_data["requires_handoff"]
         )
     except Exception as e:
+        print(f"❌ Chat endpoint error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # Affective state endpoint
