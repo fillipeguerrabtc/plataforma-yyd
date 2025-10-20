@@ -332,7 +332,7 @@ class AutonomousDecisionEngine:
                 "message": response,
                 "source": "knowledge_base",
                 "reason": reason,
-                "confidence": results[0][1].total,
+                "confidence": results[0][1].total if results else 0.0,
                 "knowledge_used": [r[0].id for r in results]
             }
     
