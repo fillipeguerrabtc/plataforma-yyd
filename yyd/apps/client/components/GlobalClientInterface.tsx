@@ -1,15 +1,21 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import AuroraChatWidget from './AuroraChatWidget';
+import { getBrowserLanguage, getTranslations, type Language } from '@/utils/i18n';
 
 export default function GlobalClientInterface() {
   const pathname = usePathname();
   const router = useRouter();
+  const [lang, setLang] = useState<Language>('en');
+  const t = getTranslations(lang);
 
   useEffect(() => {
     console.log('✅ GlobalClientInterface mounted on path:', pathname);
+    const detectedLang = getBrowserLanguage();
+    setLang(detectedLang);
+    console.log('🌍 Browser language detected:', detectedLang);
   }, [pathname]);
 
   const isBackoffice = pathname?.startsWith('/backoffice');
@@ -19,7 +25,7 @@ export default function GlobalClientInterface() {
   }
 
   const handleWhatsApp = () => {
-    const message = encodeURIComponent('Olá! Gostaria de falar sobre os tours da YYD.');
+    const message = encodeURIComponent(t.whatsappMessage);
     window.open(`https://wa.me/14155238886?text=${message}`, '_blank');
   };
 
@@ -47,9 +53,9 @@ export default function GlobalClientInterface() {
             border: '1px solid #d1d5db',
             cursor: 'pointer'
           }}
-          title="Voltar"
+          title={t.back}
         >
-          ← Voltar
+          {t.back}
         </button>
         <button
           onClick={handleHome}
@@ -63,9 +69,9 @@ export default function GlobalClientInterface() {
             cursor: 'pointer',
             border: 'none'
           }}
-          title="Página Inicial"
+          title={t.home}
         >
-          🏠 Home
+          {t.home}
         </button>
       </div>
 
@@ -101,7 +107,7 @@ export default function GlobalClientInterface() {
       </button>
 
       {/* Widget Aurora - Fixo à Direita */}
-      <AuroraChatWidget />
+      <AuroraChatWidget language={lang} />
     </div>
   );
 }

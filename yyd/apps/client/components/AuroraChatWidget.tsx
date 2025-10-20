@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getTranslations, type Language } from '@/utils/i18n';
 
 /**
  * Aurora Chat Widget - Botão fixo flutuante
@@ -18,17 +19,25 @@ interface Message {
   timestamp: Date;
 }
 
-export default function AuroraChatWidget() {
+interface AuroraChatWidgetProps {
+  language?: Language;
+}
+
+export default function AuroraChatWidget({ language = 'en' }: AuroraChatWidgetProps) {
+  const t = getTranslations(language);
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: 'assistant',
-      content: 'Olá! Sou Aurora, sua assistente virtual da YYD. Como posso ajudar hoje? 😊',
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // Initialize with greeting in detected language
+    setMessages([{
+      role: 'assistant',
+      content: t.auroraGreeting,
+      timestamp: new Date(),
+    }]);
+  }, [language, t.auroraGreeting]);
 
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
@@ -51,7 +60,7 @@ export default function AuroraChatWidget() {
         body: JSON.stringify({
           message: input,
           sessionId: 'dashboard-' + Date.now(),
-          language: 'en',
+          language: language,
         }),
       });
 
@@ -106,8 +115,8 @@ export default function AuroraChatWidget() {
                 <span className="text-black font-bold text-lg">A</span>
               </div>
               <div>
-                <h3 className="font-bold">Aurora</h3>
-                <p className="text-xs text-gray-300">Assistente Virtual YYD</p>
+                <h3 className="font-bold">{t.chatTitle}</h3>
+                <p className="text-xs text-gray-300">{t.chatSubtitle}</p>
               </div>
             </div>
             <button
@@ -147,7 +156,7 @@ export default function AuroraChatWidget() {
             {loading && (
               <div className="flex justify-start">
                 <div className="bg-white border border-gray-200 text-black p-3 rounded-lg">
-                  <p className="text-sm">Aurora está digitando...</p>
+                  <p className="text-sm">{t.auroraTyping}</p>
                 </div>
               </div>
             )}
@@ -161,7 +170,7 @@ export default function AuroraChatWidget() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                placeholder="Digite sua mensagem..."
+                placeholder={t.typingPlaceholder}
                 className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
                 disabled={loading}
               />
@@ -170,7 +179,7 @@ export default function AuroraChatWidget() {
                 disabled={loading || !input.trim()}
                 className="bg-black text-white px-6 py-2 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-50"
               >
-                Enviar
+                {t.sendButton}
               </button>
             </div>
           </div>
