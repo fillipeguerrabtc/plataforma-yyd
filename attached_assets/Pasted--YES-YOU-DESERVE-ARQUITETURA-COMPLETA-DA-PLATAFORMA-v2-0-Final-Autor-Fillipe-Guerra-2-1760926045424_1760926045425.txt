@@ -1,0 +1,98 @@
+# 🧭 YES YOU DESERVE — ARQUITETURA COMPLETA DA PLATAFORMA (v2.0 Final)
+**Autor:** Fillipe Guerra — 2025  
+**Base:** Dados reais e estrutura operacional da empresa *Yes, You Deserve!*  
+**Fontes oficiais:** [www.yesyoudeserve.tours](https://www.yesyoudeserve.tours)
+
+---
+
+## 1. MÓDULO BACKOFFICE — ERP + CRM + RESERVAS + INTEGRAÇÕES + FINANCEIRO + GESTÃO IA
+
+O Backoffice da Yes You Deserve (YYD) é o **coração administrativo, financeiro e operacional** da empresa, projetado para unificar todas as áreas críticas: gestão de produtos e experiências, controle financeiro, orquestração de reservas, comunicação com a Aurora IA, e integração com sistemas externos (Stripe, Meta, WhatsApp, Parques de Sintra, etc.).
+
+### 1.1 Estrutura Central
+O Backoffice funciona como um **ERP+CRM+IA Hub** com autenticação RBAC (Role-Based Access Control), acesso seguro, dashboards interativos e logs detalhados de todas as ações.
+
+**Módulos principais:**
+- **Gestão de Produtos e Experiências:** criação, edição e versionamento de todos os tours, transfers, tickets e pacotes (ex: “Sintra Clássico”, “Cascais & Cabo da Roca”, “Fátima Experience”). Inclui descrição multilíngue, duração, preço base, margens configuráveis, imagem, categoria e disponibilidade.  
+- **Gestão de Frota e Guias:** cadastro e controle de tuk-tuks, manutenção, agendamento e disponibilidade de motoristas/guias.  
+- **Gestão de Clientes (CRM):** histórico de interações, reservas, tickets, preferências, idioma, origem, e integração direta com o atendimento da Aurora.  
+- **Gestão de Reservas:** painel visual de todas as reservas em tempo real, sincronizado com o front dos clientes e com o calendário da frota. Permite criar, editar, cancelar e reatribuir guias.  
+- **Gestão de Tickets de Monumentos:** integração com APIs de bilheterias (ex: Parques de Sintra) para checar disponibilidade de ingressos, registrar compras realizadas e anexar comprovantes às reservas.  
+- **Gestão Financeira Completa:** módulo ERP com relatórios, gráficos e dashboards de:
+  - Contas a pagar e receber (tickets, fornecedores, parceiros, guias, etc.);
+  - Fluxo de caixa em tempo real;
+  - Pagamentos via Stripe (integração completa);
+  - Cálculo de margens e ROI por produto;
+  - Emissão automática de faturas e recibos;
+  - Controle de reembolsos e cancelamentos;
+  - Forecast financeiro e de demanda (modelo Prophet + regressões logarítmicas).
+- **Gestão de Integrações Externas:** central única para conectar e monitorar APIs externas (Stripe, Meta, OpenAI, Parques, WhatsApp Business, Email SMTP, etc.), podendo habilitar/desabilitar integrações e adicionar novas via interface.
+- **Gestão Tecnológica e DevOps:** logs de sistema, métricas de performance, monitoramento de uptime, registro de exceções e reconfiguração de módulos diretamente pela interface administrativa.
+- **Gestão IA (Aurora Manager):** painel que permite configurar o comportamento da Aurora — habilitar/desabilitar funções, definir limites de autonomia, treinar com novos dados (produtos, políticas, scripts de atendimento) e supervisionar o aprendizado autônomo da IA.
+- **Dashboards Analíticos (BI):** visualizações em tempo real com gráficos de performance comercial, receita, margem, satisfação de clientes, elasticidade de preço, origem de leads e produtividade da Aurora.
+- **Gestão de Usuários e Permissões:** controle granular de acessos (ex: Danyella — diretora, Daniel — proprietário, Guias, Financeiro, Suporte, Marketing). Cada função tem permissões específicas definidas em RBAC e MFA.
+
+---
+
+## 2. MÓDULO CLIENTES — RESERVAS + PAGAMENTO + SUPORTE HUMANO+IA
+
+A Plataforma de Clientes é o **front interativo** que conecta turistas ao ecossistema YYD. Projetada em **Next.js + Stripe + Aurora API**, oferece fluidez, estética refinada e navegação intuitiva — refletindo o padrão “boutique de experiências” da marca.
+
+### 2.1 Funcionalidades Principais
+- **Home Page Dinâmica:** apresenta os tours e experiências disponíveis, com fotos reais, vídeos e avaliações.  
+- **Catálogo de Produtos:** exibe todos os tours reais da YYD, com detalhes idênticos ao site original (descrição, duração, preço, itinerário, idiomas, política de cancelamento).  
+- **Sistema de Reservas:** o cliente escolhe data, hora e idioma. O sistema cruza a disponibilidade de:
+  - Frota (tuk-tuks disponíveis);
+  - Guias (agenda de guias);
+  - Tickets de monumentos (via API do Backoffice);
+  - Condições meteorológicas (para pacotes que dependem do tempo).
+- **Checkout Integrado com Stripe:** pagamento seguro com suporte a Apple Pay, Google Pay, cartões internacionais e PIX (via integração de gateway).  
+- **Confirmação de Reserva e Emissão Automática de Voucher:** PDF enviado ao e-mail do cliente e visível em “Minhas Reservas”.  
+- **Área do Cliente:** histórico de compras, status das reservas, reembolsos, vouchers e tickets anexados.  
+- **Chat Integrado com Aurora:** após reservar, o cliente pode conversar com a Aurora (ou humano supervisionado) via chat web, WhatsApp ou Facebook Messenger para tirar dúvidas, reagendar ou solicitar assistência.  
+- **Recomendações Inteligentes:** com base nas reservas anteriores e feedbacks, o sistema sugere experiências complementares (ex: “Você pode gostar também de Cabo da Roca Sunset Tour”).  
+- **Multilíngue:** suporte nativo a inglês, português e espanhol, com detecção automática do idioma do navegador.  
+- **SEO + Analytics:** otimização para mecanismos de busca e integração com Meta Ads e Google Analytics para remarketing e rastreamento de conversões.
+
+---
+
+## 3. MÓDULO AURORA IA — ASSISTENTE AUTÔNOMA DE EXPERIÊNCIAS
+
+Aurora é o **cérebro da YYD** — uma IA multimodal, multilíngue e autônoma, capaz de entender, conversar e agir com base em contexto real e dados internos.  
+Ela conecta o emocional do cliente à operação do Backoffice, criando uma jornada única: do primeiro contato à experiência final.
+
+### 3.1 Capacidades-Chave
+- **Atendimento Multicanal:** Aurora responde via chat do site, WhatsApp Business, Facebook Messenger e e-mail.  
+- **Idiomas:** fluente em inglês (padrão), português e espanhol, com adaptação automática ao idioma detectado.  
+- **Funções Ativas:**
+  - **Vendas Diretas:** apresentar produtos, preços reais, disponibilidade e efetuar reservas (com integração Stripe e Backoffice).  
+  - **Recomendações Contextuais:** sugerir experiências baseadas em preferências, clima, eventos e comportamento anterior.  
+  - **Resolução de Problemas:** reagendamentos, cancelamentos, reembolsos e esclarecimentos de política.  
+  - **Aprendizado Contínuo:** analisa logs de atendimentos e feedbacks para otimizar sua performance sem intervenção humana.  
+  - **Handoff Inteligente:** quando identifica dúvida complexa, transfere a conversa a um humano do Backoffice (com todo o histórico e contexto).  
+  - **Mecanismo de Autoavaliação:** Aurora audita suas próprias respostas, corrige falhas, sugere melhorias ao Backoffice e registra tudo no módulo de IA Logs.  
+  - **Autonomia Configurável:** administradores definem limites de atuação (ex: “permitir reagendamentos até 48h antes sem validação humana”).  
+  - **Execução de Tarefas Automáticas:** como enviar lembretes, emitir vouchers, confirmar pagamentos, notificar guias, e checar disponibilidade de tickets.
+
+### 3.2 Integração Total
+Aurora se integra completamente ao ecossistema YYD:
+- Recebe dados do Backoffice via API segura (produtos, disponibilidade, preços);
+- Escreve de volta logs de interação, tickets de suporte, leads e feedbacks;
+- Acessa o calendário dos guias e tuk-tuks para sugerir horários disponíveis;
+- Aprende continuamente com interações e previsões de demanda.
+
+### 3.3 Identidade e Experiência
+- **Tom de voz:** educado, encantador, com toques de humor leve e empatia — fiel à personalidade da YYD.  
+- **Interface Visual:** harmoniza com a identidade do site (fundo branco, tipografia script “Yes, you deserve.”, e ícones elegantes).  
+- **Avatar Interativo:** animações leves durante conversas (pode assumir forma de guia virtual).  
+- **Modo “Storyteller”:** Aurora narra histórias sobre Sintra, Cascais e Lisboa — transformando informações em experiências culturais envolventes.
+
+---
+
+## 4. CONCLUSÃO
+A arquitetura da plataforma YYD é **modular, escalável e humanizada**, integrando três pilares:
+- **Backoffice inteligente** para gestão total;
+- **Frontend intuitivo e elegante** para o cliente;
+- **IA autônoma e emocional** para personalizar o relacionamento.
+
+O resultado é uma empresa de turismo boutique 100% digital, sustentável, e pronta para expansão global — com uma operação inteiramente integrada entre humanos e inteligência artificial.

@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import AssignGuideForm from '@/components/AssignGuideForm';
 
 async function getBooking(id: string) {
   const booking = await prisma.booking.findUnique({
@@ -234,119 +235,49 @@ export default async function BookingDetailPage({ params }: { params: { id: stri
               🚗 Guia Atribuído
             </h2>
 
-            {booking.guide ? (
-              <div>
-                <div
-                  style={{
-                    padding: '1rem',
-                    background: 'var(--brand-turquoise)15',
-                    border: '1px solid var(--brand-turquoise)',
-                    borderRadius: '8px',
-                    marginBottom: '1rem',
-                  }}
-                >
-                  <div style={{ fontWeight: '600', fontSize: '1.125rem', marginBottom: '0.5rem' }}>
-                    {booking.guide.name}
-                  </div>
-                  <div style={{ fontSize: '0.875rem', color: 'var(--gray-600)' }}>
-                    {booking.guide.email}
-                  </div>
-                  <div style={{ fontSize: '0.875rem', color: 'var(--gray-600)' }}>
-                    {booking.guide.phone}
-                  </div>
-                  <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
-                    {booking.guide.languages.map((lang: string) => (
-                      <span
-                        key={lang}
-                        style={{
-                          padding: '0.25rem 0.5rem',
-                          background: 'white',
-                          borderRadius: '4px',
-                          fontSize: '0.75rem',
-                          fontWeight: '600',
-                        }}
-                      >
-                        {lang}
-                      </span>
-                    ))}
-                  </div>
+            {booking.guide && (
+              <div
+                style={{
+                  padding: '1rem',
+                  background: 'var(--brand-turquoise)15',
+                  border: '1px solid var(--brand-turquoise)',
+                  borderRadius: '8px',
+                  marginBottom: '1rem',
+                }}
+              >
+                <div style={{ fontWeight: '600', fontSize: '1.125rem', marginBottom: '0.5rem' }}>
+                  {booking.guide.name}
                 </div>
-
-                <button
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    background: 'var(--gray-200)',
-                    color: 'var(--gray-700)',
-                    borderRadius: '8px',
-                    border: 'none',
-                    fontWeight: '600',
-                    fontSize: '0.875rem',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Trocar Guia
-                </button>
-              </div>
-            ) : (
-              <div>
-                <div
-                  style={{
-                    padding: '1rem',
-                    background: 'var(--brand-gold)15',
-                    border: '1px solid var(--brand-gold)',
-                    borderRadius: '8px',
-                    marginBottom: '1rem',
-                    textAlign: 'center',
-                  }}
-                >
-                  <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>⚠️</div>
-                  <div style={{ fontWeight: '600', color: 'var(--brand-gold)' }}>
-                    Nenhum guia atribuído
-                  </div>
+                <div style={{ fontSize: '0.875rem', color: 'var(--gray-600)' }}>
+                  {booking.guide.email}
                 </div>
-
-                <div style={{ marginBottom: '1rem' }}>
-                  <label
-                    style={{ fontSize: '0.875rem', fontWeight: '600', marginBottom: '0.5rem', display: 'block' }}
-                  >
-                    Selecionar Guia:
-                  </label>
-                  <select
-                    style={{
-                      width: '100%',
-                      padding: '0.75rem',
-                      border: '1px solid var(--gray-300)',
-                      borderRadius: '8px',
-                      fontSize: '0.875rem',
-                    }}
-                  >
-                    <option value="">Escolher guia...</option>
-                    {guides.map((guide) => (
-                      <option key={guide.id} value={guide.id}>
-                        {guide.name}
-                      </option>
-                    ))}
-                  </select>
+                <div style={{ fontSize: '0.875rem', color: 'var(--gray-600)' }}>
+                  {booking.guide.phone}
                 </div>
-
-                <button
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    background: 'var(--brand-turquoise)',
-                    color: 'white',
-                    borderRadius: '8px',
-                    border: 'none',
-                    fontWeight: '600',
-                    fontSize: '0.875rem',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Atribuir Guia
-                </button>
+                <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
+                  {booking.guide.languages.map((lang: string) => (
+                    <span
+                      key={lang}
+                      style={{
+                        padding: '0.25rem 0.5rem',
+                        background: 'white',
+                        borderRadius: '4px',
+                        fontSize: '0.75rem',
+                        fontWeight: '600',
+                      }}
+                    >
+                      {lang}
+                    </span>
+                  ))}
+                </div>
               </div>
             )}
+
+            <AssignGuideForm 
+              bookingId={booking.id} 
+              currentGuideId={booking.guideId} 
+              guides={guides}
+            />
           </div>
         </div>
       </div>
