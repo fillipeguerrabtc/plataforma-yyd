@@ -1,27 +1,38 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getCustomerFromRequest } from '@/lib/customer-auth';
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const {
       productId,
       date,
+      startTime,
       numberOfPeople,
       selectedActivities,
-      selectedOptions,
+      pickupLocation,
       specialRequests,
       customerName,
       customerEmail,
       customerPhone,
       customerLocale,
-      preferredContact,
     } = body;
 
+    // Check if customer is authenticated
+    const auth = getCustomerFromRequest(request);
+    
     // Validate required fields
-    if (!productId || !date || !numberOfPeople || !customerName || !customerEmail) {
+    if (!productId || !date || !numberOfPeople) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Campos obrigatórios faltando' },
+        { status: 400 }
+      );
+    }
+
+    if (!auth && (!customerName || !customerEmail)) {
+      return NextResponse.json(
+        { error: 'Nome e email são obrigatórios para reservas' },
         { status: 400 }
       );
     }
@@ -31,70 +42,82 @@ export async function POST(request: Request) {
       where: { id: productId },
       include: {
         seasonPrices: true,
-        options: true,
       },
     });
 
-    if (!product) {
-      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    if (!product || !product.active) {
+      return NextResponse.json({ error: 'Tour não disponível' }, { status: 404 });
     }
 
-    // CRITICAL: Recalculate price server-side (never trust client)
-    const { calculatePrice } = await import('@yyd/shared');
-    const tiers = product.seasonPrices.map((sp) => ({
-      season: sp.season as 'low' | 'high',
-      tier: sp.tier,
-      minPeople: sp.minPeople,
-      maxPeople: sp.maxPeople,
-      priceEur: parseFloat(sp.priceEur.toString()),
-      pricePerPerson: sp.pricePerPerson,
-    }));
+    // CRITICAL: Calculate price server-side (never trust client)
+    const bookingDate = new Date(date);
+    const month = bookingDate.getMonth() + 1;
 
-    const basePrice = calculatePrice(tiers, numberOfPeople, new Date(date));
+    let priceEur = 100; // Default fallback
+    const applicablePrices = product.seasonPrices.filter(
+      (sp) =>
+        sp.startMonth <= month &&
+        sp.endMonth >= month &&
+        sp.minPeople <= numberOfPeople &&
+        (!sp.maxPeople || sp.maxPeople >= numberOfPeople)
+    );
+
+    if (applicablePrices.length > 0) {
+      const price = applicablePrices[0];
+      priceEur = price.pricePerPerson
+        ? parseFloat(price.priceEur.toString()) * numberOfPeople
+        : parseFloat(price.priceEur.toString());
+    }
+
+    // Determine season
+    const season = month >= 6 && month <= 9 ? 'peak' : 'high';
+
+    // Get or create customer
+    let customerId: string;
     
-    if (!basePrice) {
-      return NextResponse.json({ error: 'Invalid pricing tier' }, { status: 400 });
-    }
-
-    // Calculate options price
-    const optionsPrice = selectedOptions.reduce((sum: number, optionId: string) => {
-      const option = product.options.find((o) => o.id === optionId);
-      return sum + (option ? parseFloat(option.priceEur.toString()) : 0);
-    }, 0);
-
-    const totalPrice = basePrice + optionsPrice;
-
-    // Create or find customer
-    let customer = await prisma.customer.findUnique({
-      where: { email: customerEmail },
-    });
-
-    if (!customer) {
-      customer = await prisma.customer.create({
-        data: {
-          name: customerName,
-          email: customerEmail,
-          phone: customerPhone,
-          locale: customerLocale,
-        },
+    if (auth) {
+      // Use authenticated customer
+      customerId = auth.customerId;
+    } else {
+      // Create or find customer
+      let customer = await prisma.customer.findUnique({
+        where: { email: customerEmail },
       });
+
+      if (!customer) {
+        customer = await prisma.customer.create({
+          data: {
+            name: customerName!,
+            email: customerEmail!,
+            phone: customerPhone || null,
+            locale: customerLocale || 'en',
+            source: 'website',
+          },
+        });
+      }
+      
+      customerId = customer.id;
     }
+
+    // Generate booking number
+    const bookingNumber = `YYD-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
     // Create booking
     const booking = await prisma.booking.create({
       data: {
-        customerId: customer.id,
+        bookingNumber,
+        customerId,
         productId,
-        date: new Date(date),
+        date: bookingDate,
+        startTime: startTime || '09:00',
         numberOfPeople,
-        status: 'pending_payment',
-        totalPriceEur: totalPrice,
-        specialRequests,
-        metadata: {
-          selectedActivities,
-          selectedOptions,
-          preferredContact,
-        },
+        pickupLocation: pickupLocation || '',
+        specialRequests: specialRequests || null,
+        selectedActivities: selectedActivities || [],
+        priceEur,
+        season,
+        status: 'pending',
+        locale: customerLocale || 'en',
       },
       include: {
         customer: true,
@@ -112,44 +135,58 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
+    const auth = getCustomerFromRequest(request);
     const { searchParams } = new URL(request.url);
     const bookingId = searchParams.get('id');
 
     if (bookingId) {
+      // CRITICAL: Must be authenticated to view booking details
+      if (!auth) {
+        return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+      }
+
       const booking = await prisma.booking.findUnique({
         where: { id: bookingId },
         include: {
           customer: true,
           product: true,
-          payment: true,
+          payments: true,
         },
       });
 
       if (!booking) {
-        return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
+        return NextResponse.json({ error: 'Reserva não encontrada' }, { status: 404 });
+      }
+
+      // CRITICAL: Verify ownership - customer can only see their own bookings
+      if (booking.customerId !== auth.customerId) {
+        return NextResponse.json({ error: 'Não autorizado' }, { status: 403 });
       }
 
       return NextResponse.json(booking);
     }
 
-    // List all bookings (for backoffice)
+    // List bookings for authenticated customer
+    if (!auth) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+    }
+
     const bookings = await prisma.booking.findMany({
+      where: { customerId: auth.customerId },
       include: {
-        customer: true,
         product: true,
-        payment: true,
+        payments: true,
       },
-      orderBy: { createdAt: 'desc' },
-      take: 100,
+      orderBy: { date: 'desc' },
     });
 
     return NextResponse.json(bookings);
   } catch (error: any) {
     console.error('Error fetching bookings:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch bookings: ' + error.message },
+      { error: 'Erro ao buscar reservas: ' + error.message },
       { status: 500 }
     );
   }

@@ -208,24 +208,25 @@ model Payment {
 }
 
 model Customer {
-  id                  String               @id @default(cuid())
+  id                  String                @id @default(cuid())
   name                String
-  email               String               @unique
+  email               String                @unique
   phone               String?
   whatsapp            String?
-  locale              String               @default("en")
+  locale              String                @default("en")
   country             String?
   source              String?
   tags                String[]
-  notes               String?              @db.Text
-  totalBookings       Int                  @default(0)
-  totalSpent          Decimal              @default(0) @db.Decimal(10, 2)
+  notes               String?               @db.Text
+  totalBookings       Int                   @default(0)
+  totalSpent          Decimal               @default(0) @db.Decimal(10, 2)
   lastBookingAt       DateTime?
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
   bookings            Booking[]
   accountsReceivable  AccountsReceivable[]
   messages            Message[]
+  auth                CustomerAuth?
 
   @@index([email])
   @@index([phone])
@@ -501,6 +502,7 @@ model SystemLog {
 model CustomerAuth {
   id           String    @id @default(cuid())
   customerId   String    @unique
+  customer     Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
   email        String    @unique
   passwordHash String
   verified     Boolean   @default(false)
