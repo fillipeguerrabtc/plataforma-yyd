@@ -14,9 +14,13 @@ export async function GET(
           orderBy: { startMonth: 'asc' },
         },
         activities: {
+          where: { active: true },
           orderBy: { sortOrder: 'asc' },
         },
-        options: true,
+        options: {
+          where: { active: true },
+          orderBy: { sortOrder: 'asc' },
+        },
       },
     });
 
@@ -29,9 +33,13 @@ export async function GET(
             orderBy: { startMonth: 'asc' },
           },
           activities: {
+            where: { active: true },
             orderBy: { sortOrder: 'asc' },
           },
-          options: true,
+          options: {
+            where: { active: true },
+            orderBy: { sortOrder: 'asc' },
+          },
         },
       });
     }
@@ -44,20 +52,37 @@ export async function GET(
     const response = {
       id: product.id,
       slug: product.slug,
-      nameEn: product.nameEn,
-      namePt: product.namePt,
-      nameEs: product.nameEs,
+      titleEn: product.titleEn,
+      titlePt: product.titlePt,
+      titleEs: product.titleEs,
       descriptionEn: product.descriptionEn,
       descriptionPt: product.descriptionPt,
       descriptionEs: product.descriptionEs,
-      tourType: product.tourType,
+      categoryEn: product.categoryEn,
+      categoryPt: product.categoryPt,
+      categoryEs: product.categoryEs,
       durationHours: product.durationHours,
-      maxCapacity: product.maxCapacity,
-      imageUrl: product.imageUrl,
+      maxGroupSize: product.maxGroupSize,
+      featuresEn: product.featuresEn,
+      featuresPt: product.featuresPt,
+      featuresEs: product.featuresEs,
+      excludedEn: product.excludedEn,
+      excludedPt: product.excludedPt,
+      excludedEs: product.excludedEs,
+      imageUrls: product.imageUrls,
+      highlightedEn: product.highlightedEn,
+      highlightedPt: product.highlightedPt,
+      highlightedEs: product.highlightedEs,
+      bestChoice: product.bestChoice,
+      active: product.active,
       seasonPrices: product.seasonPrices.map((sp: any) => ({
         id: sp.id,
         season: sp.season,
+        startMonth: sp.startMonth,
+        endMonth: sp.endMonth,
+        tier: sp.tier,
         priceEur: Number(sp.priceEur),
+        pricePerPerson: sp.pricePerPerson,
         minPeople: sp.minPeople,
         maxPeople: sp.maxPeople,
       })),
@@ -69,19 +94,22 @@ export async function GET(
         descriptionEn: a.descriptionEn,
         descriptionPt: a.descriptionPt,
         descriptionEs: a.descriptionEs,
-        included: a.included,
+        imageUrl: a.imageUrl,
         sortOrder: a.sortOrder,
       })),
       options: product.options.map((o: any) => ({
         id: o.id,
-        code: o.code,
         nameEn: o.nameEn,
         namePt: o.namePt,
         nameEs: o.nameEs,
+        descriptionEn: o.descriptionEn,
+        descriptionPt: o.descriptionPt,
+        descriptionEs: o.descriptionEs,
+        sortOrder: o.sortOrder,
       })),
     };
 
-    return NextResponse.json({ success: true, product: response });
+    return NextResponse.json(response);
   } catch (error: any) {
     console.error('Product API error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
