@@ -334,20 +334,22 @@ export default function BookTourPage() {
               {/* Tour Details */}
               <div className="bg-white border border-gray-200 rounded-lg p-6">
                 <h2 className="text-xl font-bold text-black mb-4">Tour Details</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Date *
-                    </label>
-                    <input
-                      type="date"
-                      required
-                      min={new Date().toISOString().split('T')[0]}
-                      value={formData.date}
-                      onChange={(e) => setFormData({...formData, date: e.target.value})}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black"
-                    />
+                
+                {/* Selected date and people from previous page */}
+                {formData.date && (
+                  <div className="mb-4 p-4 bg-[#1FB7C4]/10 border border-[#1FB7C4] rounded-lg">
+                    <p className="text-sm text-gray-700">
+                      <span className="font-semibold">Tour Date:</span> {new Date(formData.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                    </p>
+                    <p className="text-sm text-gray-700 mt-1">
+                      <span className="font-semibold">Group Size:</span> {formData.numberOfPeople} {formData.numberOfPeople === 1 ? 'person' : 'people'}
+                    </p>
                   </div>
+                )}
+                
+                <input type="hidden" value={formData.date} />
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Start Time *
@@ -355,7 +357,7 @@ export default function BookTourPage() {
                     <select
                       value={formData.startTime}
                       onChange={(e) => setFormData({...formData, startTime: e.target.value})}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1FB7C4]"
                     >
                       <option value="09:00">09:00 AM</option>
                       <option value="10:00">10:00 AM</option>
@@ -366,28 +368,15 @@ export default function BookTourPage() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Number of People *
-                    </label>
-                    <input
-                      type="number"
-                      min="1"
-                      max={tour?.maxCapacity || 6}
-                      required
-                      value={formData.numberOfPeople}
-                      onChange={(e) => setFormData({...formData, numberOfPeople: parseInt(e.target.value)})}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Pickup Location (Optional)
+                      Pickup Location *
                     </label>
                     <input
                       type="text"
+                      required
                       value={formData.pickupLocation}
                       onChange={(e) => setFormData({...formData, pickupLocation: e.target.value})}
                       placeholder="Hotel name or address"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1FB7C4]"
                     />
                   </div>
                 </div>
