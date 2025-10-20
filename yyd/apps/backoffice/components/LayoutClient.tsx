@@ -19,25 +19,8 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
     }
     
     const userStr = localStorage.getItem('yyd-user');
-    
-    if (userStr) {
-      setIsAuthenticated(true);
-    } else {
-      setTimeout(() => {
-        const recheckUser = localStorage.getItem('yyd-user');
-        if (recheckUser) {
-          setIsAuthenticated(true);
-        } else {
-          const hasCookie = document.cookie.includes('auth-token');
-          if (hasCookie) {
-            setIsAuthenticated(true);
-          } else {
-            router.push('/login');
-          }
-        }
-      }, 300);
-    }
-  }, [pathname, router]);
+    setIsAuthenticated(!!userStr);
+  }, [pathname]);
 
   const isLoginPage = pathname === '/login';
   const showSidebar = mounted && isAuthenticated && !isLoginPage;
