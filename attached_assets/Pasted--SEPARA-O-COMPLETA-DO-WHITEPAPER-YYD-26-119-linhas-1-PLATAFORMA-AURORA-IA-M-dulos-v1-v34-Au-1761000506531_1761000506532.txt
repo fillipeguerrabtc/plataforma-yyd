@@ -1,0 +1,110 @@
+📋 SEPARAÇÃO COMPLETA DO WHITEPAPER YYD (26.119 linhas)
+1️⃣ PLATAFORMA AURORA IA (Módulos v1-v34)
+Aurora Core (Base)
+* Scoring híbrido: r_t=arg max(λ₁⟨E_t,v_r⟩+λ₂S(r|C_t)+λ₃U(r|H_t))
+* Embeddings afetivos em ℝ³: E=(a,c,s), ∥E∥₂=1
+* Lyapunov stability: V(E)=½∥E-E*∥²
+* LLM híbrido (open + premium)
+Aurora Sense (Tensor + Ética)
+* Tensor de Curvatura Afetiva R^a_bcd
+* Lógica Modal Deôntica KD (◻p⇒p)
+* Bayesian Moral Reasoning P(φ|E)
+* Meta-Cognição de 2ª ordem C^(2)_t
+Aurora Mind (RAG + pgvector)
+* PostgreSQL + pgvector ivfflat index
+* Cache Redis
+* Batch embeddings OpenAI text-embedding-3-small
+* Knowledge Base: Tours T-SIN-001, T-CAS-002, T-LIS-003, T-DOU-004 + FAQs + Políticas
+Aurora Módulos Avançados (v1-v34)
+* v7-v9: Neuro-Simbolismo, Meta-Ética, Motor Multimodal
+* v10: Auto-Aprendizado (PPO-lite, anti-forgetting F≥0.97)
+* v11-v14: Autonomia Adaptativa, Memória Afetiva, Córtex Decisório
+* v15-v17: Genome Evolution, Dream Mode (consolidação onírica), Collective Learning (federação)
+* v18-v20: Voice Commerce, Persuasion Mirror, Estabilização Kalman, Tensor of Empathy
+* v21: Planning (planejamento proativo A* + Monte Carlo)
+* v22: Dynamic Pricing (P=P₀(1+β₁·d+β₂·w+β₃·o), elasticidade emocional)
+* v23: Conversational CRM (memória relacional, afinidade)
+* v24: Emotional Forecasting (VAR(2) + Bayesian)
+* v25-v31: Voice Orchestrator (TTS/STT multi-canal)
+* v32: Timing Intelligence (momento perfeito de oferta)
+* v33: Retention Intelligence (churn prediction Cox hazard)
+* v34: Self-Reflective Learning (metacognição + Dream Mode noturno)
+
+2️⃣ BACKOFFICE YYD (Administração Completa)
+Módulos BackOffice
+1. Dashboard: KPIs em tempo real (bookings, receita, leads, NPS, ocupação)
+2. Tours Management: CRUD tours + traduções (EN/PT/ES) + pricing + visibility
+3. Guias: certificações, idiomas, horários, agenda drag-and-drop
+4. Frota: manutenção tuk-tuks, bateria, seguro, checklists
+5. Agenda Inteligente: visual drag-and-drop com capacidade, blackouts, feriados
+6. Financeiro:
+    * Conciliação Stripe
+    * Relatórios IVA
+    * Refunds
+    * Split de receita automático
+    * Categorização semântica (AI FinSense)
+    * Multi-moeda (EUR/USD) com FX ECB
+7. Automações: Visual Workflow Studio (triggers, conditions, actions)
+8. Site Config: Editar TODO conteúdo website (textos, imagens, vídeos)
+9. Media Assets: Gestão de imagens/vídeos (URLs, alt text, metadata)
+10. Users Management: RBAC com 4 roles (admin/manager/guide/staff)
+11. Leads Management: Track submissions, export capability
+12. Bookings Management: View/manage reservations, status filters
+13. Integrações: Configurar WhatsApp, Meta, Stripe, OTAs (Viator/GYG)
+Configurações Universais
+* Feature flags
+* Temas e i18n
+* Políticas (cancelamento, reagendamento)
+* Integrações externas
+Painéis Especiais Aurora no BackOffice
+* Aurora Fusion Console: configurar α, parâmetros éticos, idiomas
+* Aurora Scheduler Dashboard: Agenda 7 dias × guia × tuk-tuk × rota
+* Pricing Studio: Preço Base, Multiplicador Emoção, Elasticidade
+* Aurora CRM: Timeline Afetiva, Perfis, Segmentos, Histórico Multicanal
+* Memory Hub: Supervisão memória IA emocional
+* Timing Control Panel: Leads ativos, momento ideal oferta
+* Reflexão Aurora: Feedback loop IA ↔ BackOffice
+* Governança Aurora: Visualização votos, overriding humano, simulação cenários éticos
+
+3️⃣ PLATAFORMA CLIENTE (Frontstage)
+Jornada Completa
+1. Descoberta: Busca semântica (pgvector + Aurora)
+2. Exploração: Aurora gera itinerário personalizado somente escolhendo entre as escolhas opcionais que são monumentos e experiências. Não pode vender nada que na consta entre os produtos e opcionais dos produtos.  Proposta: Comparativos + recomendações
+3. Booking: Pré-reserva 15 min (saga compensável)
+4. Pagamento: Stripe → webhook → confirmação
+5. Voucher: PDF / PKPass com QR
+6. Pré-tour: Lembretes automáticos (push, email, WhatsApp)
+7. Pós-tour: Reviews + NPS + cross-sell
+Componentes Implementados (Frontend)
+* HeroSection
+* AwardsSection
+* FeaturesSection
+* StatsCounter
+* ComparisonTable
+* TestimonialsSection
+* WhyChooseSection
+* LeadCaptureForm (POST /api/v1/leads/)
+* ContactSection
+* Footer
+WhatsApp Integration (Plataforma Cliente)
+* Channel Gateway: Meta/WhatsApp/Instagram/Facebook
+* LeadSense: captura/qualifica leads
+* BookingAssist: disponibilidade + reserva + Payment
+* Eventos Kafka: lead.created, booking.tentative, payment.succeeded
+Stripe Payment Flow
+* Create PaymentIntent
+* Confirm (SCA/3DS)
+* Webhook payment_intent.succeeded
+* Multi-moeda EUR/USD
+* Idempotência
+* Refunds parciais/integrais
+Integrações Cliente
+* WhatsApp Cloud API (leads + mensagens)
+* OTAs (Viator, GYG) - catálogo + reservas
+* UI/UX Design
+* Cores: Turquesa #37C8C4, Dourado #E9C46A, Bordô #7E3231, Preto #1A1A1A
+* Tipografia: Montserrat 700 (títulos), Lato 400 (corpo), Playfair Display
+* Framework: React + Tailwind + Framer Motion
+* Performance: LCP ≤ 2.5s, CLS ≤ 0.05
+* Acessibilidade: WCAG 2.2 AA
+

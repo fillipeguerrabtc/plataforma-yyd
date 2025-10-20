@@ -53,38 +53,57 @@ export default function BookingFlow({ product }: BookingFlowProps) {
     return basePrice + optionsPrice;
   };
 
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState('');
+
   const handleProceedToCheckout = async () => {
-    const totalPrice = calculateTotalPrice();
+    setIsProcessing(true);
+    setError('');
+    
+    try {
+      const totalPrice = calculateTotalPrice();
 
-    // Create booking in database
-    const response = await fetch('/api/bookings', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        productId: product.id,
-        date: selectedDate,
-        numberOfPeople,
-        selectedActivities,
-        selectedOptions,
-        specialRequests,
-        customerName,
-        customerEmail,
-        customerPhone,
-        customerLocale,
-        preferredContact,
-        totalPrice,
-      }),
-    });
+      // Create booking in database
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productId: product.id,
+          date: selectedDate,
+          numberOfPeople,
+          selectedActivities,
+          selectedOptions,
+          specialRequests,
+          customerName,
+          customerEmail,
+          customerPhone,
+          customerLocale,
+          preferredContact,
+          totalPrice,
+        }),
+      });
 
-    const booking = await response.json();
+      const data = await response.json();
 
-    if (booking.id) {
-      // Redirect to Stripe checkout
-      router.push(
-        `/checkout?bookingId=${booking.id}&amount=${totalPrice}`
-      );
+      if (!response.ok) {
+        // API returned error
+        throw new Error(data.error || 'Failed to create booking. Please try again.');
+      }
+
+      if (data.booking && data.booking.id) {
+        // Redirect to Stripe checkout
+        router.push(
+          `/checkout?bookingId=${data.booking.id}&amount=${totalPrice}`
+        );
+      } else {
+        throw new Error('Invalid booking response');
+      }
+    } catch (err: any) {
+      console.error('Booking error:', err);
+      setError(err.message || 'Failed to create booking. Please try again.');
+      setIsProcessing(false);
     }
   };
 
@@ -453,18 +472,27 @@ export default function BookingFlow({ product }: BookingFlowProps) {
                 </p>
               </div>
 
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                  <p className="font-semibold">⚠️ Error</p>
+                  <p className="text-sm">{error}</p>
+                </div>
+              )}
+
               <div className="flex gap-4">
                 <button
                   onClick={() => setCurrentStep('details')}
-                  className="flex-1 bg-gray-200 text-gray-700 px-8 py-4 rounded-lg font-semibold hover:bg-gray-300 transition"
+                  disabled={isProcessing}
+                  className="flex-1 bg-gray-200 text-gray-700 px-8 py-4 rounded-lg font-semibold hover:bg-gray-300 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Back
                 </button>
                 <button
                   onClick={handleProceedToCheckout}
-                  className="flex-1 bg-green-500 text-white px-8 py-4 rounded-lg font-semibold hover:bg-green-600 transition"
+                  disabled={isProcessing}
+                  className="flex-1 bg-green-500 text-white px-8 py-4 rounded-lg font-semibold hover:bg-green-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Proceed to Payment
+                  {isProcessing ? 'Processing...' : 'Proceed to Payment'}
                 </button>
               </div>
             </div>
