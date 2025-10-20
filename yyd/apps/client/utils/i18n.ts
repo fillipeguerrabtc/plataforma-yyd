@@ -21,11 +21,11 @@ export const translations = {
     home: '🏠 Home',
     
     // Aurora Chat
-    auroraGreeting: 'Hello! I\'m Aurora, your YYD virtual assistant. How can I help you today? 😊',
+    auroraGreeting: 'Hi! I\'m Aurora 😊 How can I help you with your tour to Sintra or Cascais?',
     typingPlaceholder: 'Type your message...',
     sendButton: 'Send',
     chatTitle: 'Aurora',
-    chatSubtitle: 'YYD Virtual Assistant',
+    chatSubtitle: 'Your YYD Tour Expert',
     auroraTyping: 'Aurora is typing...',
     
     // WhatsApp
@@ -37,11 +37,11 @@ export const translations = {
     home: '🏠 Home',
     
     // Aurora Chat
-    auroraGreeting: 'Olá! Sou Aurora, sua assistente virtual da YYD. Como posso ajudar hoje? 😊',
+    auroraGreeting: 'Oi! Sou Aurora 😊 Como posso te ajudar com seu tour em Sintra ou Cascais?',
     typingPlaceholder: 'Digite sua mensagem...',
     sendButton: 'Enviar',
     chatTitle: 'Aurora',
-    chatSubtitle: 'Assistente Virtual YYD',
+    chatSubtitle: 'Sua Especialista em Tours YYD',
     auroraTyping: 'Aurora está digitando...',
     
     // WhatsApp
@@ -53,11 +53,11 @@ export const translations = {
     home: '🏠 Inicio',
     
     // Aurora Chat
-    auroraGreeting: '¡Hola! Soy Aurora, tu asistente virtual de YYD. ¿Cómo puedo ayudarte hoy? 😊',
+    auroraGreeting: '¡Hola! Soy Aurora 😊 ¿Cómo puedo ayudarte con tu tour a Sintra o Cascais?',
     typingPlaceholder: 'Escribe tu mensaje...',
     sendButton: 'Enviar',
     chatTitle: 'Aurora',
-    chatSubtitle: 'Asistente Virtual YYD',
+    chatSubtitle: 'Tu Experta en Tours YYD',
     auroraTyping: 'Aurora está escribiendo...',
     
     // WhatsApp

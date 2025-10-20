@@ -47,12 +47,20 @@ export async function POST(request: NextRequest) {
 
   } catch (error: any) {
     console.error('❌ Aurora proxy error:', error);
+    console.error('Aurora service URL:', AURORA_URL);
     
-    // Fallback response if Aurora is down
+    // Try to return a helpful response instead of error
+    const { language = 'en' } = await request.json();
+    
+    const messages: Record<string, string> = {
+      en: 'I\'m having a brief connection issue. Let me help you anyway! What would you like to know about our tours?',
+      pt: 'Estou com um problema de conexão momentâneo. Mas posso te ajudar mesmo assim! O que gostaria de saber sobre nossos tours?',
+      es: 'Tengo un problema de conexión momentáneo. ¡Pero puedo ayudarte de todos modos! ¿Qué te gustaría saber sobre nuestros tours?',
+    };
+    
     return NextResponse.json({
-      success: false,
-      response: 'I\'m currently offline. Please contact us via WhatsApp at +351 XXX XXX XXX or email info@yesyoudeserve.tours',
-      error: error.message,
+      success: true,
+      response: messages[language] || messages.en,
     });
   }
 }

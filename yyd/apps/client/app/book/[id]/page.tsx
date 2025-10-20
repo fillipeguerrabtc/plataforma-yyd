@@ -145,8 +145,17 @@ export default function BookTourPage() {
         }),
       });
 
+      if (!bookingRes.ok) {
+        const errorData = await bookingRes.json();
+        throw new Error(errorData.error || 'Failed to create booking');
+      }
+
       const bookingData = await bookingRes.json();
-      const bookingId = bookingData.booking.id;
+      const bookingId = bookingData.booking?.id;
+      
+      if (!bookingId) {
+        throw new Error('Booking ID not received from server');
+      }
 
       // 3. Create Stripe payment intent
       const paymentRes = await fetch('/api/payments/create-intent', {
