@@ -1,45 +1,36 @@
-import nodemailer from 'nodemailer';
+import { sendEmail as replitSendEmail } from './replitmail';
 
 interface EmailOptions {
   to: string;
   subject: string;
   html: string;
+  text?: string;
   attachments?: Array<{
     filename: string;
-    content?: Buffer;
-    path?: string;
+    content: Buffer;
   }>;
 }
 
 export class EmailService {
-  private transporter: nodemailer.Transporter;
-
-  constructor() {
-    this.transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'smtp.gmail.com',
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: process.env.SMTP_SECURE === 'true',
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
-  }
-
   async sendEmail(options: EmailOptions): Promise<boolean> {
     try {
-      const info = await this.transporter.sendMail({
-        from: `"YYD - Yes You Deserve" <${process.env.SMTP_USER}>`,
+      const result = await replitSendEmail({
         to: options.to,
         subject: options.subject,
         html: options.html,
-        attachments: options.attachments,
+        text: options.text,
+        attachments: options.attachments?.map(att => ({
+          filename: att.filename,
+          content: att.content.toString('base64'),
+          encoding: 'base64' as const,
+        })),
       });
 
-      console.log('✅ Email sent:', info.messageId);
+      console.log('✅ Email sent via Replit Mail:', result.messageId);
+      console.log('   Accepted:', result.accepted);
       return true;
-    } catch (error) {
-      console.error('❌ Email send error:', error);
+    } catch (error: any) {
+      console.error('❌ Email send error:', error.message);
       return false;
     }
   }
