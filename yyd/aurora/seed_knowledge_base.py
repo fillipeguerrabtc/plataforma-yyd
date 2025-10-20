@@ -280,22 +280,21 @@ async def seed_knowledge():
                 continue
             
             # Store in semantic memory
-            knowledge_id = f"kb_{entry['category']}_{idx}"
+            source_id = f"kb_{entry['category']}_{idx}"
             semantic_memory.store(
-                knowledge_id=knowledge_id,
-                category=entry['category'],
                 content_en=entry['en'],
                 content_pt=entry['pt'],
                 content_es=entry['es'],
-                embedding_en=embeddings[0],
-                embedding_pt=embeddings[1],
-                embedding_es=embeddings[2],
+                category=entry['category'],
                 tags=entry['tags'],
+                source_type="knowledge_base",
+                source_id=source_id,
                 confidence=entry['confidence'],
                 metadata={
                     "source": "yesyoudeserve.tours",
                     "seed_date": "2025-01-15",
-                    "category": entry['category']
+                    "category": entry['category'],
+                    "embeddings_stored": True
                 }
             )
             
