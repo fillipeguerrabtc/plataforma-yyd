@@ -19,7 +19,7 @@ export default function Header() {
               height={50}
               className="rounded-full"
             />
-            <span className="font-montserrat text-xl font-bold hidden sm:block" style={{ color: '#222222' }}>
+            <span className="font-montserrat text-xl font-bold" style={{ color: '#222222' }}>
               Yes, You Deserve!
             </span>
           </Link>

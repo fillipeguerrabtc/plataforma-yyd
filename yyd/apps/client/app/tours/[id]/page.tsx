@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Header from '@/components/Header';
 
 interface Tour {
   id: string;
@@ -35,17 +36,23 @@ interface Tour {
   }>;
 }
 
+const EXCLUDED_ITEMS_PRICES = {
+  lunch: 20,
+  monument_tickets: 25,
+  wine_tasting: 24,
+};
+
 export default function TourDetailPage() {
   const params = useParams();
   const router = useRouter();
   const [tour, setTour] = useState<Tour | null>(null);
   const [loading, setLoading] = useState(true);
   
-  // Booking form state
   const [selectedDate, setSelectedDate] = useState('');
   const [numberOfPeople, setNumberOfPeople] = useState(2);
   const [selectedOption, setSelectedOption] = useState('');
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
+  const [selectedExcludedItems, setSelectedExcludedItems] = useState<string[]>([]);
   const [calculatedPrice, setCalculatedPrice] = useState(0);
 
   useEffect(() => {
@@ -56,7 +63,7 @@ export default function TourDetailPage() {
     if (tour && selectedDate && numberOfPeople > 0) {
       calculatePrice();
     }
-  }, [tour, selectedDate, numberOfPeople]);
+  }, [tour, selectedDate, numberOfPeople, selectedExcludedItems]);
 
   const fetchTour = async () => {
     try {
@@ -75,12 +82,10 @@ export default function TourDetailPage() {
   const calculatePrice = () => {
     if (!tour || !selectedDate) return;
 
-    // Determine season from date
     const date = new Date(selectedDate);
     const month = date.getMonth() + 1;
     const season = (month >= 5 && month <= 10) ? 'high' : 'low';
 
-    // Find matching price tier
     const matchingPrice = tour.seasonPrices.find(sp => 
       sp.season === season && 
       numberOfPeople >= sp.minPeople && 
@@ -88,9 +93,18 @@ export default function TourDetailPage() {
     );
 
     if (matchingPrice) {
-      const price = matchingPrice.pricePerPerson 
+      let price = matchingPrice.pricePerPerson 
         ? matchingPrice.priceEur * numberOfPeople 
         : matchingPrice.priceEur;
+      
+      selectedExcludedItems.forEach(item => {
+        const itemKey = item.toLowerCase().replace(/\(.*?\)/g, '').trim().replace(/\s+/g, '_') as keyof typeof EXCLUDED_ITEMS_PRICES;
+        const itemPrice = EXCLUDED_ITEMS_PRICES[itemKey];
+        if (itemPrice) {
+          price += itemPrice * numberOfPeople;
+        }
+      });
+      
       setCalculatedPrice(price);
     }
   };
@@ -103,18 +117,26 @@ export default function TourDetailPage() {
     );
   };
 
+  const handleExcludedItemToggle = (item: string) => {
+    setSelectedExcludedItems(prev => 
+      prev.includes(item) 
+        ? prev.filter(i => i !== item)
+        : [...prev, item]
+    );
+  };
+
   const handleBooking = async () => {
     if (!tour || !selectedDate || numberOfPeople < 1) {
       alert('Please select a date and number of people');
       return;
     }
 
-    // Navigate to book page with pre-filled data
     const params = new URLSearchParams({
       date: selectedDate,
       people: numberOfPeople.toString(),
       option: selectedOption || '',
       activities: selectedActivities.join(','),
+      excluded: selectedExcludedItems.join(','),
     });
     
     router.push(`/book/${tour.slug}?${params.toString()}`);
@@ -123,6 +145,10 @@ export default function TourDetailPage() {
   const getMinPrice = () => {
     if (!tour || tour.seasonPrices.length === 0) return 0;
     return Math.min(...tour.seasonPrices.map(sp => Number(sp.priceEur)));
+  };
+
+  const isFullDayTour = () => {
+    return tour?.slug.includes('full-day') || tour?.durationHours === 8;
   };
 
   if (loading) {
@@ -135,292 +161,339 @@ export default function TourDetailPage() {
 
   if (!tour) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-black mb-4">Tour not found</h1>
-          <button 
-            onClick={() => router.push('/tours')}
-            className="btn-yyd"
-          >
-            Back to Tours
-          </button>
+      <>
+        <Header />
+        <div className="min-h-screen bg-white flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-black mb-4">Tour not found</h1>
+            <button 
+              onClick={() => router.push('/tours')}
+              className="btn-yyd-primary"
+            >
+              Back to Tours
+            </button>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="bg-black text-white border-b border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <button onClick={() => router.push('/')} className="text-2xl font-bold font-greatVibes">
-              Yes, you deserve.
-            </button>
-            <nav className="flex gap-6">
-              <button onClick={() => router.push('/tours')} className="hover:text-[#1FB7C4] transition-colors">
-                ← Voltar
-              </button>
-              <button onClick={() => router.push('/')} className="btn-yyd-small">
-                Home
-              </button>
-            </nav>
-          </div>
-        </div>
-      </header>
-
-      {/* Hero Image */}
-      {tour.imageUrls && tour.imageUrls.length > 0 && (
-        <div className="w-full h-[400px] bg-gray-200 relative">
-          <img
-            src={tour.imageUrls[0]}
-            alt={tour.titleEn}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              e.currentTarget.src = 'https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=400&fit=crop';
-            }}
-          />
-          {tour.bestChoice && (
-            <div className="absolute top-6 right-6 bg-gradient-to-r from-[#1FB7C4] to-[#37C8C4] text-white px-6 py-3 rounded-full font-bold shadow-lg">
-              ⭐ BEST CHOICE
+    <>
+      <Header />
+      <div className="min-h-screen bg-gray-50">
+        {/* Hero Section */}
+        <div className="relative bg-white">
+          {tour.imageUrls && tour.imageUrls.length > 0 && (
+            <div className="w-full h-[60vh] max-h-[500px] bg-gray-200 relative overflow-hidden">
+              <img
+                src={tour.imageUrls[0]}
+                alt={tour.titleEn}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.src = 'https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&h=600&fit=crop';
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+              
+              {tour.bestChoice && (
+                <div className="absolute top-8 right-8 bg-gradient-to-r from-[#1FB7C4] to-[#16A2B2] text-white px-6 py-3 rounded-full font-bold shadow-xl font-montserrat">
+                  ⭐ BEST CHOICE
+                </div>
+              )}
+              
+              <div className="absolute bottom-0 left-0 right-0 p-8 max-w-7xl mx-auto">
+                <div className="flex items-center gap-4 mb-4 text-white/90 text-sm font-medium">
+                  <span className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+                    ⏱️ {tour.durationHours} hours
+                  </span>
+                  <span className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+                    👥 Up to {tour.maxGroupSize} people
+                  </span>
+                  <span className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
+                    🚗 Private tour
+                  </span>
+                </div>
+                <h1 className="text-4xl md:text-5xl font-bold text-white mb-2 font-montserrat">
+                  {tour.titleEn}
+                </h1>
+              </div>
             </div>
           )}
         </div>
-      )}
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          {/* Left Column - Tour Info */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Tour Header */}
-            <div>
-              <div className="flex items-center gap-3 mb-4 text-gray-600">
-                <span className="flex items-center gap-1">⏱️ {tour.durationHours} hours</span>
-                <span className="flex items-center gap-1">👥 Up to {tour.maxGroupSize} people</span>
-                <span className="flex items-center gap-1">🚗 Private tour</span>
+        {/* Main Content */}
+        <main className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Column - Tour Info */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* About This Tour */}
+              <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+                <h2 className="text-2xl font-bold text-black mb-4 font-montserrat">About This Tour</h2>
+                <p className="text-gray-700 leading-relaxed text-base">
+                  {tour.descriptionEn}
+                </p>
               </div>
-              <h1 className="text-4xl font-bold text-black mb-4 font-montserrat">
-                {tour.titleEn}
-              </h1>
-            </div>
 
-            {/* About This Tour */}
-            <div>
-              <h2 className="text-2xl font-bold text-black mb-4 font-montserrat">About This Tour</h2>
-              <p className="text-gray-700 leading-relaxed text-lg">
-                {tour.descriptionEn}
-              </p>
-            </div>
-
-            {/* What's Included */}
-            <div>
-              <h2 className="text-2xl font-bold text-black mb-4 font-montserrat">What's Included</h2>
-              <div className="card-yyd p-6">
-                <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {/* What's Included */}
+              <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+                <h2 className="text-2xl font-bold text-black mb-6 font-montserrat">What's Included</h2>
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {tour.featuresEn.map((feature, idx) => (
                     <li key={idx} className="flex items-start gap-3">
-                      <span className="text-[#1FB7C4] mt-1 text-xl">✓</span>
+                      <span className="text-[#1FB7C4] mt-0.5 text-xl flex-shrink-0">✓</span>
                       <span className="text-gray-700">{feature}</span>
                     </li>
                   ))}
                 </ul>
               </div>
-            </div>
 
-            {/* What's NOT Included */}
-            {tour.excludedEn && tour.excludedEn.length > 0 && (
-              <div>
-                <h2 className="text-2xl font-bold text-black mb-4 font-montserrat">Not Included</h2>
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-                  <ul className="space-y-2">
-                    {tour.excludedEn.map((excluded, idx) => (
-                      <li key={idx} className="flex items-start gap-3">
-                        <span className="text-gray-400 mt-1">✗</span>
-                        <span className="text-gray-600">{excluded}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            )}
-
-            {/* Tour Options */}
-            {tour.options && tour.options.length > 0 && (
-              <div>
-                <h2 className="text-2xl font-bold text-black mb-4 font-montserrat">Choose Your Experience</h2>
-                <div className="space-y-4">
-                  {tour.options.map((option) => (
-                    <div
-                      key={option.id}
-                      onClick={() => setSelectedOption(option.id)}
-                      className={`card-yyd p-6 cursor-pointer transition-all ${
-                        selectedOption === option.id 
-                          ? 'border-[#1FB7C4] border-2 bg-[#1FB7C4]/5' 
-                          : 'hover:border-[#1FB7C4]'
-                      }`}
-                    >
-                      <div className="flex items-start gap-4">
-                        <input
-                          type="radio"
-                          checked={selectedOption === option.id}
-                          onChange={() => setSelectedOption(option.id)}
-                          className="mt-1 w-5 h-5 text-[#1FB7C4] focus:ring-[#1FB7C4]"
-                        />
-                        <div className="flex-1">
-                          <h3 className="font-bold text-lg text-black mb-2">{option.nameEn}</h3>
-                          <p className="text-gray-600">{option.descriptionEn}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Activities */}
-            {tour.activities && tour.activities.length > 0 && (
-              <div>
-                <h2 className="text-2xl font-bold text-black mb-4 font-montserrat">Available Activities</h2>
-                <p className="text-gray-600 mb-4">Select the activities you'd like to include in your tour:</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {tour.activities.map((activity) => (
-                    <div
-                      key={activity.id}
-                      onClick={() => handleActivityToggle(activity.id)}
-                      className={`card-yyd p-4 cursor-pointer transition-all ${
-                        selectedActivities.includes(activity.id) 
-                          ? 'border-[#1FB7C4] border-2 bg-[#1FB7C4]/5' 
-                          : 'hover:border-[#1FB7C4]'
-                      }`}
-                    >
-                      <div className="flex items-start gap-3">
-                        <input
-                          type="checkbox"
-                          checked={selectedActivities.includes(activity.id)}
-                          onChange={() => handleActivityToggle(activity.id)}
-                          className="mt-1 w-5 h-5 text-[#1FB7C4] focus:ring-[#1FB7C4] rounded"
-                        />
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-black mb-1">{activity.nameEn}</h4>
-                          <p className="text-sm text-gray-600">{activity.descriptionEn}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Right Column - Booking Form */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-6">
-              <div className="card-yyd p-6 border-2 shadow-xl">
-                <div className="mb-6">
-                  <p className="text-sm text-gray-600 mb-2">Starting from</p>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-4xl font-bold text-black">
-                      €{getMinPrice()}
-                    </span>
-                    <span className="text-gray-600">/ group</span>
-                  </div>
-                  <p className="mt-2 text-xs text-gray-500">
-                    Price varies by season. Select your date to see the exact price.
-                  </p>
-                </div>
-
-                {/* Booking Form */}
-                <div className="space-y-4">
-                  {/* Date Selection */}
-                  <div>
-                    <label className="block text-sm font-semibold text-black mb-2">
-                      Select Date *
-                    </label>
-                    <input
-                      type="date"
-                      value={selectedDate}
-                      onChange={(e) => setSelectedDate(e.target.value)}
-                      min={new Date().toISOString().split('T')[0]}
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-[#1FB7C4] focus:outline-none"
-                    />
-                  </div>
-
-                  {/* Number of People */}
-                  <div>
-                    <label className="block text-sm font-semibold text-black mb-2">
-                      Number of People *
-                    </label>
-                    <input
-                      type="number"
-                      min="1"
-                      max={tour.maxGroupSize}
-                      value={numberOfPeople}
-                      onChange={(e) => setNumberOfPeople(parseInt(e.target.value) || 1)}
-                      className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-[#1FB7C4] focus:outline-none"
-                    />
-                  </div>
-
-                  {/* Calculated Price Display */}
-                  {selectedDate && calculatedPrice > 0 && (
-                    <div className="bg-gradient-to-r from-[#1FB7C4]/10 to-[#37C8C4]/10 border-2 border-[#1FB7C4] rounded-lg p-4">
-                      <p className="text-sm text-gray-600 mb-1">Total Price</p>
-                      <p className="text-3xl font-bold text-black">€{calculatedPrice.toFixed(2)}</p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        For {numberOfPeople} {numberOfPeople === 1 ? 'person' : 'people'} on {new Date(selectedDate).toLocaleDateString()}
+              {/* What's NOT Included */}
+              {tour.excludedEn && tour.excludedEn.length > 0 && (
+                <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+                  <h2 className="text-2xl font-bold text-black mb-4 font-montserrat">Not Included</h2>
+                  
+                  {isFullDayTour() ? (
+                    <>
+                      <p className="text-gray-600 mb-6 text-sm">
+                        The following items are not included in the base price. You can add them to your booking:
                       </p>
-                    </div>
+                      <div className="space-y-3">
+                        {tour.excludedEn.map((excluded, idx) => {
+                          const itemKey = excluded.toLowerCase().replace(/\(.*?\)/g, '').trim().replace(/\s+/g, '_') as keyof typeof EXCLUDED_ITEMS_PRICES;
+                          const itemPrice = EXCLUDED_ITEMS_PRICES[itemKey];
+                          
+                          return (
+                            <div
+                              key={idx}
+                              onClick={() => handleExcludedItemToggle(excluded)}
+                              className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
+                                selectedExcludedItems.includes(excluded)
+                                  ? 'border-[#1FB7C4] bg-[#1FB7C4]/5'
+                                  : 'border-gray-200 hover:border-[#1FB7C4]/50'
+                              }`}
+                            >
+                              <div className="flex items-start gap-3">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedExcludedItems.includes(excluded)}
+                                  onChange={() => handleExcludedItemToggle(excluded)}
+                                  className="mt-1 w-5 h-5 text-[#1FB7C4] focus:ring-[#1FB7C4] rounded"
+                                />
+                                <div className="flex-1">
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-gray-700 font-medium">{excluded}</span>
+                                    {itemPrice && (
+                                      <span className="text-[#1FB7C4] font-bold text-sm">
+                                        +€{itemPrice}/person
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </>
+                  ) : (
+                    <ul className="space-y-2">
+                      {tour.excludedEn.map((excluded, idx) => (
+                        <li key={idx} className="flex items-start gap-3">
+                          <span className="text-gray-400 mt-1">✗</span>
+                          <span className="text-gray-600">{excluded}</span>
+                        </li>
+                      ))}
+                    </ul>
                   )}
-
-                  {/* Book Button */}
-                  <button
-                    onClick={handleBooking}
-                    disabled={!selectedDate || numberOfPeople < 1}
-                    className="btn-yyd w-full text-lg py-4 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Continue to Payment →
-                  </button>
-
-                  <div className="text-center">
-                    <p className="text-sm text-gray-500">or</p>
-                  </div>
-
-                  <button
-                    onClick={() => {
-                      const auroraWidget = document.querySelector('[title="Chat with Aurora"]') as HTMLElement;
-                      if (auroraWidget) auroraWidget.click();
-                    }}
-                    className="w-full border-2 border-black text-black py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
-                  >
-                    💬 Contact Us
-                  </button>
                 </div>
+              )}
 
-                {/* Trust Signals */}
-                <div className="mt-6 pt-6 border-t border-gray-200 space-y-2 text-sm text-gray-600">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[#1FB7C4]">✓</span>
-                    <span>Free cancellation up to 24h</span>
+              {/* Tour Options */}
+              {tour.options && tour.options.length > 0 && (
+                <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+                  <h2 className="text-2xl font-bold text-black mb-4 font-montserrat">Choose Your Experience</h2>
+                  <div className="space-y-3">
+                    {tour.options.map((option) => (
+                      <div
+                        key={option.id}
+                        onClick={() => setSelectedOption(option.id)}
+                        className={`border-2 rounded-lg p-5 cursor-pointer transition-all ${
+                          selectedOption === option.id 
+                            ? 'border-[#1FB7C4] bg-[#1FB7C4]/5' 
+                            : 'border-gray-200 hover:border-[#1FB7C4]/50'
+                        }`}
+                      >
+                        <div className="flex items-start gap-4">
+                          <input
+                            type="radio"
+                            checked={selectedOption === option.id}
+                            onChange={() => setSelectedOption(option.id)}
+                            className="mt-1 w-5 h-5 text-[#1FB7C4] focus:ring-[#1FB7C4]"
+                          />
+                          <div className="flex-1">
+                            <h3 className="font-bold text-lg text-black mb-2">{option.nameEn}</h3>
+                            <p className="text-gray-600 text-sm">{option.descriptionEn}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[#1FB7C4]">✓</span>
-                    <span>Instant confirmation</span>
+                </div>
+              )}
+
+              {/* Activities */}
+              {tour.activities && tour.activities.length > 0 && (
+                <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+                  <h2 className="text-2xl font-bold text-black mb-4 font-montserrat">Available Activities</h2>
+                  <p className="text-gray-600 mb-6 text-sm">Select the activities you'd like to include in your tour:</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {tour.activities.map((activity) => (
+                      <div
+                        key={activity.id}
+                        onClick={() => handleActivityToggle(activity.id)}
+                        className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
+                          selectedActivities.includes(activity.id) 
+                            ? 'border-[#1FB7C4] bg-[#1FB7C4]/5' 
+                            : 'border-gray-200 hover:border-[#1FB7C4]/50'
+                        }`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <input
+                            type="checkbox"
+                            checked={selectedActivities.includes(activity.id)}
+                            onChange={() => handleActivityToggle(activity.id)}
+                            className="mt-1 w-5 h-5 text-[#1FB7C4] focus:ring-[#1FB7C4] rounded"
+                          />
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-black mb-1 text-sm">{activity.nameEn}</h4>
+                            <p className="text-xs text-gray-600">{activity.descriptionEn}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[#1FB7C4]">✓</span>
-                    <span>Mobile voucher accepted</span>
+                </div>
+              )}
+            </div>
+
+            {/* Right Column - Booking Form */}
+            <div className="lg:col-span-1">
+              <div className="sticky top-24">
+                <div className="bg-white rounded-xl p-6 shadow-lg border-2 border-gray-100">
+                  <div className="mb-6">
+                    <p className="text-sm text-gray-600 mb-2 font-medium">Starting from</p>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-4xl font-bold text-black font-montserrat">
+                        €{getMinPrice()}
+                      </span>
+                      <span className="text-gray-600">/ group</span>
+                    </div>
+                    <p className="mt-2 text-xs text-gray-500">
+                      Price varies by season. Select your date to see the exact price.
+                    </p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[#1FB7C4]">⭐</span>
-                    <span>257 five-star reviews</span>
+
+                  {/* Booking Form */}
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-black mb-2">
+                        Select Date *
+                      </label>
+                      <input
+                        type="date"
+                        value={selectedDate}
+                        onChange={(e) => setSelectedDate(e.target.value)}
+                        min={new Date().toISOString().split('T')[0]}
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-[#1FB7C4] focus:outline-none transition-colors"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-black mb-2">
+                        Number of People *
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        max={tour.maxGroupSize}
+                        value={numberOfPeople}
+                        onChange={(e) => setNumberOfPeople(parseInt(e.target.value) || 1)}
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-[#1FB7C4] focus:outline-none transition-colors"
+                      />
+                    </div>
+
+                    {/* Calculated Price Display */}
+                    {selectedDate && calculatedPrice > 0 && (
+                      <div className="bg-gradient-to-br from-[#1FB7C4]/10 to-[#16A2B2]/5 border-2 border-[#1FB7C4] rounded-xl p-5">
+                        <p className="text-sm text-gray-700 font-medium mb-2">Total Price</p>
+                        <p className="text-4xl font-bold text-black font-montserrat">€{calculatedPrice.toFixed(2)}</p>
+                        <p className="text-xs text-gray-600 mt-2">
+                          For {numberOfPeople} {numberOfPeople === 1 ? 'person' : 'people'} on {new Date(selectedDate).toLocaleDateString()}
+                        </p>
+                        {selectedExcludedItems.length > 0 && (
+                          <div className="mt-3 pt-3 border-t border-[#1FB7C4]/30">
+                            <p className="text-xs text-gray-600 font-medium mb-1">Includes add-ons:</p>
+                            {selectedExcludedItems.map((item, idx) => (
+                              <p key={idx} className="text-xs text-gray-600">• {item}</p>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    <button
+                      onClick={handleBooking}
+                      disabled={!selectedDate || numberOfPeople < 1}
+                      className="btn-yyd-primary w-full text-base py-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Continue to Payment →
+                    </button>
+
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-200"></div>
+                      </div>
+                      <div className="relative flex justify-center text-xs">
+                        <span className="px-2 bg-white text-gray-500">or</span>
+                      </div>
+                    </div>
+
+                    <a
+                      href="http://wa.link/y0m3y9"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-yyd-whatsapp w-full justify-center"
+                    >
+                      💬 Talk With A Human
+                    </a>
+                  </div>
+
+                  {/* Trust Signals */}
+                  <div className="mt-6 pt-6 border-t border-gray-200 space-y-3 text-sm text-gray-600">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[#1FB7C4]">✓</span>
+                      <span>Free cancellation up to 24h</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[#1FB7C4]">✓</span>
+                      <span>Instant confirmation</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[#1FB7C4]">✓</span>
+                      <span>Mobile voucher accepted</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[#1FB7C4]">⭐</span>
+                      <span>257 five-star reviews</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </>
   );
 }
