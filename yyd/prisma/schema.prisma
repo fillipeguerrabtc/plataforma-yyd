@@ -148,31 +148,34 @@ model AvailabilitySlot {
 }
 
 model Booking {
-  id               String    @id @default(cuid())
-  bookingNumber    String    @unique
+  id               String          @id @default(cuid())
+  bookingNumber    String          @unique
   customerId       String
-  customer         Customer  @relation(fields: [customerId], references: [id])
+  customer         Customer        @relation(fields: [customerId], references: [id])
   productId        String
-  product          Product   @relation(fields: [productId], references: [id])
+  product          Product         @relation(fields: [productId], references: [id])
   date             DateTime
   startTime        String
   numberOfPeople   Int
   selectedOption   String?
   selectedActivities String[]
-  status           String    @default("pending")
+  selectedAddons   BookingAddon[]
+  status           String          @default("pending")
   season           String
-  priceEur         Decimal   @db.Decimal(10, 2)
-  currency         String    @default("EUR")
-  locale           String    @default("en")
+  priceEur         Decimal         @db.Decimal(10, 2)
+  addonsTotal      Decimal         @default(0) @db.Decimal(10, 2)
+  currency         String          @default("EUR")
+  locale           String          @default("en")
   pickupLocation   String?
   dropoffLocation  String?
-  specialRequests  String?   @db.Text
+  specialRequests  String?         @db.Text
   guideId          String?
-  guide            Guide?    @relation(fields: [guideId], references: [id])
+  guide            Guide?          @relation(fields: [guideId], references: [id])
   payments         Payment[]
   messages         Message[]
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  reviews          Review[]
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
   confirmedAt      DateTime?
   completedAt      DateTime?
   cancelledAt      DateTime?
@@ -476,6 +479,7 @@ model MonumentTicketAvailability {
 model Review {
   id             String   @id @default(cuid())
   bookingId      String   @unique
+  booking        Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   customerId     String
   productId      String
   rating         Int
@@ -539,4 +543,44 @@ model CustomerAuth {
 
   @@index([email])
   @@map("customer_auth")
+}
+
+model TourAddon {
+  id            String         @id @default(cuid())
+  code          String         @unique
+  nameEn        String
+  namePt        String
+  nameEs        String
+  descriptionEn String         @db.Text
+  descriptionPt String         @db.Text
+  descriptionEs String         @db.Text
+  priceEur      Decimal        @db.Decimal(10, 2)
+  priceType     String         @default("per_person")
+  category      String
+  imageUrl      String?
+  active        Boolean        @default(true)
+  sortOrder     Int            @default(0)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  bookingAddons BookingAddon[]
+
+  @@index([category])
+  @@index([active])
+  @@map("tour_addons")
+}
+
+model BookingAddon {
+  id        String    @id @default(cuid())
+  bookingId String
+  booking   Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  addonId   String
+  addon     TourAddon @relation(fields: [addonId], references: [id])
+  quantity  Int       @default(1)
+  priceEur  Decimal   @db.Decimal(10, 2)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([bookingId])
+  @@index([addonId])
+  @@map("booking_addons")
 }
