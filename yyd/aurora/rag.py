@@ -89,16 +89,46 @@ class RAGRetriever:
     
     async def search(self, query: str, locale: str = "en", category: Optional[str] = None, 
                     top_k: int = 5) -> List[SearchResult]:
-        """Perform semantic search with pgvector"""
+        """Perform semantic search with pgvector OR keyword fallback"""
         # Generate query embedding
         query_embedding = await self.embedding_generator.generate(query)
         if not query_embedding:
-            print("⚠️ Could not generate embedding - returning empty results")
-            return []
+            print("⚠️ Embeddings unavailable - using keyword search fallback")
+            return self._keyword_fallback_search(query, locale, category, top_k)
         
         # Perform vector similarity search
         results = self.semantic_memory.semantic_search(
             query_embedding=query_embedding,
+            locale=locale,
+            category=category,
+            limit=top_k
+        )
+        
+        # Convert to SearchResult objects
+        search_results = []
+        content_fields = {
+            "en": "contentEn",
+            "pt": "contentPt",
+            "es": "contentEs"
+        }
+        content_field = content_fields.get(locale.lower(), "contentEn")
+        
+        for row in results:
+            search_results.append(SearchResult(
+                id=row['id'],
+                content=row.get(content_field, row.get('contentEn', '')),
+                similarity=float(row['similarity']),
+                confidence=float(row.get('confidence', 1.0)),
+                category=row['category'],
+                metadata=row.get('metadata', {})
+            ))
+        
+        return search_results
+    
+    def _keyword_fallback_search(self, query: str, locale: str, category: Optional[str], top_k: int) -> List[SearchResult]:
+        """Fallback to keyword search when embeddings unavailable"""
+        results = self.semantic_memory.keyword_search(
+            query=query,
             locale=locale,
             category=category,
             limit=top_k
@@ -241,12 +271,18 @@ class AutonomousDecisionEngine:
         Progressive autonomy: Use ChatGPT LESS as knowledge base grows
         Returns: (use_chatgpt: bool, reason: str)
         """
+        # Check if OpenAI is available FIRST
+        if not OPENAI_API_KEY:
+            # No OpenAI available - MUST use KB only
+            return False, "openai_unavailable"
+        
         # Perform hybrid search
         results = await self.rag_retriever.hybrid_search(
             query, emotional_state, conversation_context, locale, top_k=3
         )
         
         if not results:
+            # KB empty but OpenAI available - use ChatGPT
             return True, "knowledge_base_empty"
         
         # Get best result confidence

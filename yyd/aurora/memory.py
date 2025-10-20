@@ -251,10 +251,12 @@ class SemanticMemory:
         embedding_field = embedding_fields.get(locale.lower(), "embeddingEn")
         
         category_filter = ""
-        params = [query_embedding, limit]
+        # Correct parameter order: [embedding, category?, embedding, limit]
+        params = [query_embedding]
         if category:
             category_filter = "AND category = %s"
-            params.insert(1, category)
+            params.append(category)
+        params.extend([query_embedding, limit])
         
         query = f"""
             SELECT *, 
@@ -264,8 +266,46 @@ class SemanticMemory:
             ORDER BY "{embedding_field}" <=> %s::vector
             LIMIT %s
         """
-        params_with_double = params[:1] + params  # <=> needs the vector twice
-        return DatabaseConnection.execute_query(query, tuple(params_with_double))
+        return DatabaseConnection.execute_query(query, tuple(params))
+    
+    @staticmethod
+    def keyword_search(query: str, locale: str = "en", category: str = None, limit: int = 5):
+        """Fallback keyword/tag search when embeddings unavailable"""
+        # Map locale to content field
+        content_fields = {
+            "en": "contentEn",
+            "pt": "contentPt",
+            "es": "contentEs"
+        }
+        content_field = content_fields.get(locale.lower(), "contentEn")
+        
+        # Build query with ILIKE for fuzzy matching
+        category_filter = "AND category = %s" if category else ""
+        like_param = f"%{query}%"
+        
+        # Adjust similarity scores for keyword fallback (higher to avoid ChatGPT threshold)
+        sql_query = f"""
+            SELECT *,
+                   (CASE 
+                       WHEN LOWER("{content_field}") LIKE LOWER(%s) THEN 0.9
+                       WHEN EXISTS (SELECT 1 FROM unnest(tags) tag WHERE LOWER(tag) LIKE LOWER(%s)) THEN 0.75
+                       ELSE 0.6
+                   END) as similarity
+            FROM aurora_semantic_memory
+            WHERE active = true 
+              AND (LOWER("{content_field}") LIKE LOWER(%s) 
+                   OR EXISTS (SELECT 1 FROM unnest(tags) tag WHERE LOWER(tag) LIKE LOWER(%s)))
+              {category_filter}
+            ORDER BY similarity DESC, confidence DESC
+            LIMIT %s
+        """
+        # Correct parameter order: [like, like, like, like, category?, limit]
+        search_params = [like_param, like_param, like_param, like_param]
+        if category:
+            search_params.append(category)
+        search_params.append(limit)
+        
+        return DatabaseConnection.execute_query(sql_query, tuple(search_params))
     
     @staticmethod
     def increment_usage(memory_id: str):
