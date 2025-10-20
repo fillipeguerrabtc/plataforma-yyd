@@ -184,16 +184,9 @@ export default function TourDetailPage() {
                       <span className="text-gray-600">/ group</span>
                     </div>
                     
-                    {/* Season selector */}
-                    <select
-                      value={selectedSeason}
-                      onChange={(e) => setSelectedSeason(e.target.value)}
-                      className="mt-4 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black"
-                    >
-                      <option value="low">Low Season (Nov-Apr)</option>
-                      <option value="high">High Season (May-Oct)</option>
-                      <option value="peak">Peak Season (Dec 23-Jan 1)</option>
-                    </select>
+                    <p className="mt-4 text-sm text-gray-600">
+                      Price varies by season. Select your date during booking to see the exact price.
+                    </p>
                   </div>
 
                   {/* Action Buttons */}

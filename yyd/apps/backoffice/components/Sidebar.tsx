@@ -54,11 +54,13 @@ export default function Sidebar() {
       {/* Sidebar */}
       <aside
         className={`
-          fixed top-0 left-0 h-screen bg-black text-white z-40 transition-transform duration-300
+          fixed top-0 left-0 h-screen z-40 transition-transform duration-300
           ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
         style={{
           width: '260px',
+          background: '#1a1a1a',
+          color: '#ffffff',
         }}
       >
       <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
@@ -93,9 +95,10 @@ export default function Sidebar() {
                 alignItems: 'center',
                 gap: '0.75rem',
                 padding: '0.75rem 1.5rem',
-                color: isActive ? 'var(--brand-turquoise)' : 'rgba(255,255,255,0.8)',
-                background: isActive ? 'rgba(55, 200, 196, 0.1)' : 'transparent',
-                borderLeft: isActive ? '3px solid var(--brand-turquoise)' : '3px solid transparent',
+                color: isActive ? '#23C0E3' : '#ffffff',
+                background: isActive ? 'rgba(35, 192, 227, 0.15)' : 'transparent',
+                borderLeft: isActive ? '3px solid #23C0E3' : '3px solid transparent',
+                textShadow: isActive ? 'none' : '0px 1px 2px rgba(0,0,0,0.5)',
                 fontSize: '0.9rem',
                 fontWeight: isActive ? '600' : 'normal',
                 transition: 'all 0.2s',
