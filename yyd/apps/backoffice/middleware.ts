@@ -1,10 +1,31 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { verifyToken } from './lib/auth';
+import { jwtVerify } from 'jose';
 
 const PUBLIC_ROUTES = ['/login', '/api/auth/login'];
+const JWT_SECRET = process.env.JWT_SECRET_KEY || 'yyd-secret-2025-change-in-production';
 
-export function middleware(request: NextRequest) {
+interface JWTPayload {
+  userId: string;
+  email: string;
+  role: string;
+}
+
+async function verifyTokenEdge(token: string): Promise<JWTPayload | null> {
+  try {
+    const secret = new TextEncoder().encode(JWT_SECRET);
+    const { payload } = await jwtVerify(token, secret);
+    return {
+      userId: payload.userId as string,
+      email: payload.email as string,
+      role: payload.role as string,
+    };
+  } catch (error) {
+    return null;
+  }
+}
+
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Allow public routes
@@ -20,7 +41,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  const user = verifyToken(token);
+  const user = await verifyTokenEdge(token);
 
   if (!user) {
     const loginUrl = new URL('/login', request.url);
