@@ -338,6 +338,43 @@ model AccountsReceivable {
   @@map("accounts_receivable")
 }
 
+model Account {
+  id             String        @id @default(cuid())
+  code           String        @unique
+  name           String
+  type           String
+  category       String?
+  balance        Decimal       @default(0) @db.Decimal(10, 2)
+  currency       String        @default("EUR")
+  active         Boolean       @default(true)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  ledgerEntries  LedgerEntry[]
+
+  @@index([type])
+  @@index([code])
+  @@map("accounts")
+}
+
+model LedgerEntry {
+  id              String   @id @default(cuid())
+  accountId       String
+  transactionId   String
+  transactionType String
+  description     String?
+  debit           Decimal  @default(0) @db.Decimal(10, 2)
+  credit          Decimal  @default(0) @db.Decimal(10, 2)
+  currency        String   @default("EUR")
+  metadata        Json?
+  createdAt       DateTime @default(now())
+  account         Account  @relation(fields: [accountId], references: [id])
+
+  @@index([accountId])
+  @@index([transactionId])
+  @@index([transactionType])
+  @@map("ledger_entries")
+}
+
 model AuroraConversation {
   id                String   @id @default(cuid())
   customerId        String?
