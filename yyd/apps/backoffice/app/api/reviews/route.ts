@@ -13,21 +13,34 @@ export async function GET(request: NextRequest) {
 
     const reviews = await prisma.review.findMany({
       where,
-      include: {
-        booking: {
-          include: {
-            product: {
-              select: {
-                titlePt: true,
-              },
-            },
-          },
-        },
-      },
       orderBy: { createdAt: 'desc' },
     });
 
-    return NextResponse.json(reviews);
+    // Batch fetch bookings to avoid N+1
+    const bookingIds = [...new Set(reviews.map(r => r.bookingId))];
+    const bookings = await prisma.booking.findMany({
+      where: {
+        id: { in: bookingIds },
+      },
+      include: {
+        product: {
+          select: {
+            titlePt: true,
+          },
+        },
+      },
+    });
+
+    // Create booking lookup map
+    const bookingMap = new Map(bookings.map(b => [b.id, b]));
+
+    // Enrich reviews with booking data
+    const enrichedReviews = reviews.map(review => ({
+      ...review,
+      booking: bookingMap.get(review.bookingId) || null,
+    }));
+
+    return NextResponse.json(enrichedReviews);
   } catch (error: any) {
     console.error('Reviews API error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -47,7 +60,7 @@ export async function PATCH(request: NextRequest) {
       where: { id: reviewId },
       data: {
         status,
-        moderatedAt: new Date(),
+        moderatedBy: 'system', // TODO: usar ID do usuário autenticado
       },
     });
 
