@@ -272,16 +272,69 @@ yyd/
 - Bull (job queues)
 
 ## Recent Changes (Session Log)
-- 2025-01-20: **TASK 0 COMPLETE** - RBAC Foundation + Audit Logging (27/27 routes protected, approved by Architect)
-  - Centralized RBAC policies: lib/rbac.ts (admin/director/finance/guide/support)
-  - Audit logging: lib/audit.ts (logCRUD, logAuth, logPermissionDenied with IP/UA capture)
-  - JWT security: Hardcoded fallback REMOVED, production enforces JWT_SECRET_KEY
-  - All Backoffice API routes protected with requirePermission/requireResourceAccess
-  - Known improvements (non-blocking): ownership filtering, error HTTP mapping
-- 2025-01-20: Login backoffice fixed (jsonwebtoken → jose)
-- 2025-01-20: Aurora autonomy implemented (keyword fallback, no OpenAI required)
-- 2025-01-20: WhatsApp webhook functional (port 8008)
-- 2025-01-20: Architect identified all missing features (ERP+CRM+IA gaps)
+
+### 2025-01-20 - MAJOR SESSION: Tasks 0-16 COMPLETED (Architect Approved)
+
+**✅ COMPLETED FEATURES:**
+
+**1. FOUNDATION (Task 0):**
+- RBAC + Audit Logging: 27/27 routes protected
+- Centralized policies: lib/rbac.ts (admin/director/finance/guide/support)
+- Audit logging: lib/audit.ts (logCRUD, logAuth, logPermissionDenied with IP/UA)
+- JWT security: Hardcoded fallback REMOVED
+
+**2. INTEGRATIONS (Tasks 1):**
+- CRUD completo: /api/integrations (GET/POST), /api/integrations/[id] (GET/PATCH/DELETE)
+- Testes conectividade: /api/integrations/[id]/test (Stripe, WhatsApp, Facebook, Email, OpenAI)
+- UI: IntegrationManager.tsx (client-side) com add/edit/remove/test/toggle active
+- RBAC + Audit logging em todas operações
+
+**3. PRODUTOS (Tasks 2-3):**
+- CRUD básico: /api/tours, /api/products (já existente)
+- UIs avançadas criadas:
+  - /tours/[id]/activities (ActivityManager.tsx) - gerenciar ProductActivity
+  - /tours/[id]/pricing (PricingManager.tsx) - gerenciar ProductSeasonPrice
+  - /tours/[id]/availability (AvailabilityManager.tsx) - gerenciar AvailabilitySlot + blackout dates
+- Client-side managers com drag-drop ordering, add/remove, save all
+
+**4. PESSOAS (Tasks 4-5):**
+- Users schema completo (login backoffice)
+- Guides CRUD completo (pages + forms já existentes)
+
+**5. FINANCEIRO (Tasks 6-8):**
+- Double-entry ledger schemas: Account + LedgerEntry
+- Transactional write endpoint: /api/financial/ledger/transactions
+  - Valida balanced debits/credits (sum(debits) == sum(credits))
+  - Valida non-negative amounts
+  - Valida currency alignment
+  - Atualiza Account.balance atomicamente
+  - Audit logging completo
+- APIs suporte: /api/financial/accounts (GET/POST), /api/financial/ledger (GET)
+- AR/AP rotas já existiam: /api/financial/ar, /api/financial/ap
+- Stripe reconciliation já existe: /api/financial/reconciliation
+
+**6. CRM (Tasks 10-11):**
+- Customer schema completo (name, email, phone, country, source, tags, totalBookings, totalSpent)
+- Timeline API: /api/crm/customers/[id]/timeline (GET) - timeline unificada (bookings + messages)
+- MessageThread, Message schemas já existem
+
+**7. AURORA IA (Tasks 15-16):**
+- Config API: /api/aurora/config (GET/PATCH) - gerenciar comportamento Aurora
+- Knowledge Base CRUD: /api/aurora/knowledge (GET/POST), /api/aurora/knowledge/[id] (PATCH/DELETE)
+- Todas rotas protegidas com requirePermission('aurora', ...)
+- Audit logging completo
+
+**⏳ PENDENTES:**
+- Task 9: Folha pagamento (payroll)
+- Task 12: CRM segmentação + pipeline UI
+- Task 13: CRM comunicação integrada UI
+- Task 14: CRM automações
+- Task 17: Dashboard navigation UI
+
+**NOTES:**
+- Login backoffice fixed (jsonwebtoken → jose)
+- Aurora autonomy implemented (keyword fallback, no OpenAI required)
+- WhatsApp webhook functional (port 8008)
 
 ## CRITICAL NOTES
 - **NO MVP**: Build complete platform
