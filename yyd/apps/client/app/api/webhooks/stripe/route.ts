@@ -81,7 +81,7 @@ async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
   }
 
   // CRITICAL: Verify payment amount matches booking total
-  const expectedAmount = Math.round(parseFloat(booking.totalPriceEur.toString()) * 100);
+  const expectedAmount = Math.round(parseFloat(booking.priceEur.toString()) * 100);
   if (paymentIntent.amount !== expectedAmount) {
     console.error(
       `Payment amount mismatch for booking ${bookingId}: expected ${expectedAmount}, got ${paymentIntent.amount}`
@@ -102,7 +102,7 @@ async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
   await prisma.payment.create({
     data: {
       bookingId: booking.id,
-      stripePaymentIntentId: paymentIntent.id,
+      stripePaymentIntent: paymentIntent.id,
       amount: paymentIntent.amount / 100, // Convert from cents
       currency: paymentIntent.currency.toUpperCase(),
       status: 'succeeded',
@@ -115,11 +115,11 @@ async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
     data: {
       productId: booking.productId,
       date: booking.date,
-      startTime: '09:00', // Default start time, can be customized
-      endTime: `${9 + booking.product.durationHours}:00`, // Based on tour duration
-      availableSeats: 0, // Fully booked
+      startTime: booking.startTime || '09:00',
+      endTime: `${parseInt(booking.startTime.split(':')[0]) + booking.product.durationHours}:00`,
+      maxSlots: 1,
+      bookedSlots: 1,
       status: 'booked',
-      bookingId: booking.id,
     },
   });
 
@@ -144,9 +144,13 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
       return;
     }
 
+    // Generate unique booking number
+    const bookingNumber = `YYD-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+    
     // Create booking
     const booking = await prisma.booking.create({
       data: {
+        bookingNumber,
         productId: tourId,
         customerId,
         date: new Date(date!),
@@ -154,7 +158,8 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
         startTime: startTime || '09:00',
         pickupLocation: pickupLocation || '',
         specialRequests: specialRequests || '',
-        totalPriceEur: (session.amount_total || 0) / 100,
+        priceEur: (session.amount_total || 0) / 100,
+        season: 'high', // TODO: Calculate based on date
         status: 'confirmed',
         confirmedAt: new Date(),
       },
@@ -164,12 +169,14 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
     await prisma.payment.create({
       data: {
         bookingId: booking.id,
-        stripeSessionId: session.id,
-        stripePaymentIntentId: session.payment_intent as string || '',
+        stripePaymentIntent: session.payment_intent as string || '',
         amount: (session.amount_total || 0) / 100,
         currency: 'EUR',
         status: 'succeeded',
         paidAt: new Date(),
+        metadata: {
+          sessionId: session.id,
+        },
       },
     });
 

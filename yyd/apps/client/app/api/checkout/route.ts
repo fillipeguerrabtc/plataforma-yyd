@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 import { prisma } from '@/lib/prisma';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
+  apiVersion: '2024-06-20',
 });
 
 export async function POST(request: Request) {
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
             product_data: {
               name: tour.titleEn,
               description: `${tour.categoryEn} - ${date}`,
-              images: tour.imageUrl ? [tour.imageUrl] : [],
+              images: tour.imageUrls && tour.imageUrls.length > 0 ? [tour.imageUrls[0]] : [],
             },
             unit_amount: Math.round(calculatedPrice * 100), // Convert to cents
           },

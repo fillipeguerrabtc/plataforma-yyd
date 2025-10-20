@@ -1,142 +1,142 @@
-# 🚀 YYD Platform - Yes, You Deserve! (v2.0 Production)
+# 🚀 Plataforma YYD - Yes, You Deserve! (v2.0 Produção)
 
-**Premium Electric Tuk-Tuk Tour Platform** for Sintra & Cascais, Portugal
+**Plataforma Premium de Tours em Tuk-Tuk Elétrico** para Sintra e Cascais, Portugal
 
-**Founded by**: Daniel Ponce  
-**Featured on**: ABC Good Morning America  
-**Reviews**: 200+ 5-star TripAdvisor reviews  
-
----
-
-## 📚 Documentation Index
-
-This `/docs` folder contains **COMPLETE** technical documentation for the YYD platform:
-
-### Core Documentation
-- **[IMPLEMENTATION-STATUS.md](./IMPLEMENTATION-STATUS.md)** - Current status of ALL 63 production features
-- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Complete technical architecture
-- **[API-REFERENCE.md](./API-REFERENCE.md)** - All API endpoints with examples
-- **[AUTHENTICATION.md](./AUTHENTICATION.md)** - RBAC authentication system
-- **[STRIPE-MIGRATION.md](./STRIPE-MIGRATION.md)** - Stripe test → live migration guide
-- **[CHANGELOG.md](./CHANGELOG.md)** - Complete change history
-
-### Additional Resources
-- **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Production deployment guide
-- **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Local development setup
-- **[TESTING.md](./TESTING.md)** - Testing strategy and QA
-- **[SECURITY.md](./SECURITY.md)** - Security best practices
+**Fundador**: Daniel Ponce  
+**Destaque**: ABC Good Morning America  
+**Avaliações**: Mais de 200 avaliações 5 estrelas no TripAdvisor  
 
 ---
 
-## 🎯 Platform Overview
+## 📚 Índice da Documentação
 
-### Three Core Modules
+Esta pasta `/docs` contém **TODA** a documentação técnica da plataforma YYD:
 
-#### 1️⃣ **Client App** (Port 5000)
-Public-facing website where customers:
-- Browse 3 real tours (Half-Day €340-400, Full-Day €440-520, All-Inclusive €580-1650)
-- Complete booking flow with seasonal pricing
-- Pay securely via Stripe
-- Receive automatic PDF vouchers
-- Chat with Aurora IA
+### Documentação Principal
+- **[IMPLEMENTACAO-STATUS.md](./IMPLEMENTACAO-STATUS.md)** ✅ - Status atual de TODAS as 63 funcionalidades de produção
+- **[CHANGELOG.md](./CHANGELOG.md)** ✅ - Histórico completo de mudanças
+- **[AUTENTICACAO.md](./AUTENTICACAO.md)** 🔄 - Sistema de autenticação RBAC (em tradução)
+- **[API-REFERENCIA.md](./API-REFERENCIA.md)** 🔄 - Todos os endpoints da API com exemplos (em tradução)
+- **[STRIPE-MIGRACAO.md](./STRIPE-MIGRACAO.md)** 🔄 - Guia de migração Stripe test → live (em tradução)
+- **[ARQUITETURA.md](./ARQUITETURA.md)** ⏳ - Arquitetura técnica completa (pendente)
 
-**Tech Stack**: Next.js 14, Stripe, Tailwind CSS, PostgreSQL
+### Recursos Adicionais
+- **[DEPLOY.md](./DEPLOY.md)** - Guia de deploy em produção
+- **[DESENVOLVIMENTO.md](./DESENVOLVIMENTO.md)** - Setup de desenvolvimento local
+- **[TESTES.md](./TESTES.md)** - Estratégia de testes e QA
+- **[SEGURANCA.md](./SEGURANCA.md)** - Melhores práticas de segurança
 
-#### 2️⃣ **Backoffice App** (Port 3001)
-Admin ERP/CRM system with:
-- Dashboard with real-time stats
-- Complete booking management
-- Calendar view with guide assignments
-- Tours CRUD (multilingual PT/EN/ES)
-- Guides, Customers, Financial management
-- Aurora IA configuration
-- RBAC authentication (5 roles)
+---
 
-**Tech Stack**: Next.js 14, Prisma ORM, JWT Auth, RBAC
+## 🎯 Visão Geral da Plataforma
+
+### Três Módulos Principais
+
+#### 1️⃣ **Client App** (Porta 5000)
+Website público onde clientes:
+- Navegam pelos 3 tours reais (Meio-Dia €340-400, Dia Completo €440-520, Premium €580-1650)
+- Completam fluxo de reserva com preços sazonais
+- Pagam com segurança via Stripe
+- Recebem vouchers PDF automaticamente
+- Conversam com Aurora IA
+
+**Stack Técnica**: Next.js 14, Stripe, Tailwind CSS, PostgreSQL
+
+#### 2️⃣ **Backoffice App** (Porta 3001)
+Sistema administrativo ERP/CRM com:
+- Dashboard com estatísticas em tempo real
+- Gestão completa de reservas
+- Calendário com atribuição de guias
+- CRUD de Tours (multilíngue PT/EN/ES)
+- Gestão de Guias, Clientes, Financeiro
+- Configuração Aurora IA
+- Autenticação RBAC (5 perfis)
+
+**Stack Técnica**: Next.js 14, Prisma ORM, JWT Auth, RBAC
 
 #### 3️⃣ **Aurora IA**
-Autonomous AI concierge that:
-- Responds via WhatsApp & Facebook Messenger
-- Provides tour information in 3 languages
-- Creates complete bookings via chat
-- Generates Stripe payment links
-- Hands off complex queries to humans
-- Self-evaluates and improves
+Concierge de IA autônomo que:
+- Responde via WhatsApp & Facebook Messenger
+- Fornece informações sobre tours em 3 idiomas
+- Cria reservas completas via chat
+- Gera links de pagamento Stripe
+- Transfere consultas complexas para humanos
+- Auto-avalia e melhora continuamente
 
-**Tech Stack**: OpenAI GPT-4o-mini, WhatsApp Cloud API, Facebook Graph API
+**Stack Técnica**: OpenAI GPT-4o-mini, WhatsApp Cloud API, Facebook Graph API
 
 ---
 
-## 🎨 Brand Identity
+## 🎨 Identidade Visual
 
-### Official YYD Visual Identity
-- **Primary**: Turquoise `#23C0E3`
-- **Secondary**: WhatsApp Green `#25D366`
-- **Accent**: Yellow `#FFD700`
-- **Text**: Dark Gray `#333333`
-- **Background**: White `#FFFFFF`
+### Identidade Visual Oficial YYD
+- **Primária**: Turquesa `#23C0E3`
+- **Secundária**: Verde WhatsApp `#25D366`
+- **Destaque**: Amarelo `#FFD700`
+- **Texto**: Cinza Escuro `#333333`
+- **Fundo**: Branco `#FFFFFF`
 
-### Typography
-- **Script Titles**: Pacifico (cursive)
-- **Body Text**: Montserrat (sans-serif)
-- **Numbers**: Poppins (sans-serif)
+### Tipografia
+- **Títulos Script**: Pacifico (cursiva)
+- **Texto Corpo**: Montserrat (sans-serif)
+- **Números**: Poppins (sans-serif)
 
 ### Logo
-Circular "Yes, you deserve!" script logo appears on **ALL pages** (Client + Backoffice)
+Logo circular "Yes, you deserve!" em script aparece em **TODAS as páginas** (Cliente + Backoffice)
 
 ---
 
-## 🗄️ Database Schema
+## 🗄️ Esquema do Banco de Dados
 
-**Technology**: PostgreSQL via Prisma ORM
+**Tecnologia**: PostgreSQL via Prisma ORM
 
-### Core Models
-- `Product` - Tours with multilingual content (PT/EN/ES)
-- `ProductSeasonPrice` - Seasonal pricing tiers
-- `Booking` - Tour reservations
-- `Customer` - CRM data
-- `Guide` - Drivers with certifications
-- `Payment` - Stripe payments
-- `User` - Backoffice staff with RBAC roles
-- `AuroraConversation` - AI chat logs
+### Modelos Principais
+- `Product` - Tours com conteúdo multilíngue (PT/EN/ES)
+- `ProductSeasonPrice` - Preços sazonais
+- `Booking` - Reservas de tours
+- `Customer` - Dados CRM
+- `Guide` - Motoristas com certificações
+- `Payment` - Pagamentos Stripe
+- `User` - Staff do Backoffice com perfis RBAC
+- `AuroraConversation` - Logs de chat IA
 
-See [ARCHITECTURE.md](./ARCHITECTURE.md) for complete schema.
-
----
-
-## 🔐 Authentication & Security
-
-### RBAC System (5 Roles)
-1. **Admin** - Full system access
-2. **Director** - Business operations + reports
-3. **Finance** - Financial data only
-4. **Guide** - Own bookings + calendar
-5. **Support** - Customer service
-
-### Security Features
-- JWT authentication with 7-day expiry
-- HTTP-only cookies
-- bcrypt password hashing (10 rounds)
-- Protected API routes
-- Middleware auth checks on ALL Backoffice routes
-
-**Default Login**: `admin@yyd.tours` / `admin123`
-
-See [AUTHENTICATION.md](./AUTHENTICATION.md) for details.
+Ver [ARQUITETURA.md](./ARQUITETURA.md) para esquema completo.
 
 ---
 
-## 🚀 Quick Start
+## 🔐 Autenticação & Segurança
 
-### Prerequisites
+### Sistema RBAC (5 Perfis)
+1. **Admin** - Acesso total ao sistema
+2. **Diretor** - Operações comerciais + relatórios
+3. **Financeiro** - Apenas dados financeiros
+4. **Guia** - Apenas próprias reservas + calendário
+5. **Suporte** - Atendimento ao cliente
+
+### Recursos de Segurança
+- Autenticação JWT com expiração de 7 dias
+- Cookies HTTP-only
+- Hashing de senha bcrypt (10 rounds)
+- Rotas API protegidas
+- Verificações de autenticação via middleware em TODAS as rotas do Backoffice
+
+**Login Padrão**: `admin@yyd.tours` / `admin123`
+
+Ver [AUTENTICACAO.md](./AUTENTICACAO.md) para detalhes.
+
+---
+
+## 🚀 Início Rápido
+
+### Pré-requisitos
 - Node.js 20+
-- PostgreSQL database
-- Stripe account
-- OpenAI API key
+- Banco de dados PostgreSQL
+- Conta Stripe
+- Chave API OpenAI
 
-### Environment Variables
+### Variáveis de Ambiente
 ```env
-# Database
+# Banco de Dados
 DATABASE_URL=postgresql://...
 PGHOST=...
 PGUSER=...
@@ -144,26 +144,26 @@ PGPASSWORD=...
 PGDATABASE=...
 PGPORT=5432
 
-# Authentication
-JWT_SECRET_KEY=your-secret-key
+# Autenticação
+JWT_SECRET_KEY=sua-chave-secreta
 
 # Stripe
-STRIPE_SECRET_KEY=sk_...
-NEXT_PUBLIC_STRIPE_PUBLIC_KEY=pk_...
+STRIPE_SECRET_KEY=sk_test_...
+NEXT_PUBLIC_STRIPE_PUBLIC_KEY=pk_test_...
 
 # OpenAI
 OPENAI_API_KEY=sk-...
 
-# WhatsApp (optional)
+# WhatsApp (opcional)
 WHATSAPP_ACCESS_TOKEN=...
 WHATSAPP_PHONE_NUMBER_ID=...
 
-# Facebook (optional)
+# Facebook (opcional)
 FACEBOOK_PAGE_ACCESS_TOKEN=...
 FACEBOOK_PAGE_ID=...
 ```
 
-### Installation
+### Instalação
 ```bash
 cd yyd
 pnpm install
@@ -173,30 +173,31 @@ npx tsx prisma/seed-admin.ts
 pnpm dev
 ```
 
-### Access
-- **Client**: http://localhost:5000
+### Acesso
+- **Cliente**: http://localhost:5000
 - **Backoffice**: http://localhost:3001
 - **Login**: admin@yyd.tours / admin123
 
 ---
 
-## 📊 Implementation Status
+## 📊 Status da Implementação
 
-**Total Features**: 63  
-**Completed**: 12 ✅  
-**In Progress**: 51 🔄  
+**Total de Funcionalidades**: 63  
+**Completas**: 14 ✅  
+**Em Progresso**: 0 🔄  
+**Pendentes**: 49 ⏳  
 
-See [IMPLEMENTATION-STATUS.md](./IMPLEMENTATION-STATUS.md) for detailed breakdown.
+Ver [IMPLEMENTACAO-STATUS.md](./IMPLEMENTACAO-STATUS.md) para detalhamento completo.
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Stack Tecnológica
 
 ### Frontend
 - Next.js 14 (App Router)
 - React 18
 - TypeScript
-- Tailwind CSS (via custom globals.css)
+- Tailwind CSS (via globals.css customizado)
 
 ### Backend
 - Next.js API Routes
@@ -204,60 +205,60 @@ See [IMPLEMENTATION-STATUS.md](./IMPLEMENTATION-STATUS.md) for detailed breakdow
 - PostgreSQL (Neon)
 - bcryptjs + JWT
 
-### Payments
+### Pagamentos
 - Stripe (Checkout + Webhooks)
 
-### AI/ML
+### IA/ML
 - OpenAI GPT-4o-mini
-- Custom prompt engineering
+- Engenharia de prompts customizada
 
-### Integrations
+### Integrações
 - WhatsApp Cloud API
 - Facebook Graph API
 - PDFKit (vouchers)
-- QRCode generation
+- Geração de QRCode
 
 ---
 
-## 📝 Development Workflow
+## 📝 Fluxo de Desenvolvimento
 
-1. **Feature Development**
-   - Create feature branch
-   - Implement with tests
-   - Document in `/docs`
-   - Update IMPLEMENTATION-STATUS.md
-   - Create PR with screenshots
+1. **Desenvolvimento de Funcionalidades**
+   - Criar branch da funcionalidade
+   - Implementar com testes
+   - Documentar em `/docs`
+   - Atualizar IMPLEMENTACAO-STATUS.md
+   - Criar PR com screenshots
 
-2. **Code Standards**
+2. **Padrões de Código**
    - TypeScript strict mode
-   - Prisma for all DB operations
-   - Server-side validation
-   - Error handling on all APIs
+   - Prisma para todas operações DB
+   - Validação server-side
+   - Tratamento de erros em todas APIs
 
-3. **Documentation**
-   - Update docs BEFORE merging
-   - Include API examples
-   - Add security notes
-   - Update changelog
-
----
-
-## 🔗 External Links
-
-- **Live Site**: https://www.yesyoudeserve.tours
-- **TripAdvisor**: [200+ 5-star reviews]
-- **ABC Feature**: Good Morning America
+3. **Documentação**
+   - Atualizar docs ANTES de merge
+   - Incluir exemplos de API
+   - Adicionar notas de segurança
+   - Atualizar changelog
 
 ---
 
-## 📧 Contact
+## 🔗 Links Externos
 
-**Technical Support**: Fillipe Guerra  
-**Business**: Daniel Ponce (daniel@yyd.tours)  
-**Location**: Sintra & Cascais, Portugal  
+- **Site Oficial**: https://www.yesyoudeserve.tours
+- **TripAdvisor**: [Mais de 200 avaliações 5 estrelas]
+- **Destaque ABC**: Good Morning America
 
 ---
 
-**Last Updated**: 2025-10-20  
-**Version**: 2.0.0 Production (In Development)  
-**License**: Proprietary - Yes, You Deserve! Ltd.
+## 📧 Contato
+
+**Suporte Técnico**: Fillipe Guerra  
+**Comercial**: Daniel Ponce (daniel@yyd.tours)  
+**Localização**: Sintra e Cascais, Portugal  
+
+---
+
+**Última Atualização**: 2025-10-20  
+**Versão**: 2.0.0 Produção (Em Desenvolvimento)  
+**Licença**: Proprietária - Yes, You Deserve! Ltd.
