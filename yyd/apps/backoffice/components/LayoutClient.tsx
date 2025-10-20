@@ -12,11 +12,30 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
 
   useEffect(() => {
     setMounted(true);
-    const userStr = localStorage.getItem('yyd-user');
-    setIsAuthenticated(!!userStr);
     
-    if (!userStr && pathname !== '/login') {
-      router.push('/login');
+    if (pathname === '/login') {
+      setIsAuthenticated(false);
+      return;
+    }
+    
+    const userStr = localStorage.getItem('yyd-user');
+    
+    if (userStr) {
+      setIsAuthenticated(true);
+    } else {
+      setTimeout(() => {
+        const recheckUser = localStorage.getItem('yyd-user');
+        if (recheckUser) {
+          setIsAuthenticated(true);
+        } else {
+          const hasCookie = document.cookie.includes('auth-token');
+          if (hasCookie) {
+            setIsAuthenticated(true);
+          } else {
+            router.push('/login');
+          }
+        }
+      }, 300);
     }
   }, [pathname, router]);
 

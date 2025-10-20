@@ -55,7 +55,7 @@ export default function BookTourPage() {
       const tourData = await tourRes.json();
       const addonsData = await addonsRes.json();
 
-      setTour(tourData.product);
+      setTour(tourData);
       setAddons(addonsData.addons || []);
 
       // Set season based on current date
