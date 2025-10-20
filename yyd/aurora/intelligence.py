@@ -140,7 +140,7 @@ class AuroraIntelligence:
     def __init__(self):
         self.client = client
         self.analyzer = AffectiveAnalyzer()
-        self.model = "gpt-4-turbo-preview"  # Use latest GPT-4 model
+        self.model = "gpt-4"  # Use GPT-4 model
     
     def generate_response(
         self,
