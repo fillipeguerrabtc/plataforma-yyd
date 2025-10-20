@@ -160,7 +160,7 @@ export default async function Home() {
                     tier: sp.tier,
                     minPeople: sp.minPeople,
                     maxPeople: sp.maxPeople,
-                    priceEur: sp.priceEur,
+                    priceEur: Number(sp.priceEur),
                     pricePerPerson: sp.pricePerPerson,
                   }))
                 );
