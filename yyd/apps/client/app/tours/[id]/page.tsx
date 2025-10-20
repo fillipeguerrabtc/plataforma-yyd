@@ -118,9 +118,11 @@ export default function TourDetailPage() {
             {/* Left Column - Tour Info */}
             <div className="lg:col-span-2">
               <div className="mb-8">
-                <span className="inline-block px-3 py-1 bg-black text-white text-sm font-medium rounded-full mb-4">
-                  {tour.tourType.replace('-', ' ').toUpperCase()}
-                </span>
+                {tour.tourType && (
+                  <span className="inline-block px-3 py-1 bg-black text-white text-sm font-medium rounded-full mb-4">
+                    {tour.tourType.replace('-', ' ').toUpperCase()}
+                  </span>
+                )}
                 <h1 className="text-4xl font-bold text-black mb-4">
                   {tour.nameEn}
                 </h1>
