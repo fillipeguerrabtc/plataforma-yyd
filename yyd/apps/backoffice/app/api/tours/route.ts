@@ -1,12 +1,13 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAuth } from '@/lib/auth';
+import { requirePermission } from '@/lib/auth';
+import { logCRUD } from '@/lib/audit';
 import { tourSchema } from '@/lib/validators';
 
 export async function POST(request: Request) {
   try {
-    // Require admin or director role
-    requireAuth(request, ['admin', 'director']);
+    // Require permission to create products
+    const user = requirePermission(request, 'products', 'create');
     
     const rawData = await request.json();
     
@@ -32,6 +33,17 @@ export async function POST(request: Request) {
         updatedAt: new Date(),
       },
     });
+
+    // Log creation in audit log
+    await logCRUD(
+      user.userId,
+      user.email,
+      'create',
+      'products',
+      tour.id,
+      { before: null, after: tour },
+      request
+    );
 
     return NextResponse.json({ success: true, tour });
   } catch (error: any) {

@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAuth } from '@/lib/auth';
+import { requirePermission } from '@/lib/auth';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const user = requireAuth(request, ['admin', 'director']);
+    requirePermission(request, 'products', 'update');
 
     const prices = await prisma.productSeasonPrice.findMany({
       where: { productId: params.id },
@@ -25,7 +25,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const user = requireAuth(request, ['admin', 'director']);
+    requirePermission(request, 'products', 'update');
     const body = await request.json();
 
     // Delete all existing prices

@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireResourceAccess, requirePermission } from '@/lib/auth';
+import { logCRUD } from '@/lib/audit';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    // Require access to products resource
+    requireResourceAccess(request, 'products');
+    
     const products = await prisma.product.findMany({
       include: {
         seasonPrices: { orderBy: { minPeople: 'asc' } },
@@ -26,6 +31,8 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    // Require permission to create products
+    const user = requirePermission(request, 'products', 'create');
     const body = await request.json();
     const {
       slug,
@@ -69,6 +76,17 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Log creation in audit log
+    await logCRUD(
+      user.userId,
+      user.email,
+      'create',
+      'products',
+      product.id,
+      { before: null, after: product },
+      request
+    );
+
     return NextResponse.json(product);
   } catch (error: any) {
     console.error('Product create error:', error);
@@ -78,6 +96,8 @@ export async function POST(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
+    // Require permission to update products
+    const user = requirePermission(request, 'products', 'update');
     const body = await request.json();
     const { id, ...updates } = body;
 
@@ -85,10 +105,24 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'Product ID required' }, { status: 400 });
     }
 
+    // Get before state for audit log
+    const before = await prisma.product.findUnique({ where: { id } });
+
     const product = await prisma.product.update({
       where: { id },
       data: updates,
     });
+
+    // Log update in audit log
+    await logCRUD(
+      user.userId,
+      user.email,
+      'update',
+      'products',
+      product.id,
+      { before, after: product },
+      request
+    );
 
     return NextResponse.json(product);
   } catch (error: any) {

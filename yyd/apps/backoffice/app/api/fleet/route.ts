@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAuth } from '@/lib/auth';
+import { requireResourceAccess, requirePermission } from '@/lib/auth';
+import { logCRUD } from '@/lib/audit';
 
 export async function GET(request: NextRequest) {
   try {
-    const user = requireAuth(request, ['admin', 'director']);
+    // Require access to fleet resource
+    requireResourceAccess(request, 'fleet');
 
     const fleet = await prisma.fleet.findMany({
       orderBy: { licensePlate: 'asc' },
@@ -18,7 +20,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = requireAuth(request, ['admin', 'director']);
+    // Require permission to create fleet vehicles
+    const user = requirePermission(request, 'fleet', 'create');
     const body = await request.json();
 
     const vehicle = await prisma.fleet.create({
@@ -41,6 +44,17 @@ export async function POST(request: NextRequest) {
         active: body.active !== undefined ? body.active : true,
       },
     });
+
+    // Log creation in audit log
+    await logCRUD(
+      user.userId,
+      user.email,
+      'create',
+      'fleet',
+      vehicle.id,
+      { before: null, after: vehicle },
+      request
+    );
 
     return NextResponse.json(vehicle);
   } catch (error: any) {

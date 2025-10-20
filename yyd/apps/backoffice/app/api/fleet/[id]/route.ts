@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAuth } from '@/lib/auth';
+import { requireResourceAccess, requirePermission } from '@/lib/auth';
+import { logCRUD } from '@/lib/audit';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const user = requireAuth(request, ['admin', 'director']);
+    // Require access to fleet resource
+    requireResourceAccess(request, 'fleet');
 
     const vehicle = await prisma.fleet.findUnique({
       where: { id: params.id },
@@ -28,8 +30,12 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const user = requireAuth(request, ['admin', 'director']);
+    // Require permission to update fleet
+    const user = requirePermission(request, 'fleet', 'update');
     const body = await request.json();
+
+    // Get before state for audit log
+    const before = await prisma.fleet.findUnique({ where: { id: params.id } });
 
     const vehicle = await prisma.fleet.update({
       where: { id: params.id },
@@ -53,6 +59,17 @@ export async function PUT(
       },
     });
 
+    // Log update in audit log
+    await logCRUD(
+      user.userId,
+      user.email,
+      'update',
+      'fleet',
+      vehicle.id,
+      { before, after: vehicle },
+      request
+    );
+
     return NextResponse.json(vehicle);
   } catch (error: any) {
     console.error('Fleet update error:', error);
@@ -65,11 +82,26 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const user = requireAuth(request, ['admin']);
+    // Require permission to delete fleet
+    const user = requirePermission(request, 'fleet', 'delete');
+
+    // Get before state for audit log
+    const before = await prisma.fleet.findUnique({ where: { id: params.id } });
 
     await prisma.fleet.delete({
       where: { id: params.id },
     });
+
+    // Log deletion in audit log
+    await logCRUD(
+      user.userId,
+      user.email,
+      'delete',
+      'fleet',
+      params.id,
+      { before, after: null },
+      request
+    );
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

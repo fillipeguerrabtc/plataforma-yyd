@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAuth } from '@/lib/auth';
+import { requirePermission } from '@/lib/auth';
+import { logCRUD } from '@/lib/audit';
 import { tourSchema } from '@/lib/validators';
 
 export async function PUT(
@@ -8,8 +9,8 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Require admin or director role
-    requireAuth(request, ['admin', 'director']);
+    // Require permission to update products
+    const user = requirePermission(request, 'products', 'update');
     
     const rawData = await request.json();
     
@@ -28,6 +29,9 @@ export async function PUT(
     
     const data = validationResult.data;
 
+    // Get before state for audit log
+    const before = await prisma.product.findUnique({ where: { id: params.id } });
+
     const tour = await prisma.product.update({
       where: { id: params.id },
       data: {
@@ -35,6 +39,17 @@ export async function PUT(
         updatedAt: new Date(),
       },
     });
+
+    // Log update in audit log
+    await logCRUD(
+      user.userId,
+      user.email,
+      'update',
+      'products',
+      tour.id,
+      { before, after: tour },
+      request
+    );
 
     return NextResponse.json({ success: true, tour });
   } catch (error: any) {
@@ -48,12 +63,26 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Require admin role only
-    requireAuth(request, ['admin']);
+    // Require permission to delete products
+    const user = requirePermission(request, 'products', 'delete');
+    
+    // Get before state for audit log
+    const before = await prisma.product.findUnique({ where: { id: params.id } });
     
     await prisma.product.delete({
       where: { id: params.id },
     });
+
+    // Log deletion in audit log
+    await logCRUD(
+      user.userId,
+      user.email,
+      'delete',
+      'products',
+      params.id,
+      { before, after: null },
+      request
+    );
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireResourceAccess } from '@/lib/auth';
 
 // GET /api/monuments/availability - Check monument ticket availability
 export async function GET(request: NextRequest) {
   try {
+    requireResourceAccess(request, 'bookings');
     const { searchParams } = new URL(request.url);
     const monumentId = searchParams.get('monumentId');
     const date = searchParams.get('date');

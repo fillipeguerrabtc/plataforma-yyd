@@ -1,16 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAuth } from '@/lib/auth';
+import { requirePermission } from '@/lib/auth';
+import { logCRUD } from '@/lib/audit';
 
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const user = requireAuth(request, ['admin', 'director']);
+    const user = requirePermission(request, 'reviews', 'update');
     const body = await request.json();
 
     const { status, responseText } = body;
+
+    const before = await prisma.review.findUnique({ where: { id: params.id } });
 
     const review = await prisma.review.update({
       where: { id: params.id },
@@ -23,6 +26,8 @@ export async function POST(
         respondedBy: responseText ? user.userId : null,
       },
     });
+
+    await logCRUD(user.userId, user.email, 'update', 'reviews', review.id, { before, after: review }, request);
 
     return NextResponse.json(review);
   } catch (error: any) {

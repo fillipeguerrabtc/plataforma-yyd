@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requirePermission } from '@/lib/auth';
 
 // POST /api/monuments/book - Book monument tickets through external provider
 export async function POST(request: NextRequest) {
   try {
+    requirePermission(request, 'bookings', 'update');
     const body = await request.json();
     const { bookingId, monumentId, date, numberOfTickets, provider } = body;
 

@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireResourceAccess, requirePermission } from '@/lib/auth';
+import { logCRUD } from '@/lib/audit';
 
 // GET /api/financial/ap - List accounts payable
 export async function GET(request: NextRequest) {
   try {
+    // Require access to finance resource
+    requireResourceAccess(request, 'finance');
+    
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
 
@@ -27,6 +32,9 @@ export async function GET(request: NextRequest) {
 // POST /api/financial/ap - Create new payable
 export async function POST(request: NextRequest) {
   try {
+    // Require permission to create finance entries
+    const user = requirePermission(request, 'finance', 'create');
+    
     const body = await request.json();
     const { vendor, description, amount, dueDate } = body;
 
@@ -46,6 +54,17 @@ export async function POST(request: NextRequest) {
         status: 'open',
       },
     });
+
+    // Log creation in audit log
+    await logCRUD(
+      user.userId,
+      user.email,
+      'create',
+      'finance',
+      accountPayable.id,
+      { before: null, after: accountPayable },
+      request
+    );
 
     return NextResponse.json(accountPayable);
   } catch (error: any) {

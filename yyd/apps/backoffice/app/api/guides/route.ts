@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAuth } from '@/lib/auth';
+import { requireResourceAccess, requirePermission } from '@/lib/auth';
+import { logCRUD } from '@/lib/audit';
 
 export async function GET(request: NextRequest) {
   try {
-    const user = requireAuth(request, ['admin', 'director', 'guide']);
+    // Require access to guides resource (any role that can view guides)
+    requireResourceAccess(request, 'guides');
 
     const guides = await prisma.guide.findMany({
       orderBy: { name: 'asc' },
@@ -18,7 +20,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = requireAuth(request, ['admin', 'director']);
+    // Require permission to create guides
+    const user = requirePermission(request, 'guides', 'create');
     const body = await request.json();
 
     const guide = await prisma.guide.create({
@@ -33,6 +36,17 @@ export async function POST(request: NextRequest) {
         active: body.active !== undefined ? body.active : true,
       },
     });
+
+    // Log creation in audit log
+    await logCRUD(
+      user.userId,
+      user.email,
+      'create',
+      'guides',
+      guide.id,
+      { before: null, after: guide },
+      request
+    );
 
     return NextResponse.json(guide);
   } catch (error: any) {

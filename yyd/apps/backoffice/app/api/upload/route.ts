@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { randomBytes } from 'crypto';
-import { verifyToken } from '@/lib/auth';
+import { requirePermission } from '@/lib/auth';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_TYPES = [
@@ -15,16 +15,8 @@ const ALLOWED_TYPES = [
 
 export async function POST(request: NextRequest) {
   try {
-    // Verify authentication
-    const token = request.cookies.get('token')?.value;
-    if (!token) {
-      return NextResponse.json({ error: 'Não autenticado' }, { status: 401 });
-    }
-
-    const user = verifyToken(token);
-    if (!user || !['admin', 'director'].includes(user.role)) {
-      return NextResponse.json({ error: 'Sem permissão' }, { status: 403 });
-    }
+    // Require permission to upload files
+    requirePermission(request, 'products', 'create');
 
     // Parse form data
     const formData = await request.formData();

@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requirePermission } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
+    // Require admin permission to test emails
+    requirePermission(request, 'analytics', 'read');
+    
     const { to, templateId } = await request.json();
 
     if (!to || !templateId) {

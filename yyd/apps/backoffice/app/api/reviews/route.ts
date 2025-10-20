@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireResourceAccess, requirePermission } from '@/lib/auth';
+import { logCRUD } from '@/lib/audit';
 
 export async function GET(request: NextRequest) {
   try {
+    // Require access to reviews resource
+    requireResourceAccess(request, 'reviews');
+    
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
 
@@ -49,6 +54,9 @@ export async function GET(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
+    // Require permission to update reviews
+    const user = requirePermission(request, 'reviews', 'update');
+    
     const body = await request.json();
     const { reviewId, status } = body;
 
@@ -56,13 +64,27 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'reviewId and status required' }, { status: 400 });
     }
 
+    // Get before state for audit log
+    const before = await prisma.review.findUnique({ where: { id: reviewId } });
+
     const review = await prisma.review.update({
       where: { id: reviewId },
       data: {
         status,
-        moderatedBy: 'system', // TODO: usar ID do usuário autenticado
+        moderatedBy: user.userId, // Use authenticated user ID
       },
     });
+
+    // Log update in audit log
+    await logCRUD(
+      user.userId,
+      user.email,
+      'update',
+      'reviews',
+      review.id,
+      { before, after: review },
+      request
+    );
 
     return NextResponse.json(review);
   } catch (error: any) {

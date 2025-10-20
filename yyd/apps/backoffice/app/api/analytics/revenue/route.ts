@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireResourceAccess } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
+    requireResourceAccess(request, 'analytics');
     const { searchParams } = new URL(request.url);
     const period = searchParams.get('period') || '30'; // days
     const days = parseInt(period);

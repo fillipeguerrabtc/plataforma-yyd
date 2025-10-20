@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireResourceAccess, requirePermission } from '@/lib/auth';
+import { logCRUD } from '@/lib/audit';
 
 export async function GET(request: NextRequest) {
   try {
+    // Require access to bookings resource
+    requireResourceAccess(request, 'bookings');
+    
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
     const date = searchParams.get('date');
@@ -75,6 +80,8 @@ export async function GET(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
+    // Require permission to update bookings
+    const user = requirePermission(request, 'bookings', 'update');
     const body = await request.json();
     const { bookingId, status, guideId, vehicleId, notes } = body;
 
@@ -89,6 +96,9 @@ export async function PATCH(request: NextRequest) {
     if (vehicleId !== undefined) updateData.vehicleId = vehicleId;
     if (notes !== undefined) updateData.specialRequests = notes;
 
+    // Get before state for audit log
+    const before = await prisma.booking.findUnique({ where: { id: bookingId } });
+
     const booking = await prisma.booking.update({
       where: { id: bookingId },
       data: updateData,
@@ -98,6 +108,17 @@ export async function PATCH(request: NextRequest) {
         guide: true,
       },
     });
+
+    // Log update in audit log
+    await logCRUD(
+      user.userId,
+      user.email,
+      'update',
+      'bookings',
+      booking.id,
+      { before, after: booking },
+      request
+    );
 
     return NextResponse.json(booking);
   } catch (error: any) {

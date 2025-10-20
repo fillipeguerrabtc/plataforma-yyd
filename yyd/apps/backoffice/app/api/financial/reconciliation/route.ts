@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireResourceAccess } from '@/lib/auth';
 
 // GET /api/financial/reconciliation - Get financial reconciliation data
 export async function GET(request: NextRequest) {
   try {
+    // Require access to finance resource
+    requireResourceAccess(request, 'finance');
+    
     const { searchParams } = new URL(request.url);
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');

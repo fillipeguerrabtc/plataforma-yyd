@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { comparePassword, generateToken } from '@/lib/auth';
+import { logAuth } from '@/lib/audit';
 
 export async function POST(request: Request) {
   try {
@@ -18,6 +19,9 @@ export async function POST(request: Request) {
     });
 
     if (!user || !user.active) {
+      // Log failed login attempt
+      await logAuth('LOGIN_FAILED', email, request);
+      
       return NextResponse.json(
         { error: 'Invalid credentials' },
         { status: 401 }
@@ -27,6 +31,9 @@ export async function POST(request: Request) {
     const isValidPassword = await comparePassword(password, user.passwordHash);
 
     if (!isValidPassword) {
+      // Log failed login attempt
+      await logAuth('LOGIN_FAILED', email, request);
+      
       return NextResponse.json(
         { error: 'Invalid credentials' },
         { status: 401 }
@@ -38,6 +45,9 @@ export async function POST(request: Request) {
       where: { id: user.id },
       data: { lastLoginAt: new Date() },
     });
+
+    // Log successful login
+    await logAuth('LOGIN', user.email, request);
 
     // Generate JWT token
     const token = generateToken({

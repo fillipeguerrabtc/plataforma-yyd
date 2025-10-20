@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireResourceAccess } from '@/lib/auth';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    // Require access to analytics resource
+    requireResourceAccess(request, 'analytics');
+    
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const tomorrow = new Date(today);
@@ -45,8 +49,8 @@ export async function GET() {
           paidAt: { gte: thirtyDaysAgo },
         },
       }),
-      prisma.guide.count({ where: { status: 'active' } }),
-      prisma.vehicle.count({ where: { status: 'active' } }),
+      prisma.guide.count({ where: { active: true } }),
+      prisma.fleet.count({ where: { active: true } }),
     ]);
 
     return NextResponse.json({
