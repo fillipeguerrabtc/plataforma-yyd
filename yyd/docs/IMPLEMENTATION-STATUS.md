@@ -48,7 +48,7 @@
 
 | ID | Feature | Status | Notes |
 |----|---------|--------|-------|
-| tours-complete-1 | Zod validation schema | ⏳ | Pending - needs strict validation |
+| tours-complete-1 | Zod validation schema | ✅ | Complete - all tours APIs validate with Zod |
 | tours-complete-2 | Pricing tiers management | ⏳ | Pending - seasonal price CRUD |
 | tours-complete-3 | Activities/highlights fields | ⏳ | Pending - multilingual arrays |
 | tours-complete-4 | Image upload/management | ⏳ | Pending - needs file storage |

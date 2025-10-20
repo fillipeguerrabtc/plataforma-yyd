@@ -9,8 +9,18 @@ All notable changes to the YYD Platform will be documented in this file.
 
 ## [Unreleased]
 
+### ✅ Added - 2025-10-20 (Continued)
+- **Zod validation** for all Tours APIs (POST, PUT)
+- **Comprehensive validators** for Tours, Bookings, Customers, Guides
+- **Validation errors** with detailed field-level feedback
+
+**Files Added**:
+- `yyd/apps/backoffice/lib/validators.ts`
+
+**Dependencies**: `zod@latest`
+
 ### 🚧 In Progress
-- Complete Tours CRUD (pricing tiers, activities, image upload)
+- Complete Tours CRUD (pricing tiers UI, activities fields, image upload)
 - Email system with nodemailer
 - Customer portal with authentication
 - Fleet management module

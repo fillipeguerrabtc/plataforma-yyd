@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
+import { tourSchema } from '@/lib/validators';
 
 export async function PUT(
   request: Request,
@@ -10,7 +11,22 @@ export async function PUT(
     // Require admin or director role
     requireAuth(request, ['admin', 'director']);
     
-    const data = await request.json();
+    const rawData = await request.json();
+    
+    // Validate with Zod (partial for updates)
+    const validationResult = tourSchema.partial().safeParse(rawData);
+    
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { 
+          error: 'Validation failed', 
+          details: validationResult.error.format() 
+        },
+        { status: 400 }
+      );
+    }
+    
+    const data = validationResult.data;
 
     const tour = await prisma.product.update({
       where: { id: params.id },
