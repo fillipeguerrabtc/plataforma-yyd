@@ -55,13 +55,13 @@ outputType = "console"
 name = "Aurora"
 author = "agent"
 
+[workflows.workflow.metadata]
+outputType = "console"
+
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "cd yyd/aurora && python main.py"
-waitForPort = 8000
-
-[workflows.workflow.metadata]
-outputType = "console"
+waitForPort = 8008
 
 [[ports]]
 localPort = 3000
@@ -80,8 +80,20 @@ localPort = 8000
 externalPort = 8000
 
 [[ports]]
+localPort = 8001
+externalPort = 4200
+
+[[ports]]
+localPort = 8008
+externalPort = 8008
+
+[[ports]]
 localPort = 34741
 externalPort = 3002
+
+[[ports]]
+localPort = 43299
+externalPort = 5000
 
 [[ports]]
 localPort = 43533
