@@ -7,6 +7,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  admin
+  director
+  guide
+  finance
+  support
+}
+
+model User {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.VarChar
+  email        String    @unique @db.VarChar(255)
+  name         String    @db.VarChar(255)
+  passwordHash String    @db.VarChar(255)
+  role         UserRole  @default(guide)
+  active       Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  
+  @@index([email])
+  @@index([role])
+}
+
 model Product {
   id               String                 @id @default(cuid())
   slug             String                 @unique

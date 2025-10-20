@@ -7,6 +7,9 @@ export async function GET(
   { params }: { params: { bookingId: string } }
 ) {
   try {
+    // TODO: Add customer authentication check
+    // For now, validate booking exists and is paid
+    
     const booking = await prisma.booking.findUnique({
       where: { id: params.bookingId },
       include: {

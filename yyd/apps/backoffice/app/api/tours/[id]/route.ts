@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAuth } from '@/lib/auth';
 
 export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
+    // Require admin or director role
+    requireAuth(request, ['admin', 'director']);
+    
     const data = await request.json();
 
     const tour = await prisma.product.update({
@@ -28,6 +32,9 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Require admin role only
+    requireAuth(request, ['admin']);
+    
     await prisma.product.delete({
       where: { id: params.id },
     });

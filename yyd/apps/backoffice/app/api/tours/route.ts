@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAuth } from '@/lib/auth';
 
 export async function POST(request: Request) {
   try {
+    // Require admin or director role
+    requireAuth(request, ['admin', 'director']);
+    
     const data = await request.json();
 
     const tour = await prisma.product.create({
