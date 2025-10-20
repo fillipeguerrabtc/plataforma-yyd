@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getCustomerFromRequest } from '@/lib/customer-auth';
+import { emailService } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   try {
@@ -150,6 +151,21 @@ export async function POST(request: NextRequest) {
     });
 
     console.log('✅ Booking created successfully:', booking.id);
+    
+    // Send confirmation email asynchronously
+    try {
+      await emailService.sendBookingConfirmation(
+        booking,
+        booking.customer,
+        booking.product,
+        booking.locale || 'en'
+      );
+      console.log('📧 Confirmation email sent to', booking.customer.email);
+    } catch (emailError: any) {
+      console.error('❌ Failed to send confirmation email:', emailError.message);
+      // Don't fail the booking if email fails
+    }
+    
     return NextResponse.json({ booking });
   } catch (error: any) {
     console.error('❌ ERROR creating booking:', error);
