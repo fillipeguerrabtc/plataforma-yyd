@@ -54,9 +54,9 @@ export default function ToursPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#37C8C4] mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4"></div>
           <p className="text-gray-600">Loading tours...</p>
         </div>
       </div>
@@ -64,11 +64,11 @@ export default function ToursPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-gradient-to-r from-[#37C8C4] to-[#23C0E3] text-white">
+      <header className="bg-black text-white border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-bold mb-2" style={{ fontFamily: 'Pacifico, cursive' }}>
+          <h1 className="text-4xl font-bold mb-2 font-montserrat">
             Yes, you deserve.
           </h1>
           <p className="text-xl text-white/90">Premium Electric Tuk-Tuk Tours • Sintra & Cascais</p>
@@ -78,7 +78,7 @@ export default function ToursPage() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Discover Our Tours</h2>
+          <h2 className="text-3xl font-bold text-black mb-4 font-montserrat">Discover Our Tours</h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Experience unforgettable journeys through Sintra and Cascais in our eco-friendly electric tuk-tuks.
             Featured on ABC Good Morning America with 200+ 5-star reviews.
@@ -103,7 +103,7 @@ export default function ToursPage() {
               <div
                 key={tour.id}
                 onClick={() => router.push(`/tours/${tour.slug}`)}
-                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow cursor-pointer"
+                className="card-yyd overflow-hidden cursor-pointer"
               >
                 {tour.imageUrls?.[0] && (
                   <div className="relative h-48 overflow-hidden">
@@ -116,7 +116,7 @@ export default function ToursPage() {
                 )}
                 
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  <h3 className="text-xl font-bold text-black mb-2 font-montserrat">
                     {tour.titleEn}
                   </h3>
                   
@@ -138,11 +138,11 @@ export default function ToursPage() {
                   <div className="flex items-center justify-between pt-4 border-t border-gray-200">
                     <div>
                       <span className="text-sm text-gray-500">From</span>
-                      <div className="text-2xl font-bold text-[#37C8C4]">
+                      <div className="text-2xl font-bold text-black">
                         €{getMinPrice(tour)}
                       </div>
                     </div>
-                    <button className="px-6 py-2 bg-[#E9C46A] text-gray-900 rounded-lg hover:bg-[#ddb860] transition font-semibold">
+                    <button className="btn-yyd-primary">
                       Book Now
                     </button>
                   </div>
@@ -154,11 +154,11 @@ export default function ToursPage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white mt-20">
+      <footer className="bg-black text-white mt-20">
         <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-3 gap-8">
             <div>
-              <h3 className="text-xl font-bold mb-4" style={{ fontFamily: 'Pacifico, cursive' }}>
+              <h3 className="text-xl font-bold mb-4 font-montserrat">
                 Yes, you deserve.
               </h3>
               <p className="text-gray-400">Premium electric tuk-tuk tours in Sintra & Cascais, Portugal</p>

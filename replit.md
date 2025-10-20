@@ -21,11 +21,12 @@ Premium electric tuk-tuk tour platform for **YYD (Yes You Deserve)** - a boutiqu
 - **SEO**: Production-ready (sitemap, robots, OpenGraph, Twitter cards)
 - **Aurora IA**: Chat widget integration + proxy API production-ready
 
-### 🎨 Design System
-- **Primary**: Turquoise #37C8C4
-- **Secondary**: Gold #E9C46A
-- **Accent**: Bordeaux #7E3231
-- **Typography**: Montserrat 700 (headings), Lato 400 (body), Playfair Display (decorative)
+### 🎨 Design System (REAL WEBSITE - Minimalist Black & White)
+- **Primary**: Black #1A1A1A (text, buttons, headers)
+- **Background**: White #FFFFFF
+- **Neutrals**: Gray scale (#F9FAFB to #111827) for subtle accents
+- **Typography**: Montserrat (bold for headings, regular for body)
+- **Aesthetic**: Clean, minimalist, professional - matching https://www.yesyoudeserve.tours/
 
 ### 🗄️ Database Schema (Prisma - 16 Models)
 **Core**: User, Product, ProductSeasonPrice, ProductOption, ProductActivity, Booking, Payment, Customer, CustomerAuth

@@ -14,7 +14,7 @@ export default function Header() {
               height={50}
               className="rounded-full"
             />
-            <span className="font-pacifico text-xl text-yyd-turquoise">
+            <span className="font-montserrat text-xl text-black font-bold">
               Yes, You Deserve!
             </span>
           </Link>
@@ -22,19 +22,19 @@ export default function Header() {
           <div className="hidden md:flex items-center space-x-8">
             <Link
               href="/#tours"
-              className="text-brand-black hover:text-brand-turquoise transition"
+              className="text-black hover:text-gray-700 transition font-medium"
             >
               Tours
             </Link>
             <Link
               href="/#about"
-              className="text-brand-black hover:text-brand-turquoise transition"
+              className="text-black hover:text-gray-700 transition font-medium"
             >
               About
             </Link>
             <Link
               href="/#contact"
-              className="text-brand-black hover:text-brand-turquoise transition"
+              className="text-black hover:text-gray-700 transition font-medium"
             >
               Contact
             </Link>
