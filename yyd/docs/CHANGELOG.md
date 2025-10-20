@@ -34,8 +34,14 @@ All notable changes to the YYD Platform will be documented in this file.
 **Documentation**:
 - `yyd/docs/STRIPE-MIGRATION.md` - Complete test → live migration guide
 
-**Status**: ✅ Ready for testing with test credit cards  
-**Next**: Test thoroughly, then migrate to live keys for production
+**Status**: ✅ Pronto para testes com cartões sandbox  
+**Próximo**: Testar completamente, depois migrar para keys live em produção
+
+**Correções Pós-Revisão**:
+- Corrigido schema Zod booking: `totalPriceEur` → `priceEur` (alinhado com Prisma)
+- Corrigido webhook Stripe: campos corretos do schema (`stripePaymentIntent`, `priceEur`)
+- Adicionado geração `bookingNumber` único em checkout webhook
+- Documentado necessidade de `JWT_SECRET_KEY` forte em produção
 
 ### 🚧 In Progress
 - Complete Tours CRUD (pricing tiers UI, activities fields, image upload)

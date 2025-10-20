@@ -145,7 +145,7 @@ PGDATABASE=...
 PGPORT=5432
 
 # Autenticação
-JWT_SECRET_KEY=sua-chave-secreta
+JWT_SECRET_KEY=sua-chave-secreta-forte-minimo-32-caracteres
 
 # Stripe
 STRIPE_SECRET_KEY=sk_test_...

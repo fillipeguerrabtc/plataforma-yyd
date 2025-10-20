@@ -63,7 +63,8 @@ export const bookingSchema = z.object({
   startTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Formato inválido (HH:MM)'),
   pickupLocation: z.string().min(5, 'Local de embarque muito curto').max(500),
   specialRequests: z.string().max(1000, 'Máximo 1000 caracteres').optional().nullable(),
-  totalPriceEur: z.number().min(0, 'Preço deve ser positivo'),
+  priceEur: z.number().min(0, 'Preço deve ser positivo'),
+  season: z.enum(['low', 'high', 'peak', 'special']).optional().default('high'),
   status: z.enum(['pending', 'confirmed', 'completed', 'cancelled'], {
     errorMap: () => ({ message: 'Status inválido' }),
   }).optional().default('pending'),
