@@ -3,9 +3,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
+import { useState } from 'react';
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
     { href: '/', label: 'Dashboard', icon: '📊' },
@@ -23,19 +25,42 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside
-      style={{
-        width: '260px',
-        height: '100vh',
-        background: 'var(--brand-black)',
-        color: 'white',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'fixed',
-        left: 0,
-        top: 0,
-      }}
-    >
+    <>
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="lg:hidden fixed top-4 left-4 z-50 bg-black text-white p-3 rounded-lg shadow-lg"
+        aria-label="Menu"
+      >
+        {isOpen ? (
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        ) : (
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        )}
+      </button>
+
+      {/* Overlay */}
+      {isOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`
+          fixed top-0 left-0 h-screen bg-black text-white z-40 transition-transform duration-300
+          ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        `}
+        style={{
+          width: '260px',
+        }}
+      >
       <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
         <Image 
           src="/logo.png" 
@@ -43,7 +68,7 @@ export default function Sidebar() {
           width={70} 
           height={70}
           priority
-          style={{ objectFit: 'contain', filter: 'brightness(0) invert(1)' }}
+          style={{ objectFit: 'contain' }}
         />
         <div style={{ textAlign: 'center' }}>
           <h1 className="font-pacifico" style={{ fontSize: '1.125rem', color: 'var(--brand-turquoise)' }}>
@@ -62,6 +87,7 @@ export default function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={() => setIsOpen(false)}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -88,6 +114,7 @@ export default function Sidebar() {
           <p style={{ marginTop: '0.25rem' }}>daniel@yyd.tours</p>
         </div>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }
