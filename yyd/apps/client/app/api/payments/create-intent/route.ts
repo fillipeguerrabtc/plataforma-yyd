@@ -9,13 +9,11 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(request: NextRequest) {
   try {
-    const customer = requireCustomerAuth(request);
     const body = await request.json();
-
-    const { bookingId } = body;
+    const { bookingId, customerEmail } = body;
 
     if (!bookingId) {
-      return NextResponse.json({ error: 'Booking ID obrigatório' }, { status: 400 });
+      return NextResponse.json({ error: 'Booking ID required' }, { status: 400 });
     }
 
     // Get booking
@@ -25,30 +23,46 @@ export async function POST(request: NextRequest) {
         customer: true,
         product: true,
         payments: true,
+        selectedAddons: {
+          include: {
+            addon: true,
+          },
+        },
       },
     });
 
     if (!booking) {
-      return NextResponse.json({ error: 'Reserva não encontrada' }, { status: 404 });
+      return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
     }
 
-    // Verify ownership
-    if (booking.customerId !== customer.customerId) {
-      return NextResponse.json({ error: 'Não autorizado' }, { status: 403 });
+    // Optional: Verify ownership if customer is logged in
+    try {
+      const customer = requireCustomerAuth(request);
+      if (customer && booking.customerId !== customer.customerId) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+      }
+    } catch {
+      // No auth - new customer booking is OK
     }
 
     // Check if already paid
     const existingPayment = booking.payments.find((p) => p.status === 'succeeded');
     if (existingPayment) {
-      return NextResponse.json({ error: 'Reserva já foi paga' }, { status: 400 });
+      return NextResponse.json({ error: 'Booking already paid' }, { status: 400 });
     }
 
-    // Create Stripe payment intent
-    const amountCents = Math.round(parseFloat(booking.priceEur.toString()) * 100);
+    // Calculate total with add-ons
+    const basePrice = Number(booking.priceEur);
+    const addonsTotal = Number(booking.addonsTotal);
+    const totalAmount = basePrice + addonsTotal;
+    const amountCents = Math.round(totalAmount * 100);
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountCents,
       currency: 'eur',
+      automatic_payment_methods: {
+        enabled: true,
+      },
       metadata: {
         bookingId: booking.id,
         bookingNumber: booking.bookingNumber,
@@ -56,7 +70,7 @@ export async function POST(request: NextRequest) {
         productId: booking.productId,
       },
       description: `YYD Tour: ${booking.product.titleEn} - ${booking.bookingNumber}`,
-      receipt_email: booking.customer.email,
+      receipt_email: customerEmail || booking.customer.email,
     });
 
     // Create payment record
@@ -64,25 +78,20 @@ export async function POST(request: NextRequest) {
       data: {
         bookingId: booking.id,
         stripePaymentIntent: paymentIntent.id,
-        amount: booking.priceEur,
+        amount: totalAmount,
         currency: 'EUR',
         status: 'pending',
-        metadata: {
-          paymentIntentId: paymentIntent.id,
-          clientSecret: paymentIntent.client_secret,
-        },
       },
     });
 
     return NextResponse.json({
+      success: true,
       clientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
+      amount: totalAmount,
     });
   } catch (error: any) {
-    if (error.message === 'Unauthorized') {
-      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
-    }
-    console.error('Payment intent error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error('❌ Payment intent error:', error);
+    return NextResponse.json({ error: error.message || 'Failed to create payment intent' }, { status: 500 });
   }
 }
