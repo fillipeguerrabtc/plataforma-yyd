@@ -10,14 +10,32 @@ All notable changes to the YYD Platform will be documented in this file.
 ## [Unreleased]
 
 ### ✅ Added - 2025-10-20 (Continued)
+
+#### Validation
 - **Zod validation** for all Tours APIs (POST, PUT)
 - **Comprehensive validators** for Tours, Bookings, Customers, Guides
 - **Validation errors** with detailed field-level feedback
 
-**Files Added**:
-- `yyd/apps/backoffice/lib/validators.ts`
-
+**Files**: `yyd/apps/backoffice/lib/validators.ts`  
 **Dependencies**: `zod@latest`
+
+#### Stripe Integration (Test Mode Active)
+- **Checkout API** for creating Stripe payment sessions
+- **Webhook handler** for `checkout.session.completed` events
+- **Automatic booking creation** after successful payments
+- **Payment tracking** in database
+- **Test mode configured** with sandbox API keys
+
+**Files**:
+- `yyd/apps/client/app/api/checkout/route.ts`
+- `yyd/apps/client/app/api/webhooks/stripe/route.ts` (updated)
+- `yyd/apps/client/lib/stripe.ts`
+
+**Documentation**:
+- `yyd/docs/STRIPE-MIGRATION.md` - Complete test → live migration guide
+
+**Status**: ✅ Ready for testing with test credit cards  
+**Next**: Test thoroughly, then migrate to live keys for production
 
 ### 🚧 In Progress
 - Complete Tours CRUD (pricing tiers UI, activities fields, image upload)

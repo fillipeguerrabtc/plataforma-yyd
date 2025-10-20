@@ -17,6 +17,7 @@ This `/docs` folder contains **COMPLETE** technical documentation for the YYD pl
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Complete technical architecture
 - **[API-REFERENCE.md](./API-REFERENCE.md)** - All API endpoints with examples
 - **[AUTHENTICATION.md](./AUTHENTICATION.md)** - RBAC authentication system
+- **[STRIPE-MIGRATION.md](./STRIPE-MIGRATION.md)** - Stripe test → live migration guide
 - **[CHANGELOG.md](./CHANGELOG.md)** - Complete change history
 
 ### Additional Resources

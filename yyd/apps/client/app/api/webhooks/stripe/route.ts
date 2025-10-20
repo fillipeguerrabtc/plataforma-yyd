@@ -29,6 +29,11 @@ export async function POST(request: Request) {
 
   try {
     switch (event.type) {
+      case 'checkout.session.completed':
+        const session = event.data.object as Stripe.Checkout.Session;
+        await handleCheckoutComplete(session);
+        break;
+
       case 'payment_intent.succeeded':
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
         await handlePaymentSuccess(paymentIntent);
@@ -120,6 +125,69 @@ async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
 
   // TODO: Send confirmation email/WhatsApp message to customer
   console.log(`✅ Booking ${bookingId} confirmed for ${booking.customer.name}`);
+}
+
+async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
+  try {
+    const {
+      tourId,
+      customerId,
+      date,
+      numberOfPeople,
+      startTime,
+      pickupLocation,
+      specialRequests,
+    } = session.metadata || {};
+
+    if (!tourId || !customerId) {
+      console.error('Missing metadata in checkout session');
+      return;
+    }
+
+    // Create booking
+    const booking = await prisma.booking.create({
+      data: {
+        productId: tourId,
+        customerId,
+        date: new Date(date!),
+        numberOfPeople: parseInt(numberOfPeople || '2'),
+        startTime: startTime || '09:00',
+        pickupLocation: pickupLocation || '',
+        specialRequests: specialRequests || '',
+        totalPriceEur: (session.amount_total || 0) / 100,
+        status: 'confirmed',
+        confirmedAt: new Date(),
+      },
+    });
+
+    // Create payment record
+    await prisma.payment.create({
+      data: {
+        bookingId: booking.id,
+        stripeSessionId: session.id,
+        stripePaymentIntentId: session.payment_intent as string || '',
+        amount: (session.amount_total || 0) / 100,
+        currency: 'EUR',
+        status: 'succeeded',
+        paidAt: new Date(),
+      },
+    });
+
+    // Update customer
+    await prisma.customer.update({
+      where: { id: customerId },
+      data: {
+        lastBookingAt: new Date(),
+      },
+    });
+
+    console.log('✅ Booking created successfully from checkout:', booking.id);
+
+    // TODO: Send confirmation email with voucher
+    // TODO: Create calendar event
+  } catch (error: any) {
+    console.error('Error processing checkout:', error);
+  }
 }
 
 async function handlePaymentFailure(paymentIntent: Stripe.PaymentIntent) {
