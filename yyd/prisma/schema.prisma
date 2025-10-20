@@ -7,14 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  admin
-  director
-  guide
-  finance
-  support
-}
-
 model User {
   id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.VarChar
   email        String    @unique @db.VarChar(255)
@@ -25,62 +17,62 @@ model User {
   lastLoginAt  DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
-  
+
   @@index([email])
   @@index([role])
 }
 
 model Product {
-  id               String                 @id @default(cuid())
-  slug             String                 @unique
-  titleEn          String
-  titlePt          String
-  titleEs          String
-  descriptionEn    String                 @db.Text
-  descriptionPt    String                 @db.Text
-  descriptionEs    String                 @db.Text
-  durationHours    Int
-  maxGroupSize     Int                    @default(6)
-  categoryEn       String
-  categoryPt       String
-  categoryEs       String
-  featuresEn       String[]
-  featuresPt       String[]
-  featuresEs       String[]
-  excludedEn       String[]
-  excludedPt       String[]
-  excludedEs       String[]
-  imageUrls        String[]
-  highlightedEn    String?
-  highlightedPt    String?
-  highlightedEs    String?
-  bestChoice       Boolean                @default(false)
-  active           Boolean                @default(true)
-  createdAt        DateTime               @default(now())
-  updatedAt        DateTime               @updatedAt
-  seasonPrices     ProductSeasonPrice[]
-  options          ProductOption[]
-  activities       ProductActivity[]
-  bookings         Booking[]
-  availability     AvailabilitySlot[]
+  id            String               @id @default(cuid())
+  slug          String               @unique
+  titleEn       String
+  titlePt       String
+  titleEs       String
+  descriptionEn String
+  descriptionPt String
+  descriptionEs String
+  durationHours Int
+  maxGroupSize  Int                  @default(6)
+  categoryEn    String
+  categoryPt    String
+  categoryEs    String
+  featuresEn    String[]
+  featuresPt    String[]
+  featuresEs    String[]
+  excludedEn    String[]
+  excludedPt    String[]
+  excludedEs    String[]
+  imageUrls     String[]
+  highlightedEn String?
+  highlightedPt String?
+  highlightedEs String?
+  bestChoice    Boolean              @default(false)
+  active        Boolean              @default(true)
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  availability  AvailabilitySlot[]
+  bookings      Booking[]
+  activities    ProductActivity[]
+  options       ProductOption[]
+  seasonPrices  ProductSeasonPrice[]
 
   @@map("products")
 }
 
 model ProductSeasonPrice {
-  id            String   @id @default(cuid())
-  productId     String
-  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  season        String
-  startMonth    Int
-  endMonth      Int
-  tier          String
-  minPeople     Int
-  maxPeople     Int?
-  priceEur      Decimal  @db.Decimal(10, 2)
-  pricePerPerson Boolean @default(false)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id             String   @id @default(cuid())
+  productId      String
+  season         String
+  startMonth     Int
+  endMonth       Int
+  tier           String
+  minPeople      Int
+  maxPeople      Int?
+  priceEur       Decimal  @db.Decimal(10, 2)
+  pricePerPerson Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  product        Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([productId, season, tier])
   @@index([productId])
@@ -90,17 +82,17 @@ model ProductSeasonPrice {
 model ProductOption {
   id            String   @id @default(cuid())
   productId     String
-  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   nameEn        String
   namePt        String
   nameEs        String
-  descriptionEn String   @db.Text
-  descriptionPt String   @db.Text
-  descriptionEs String   @db.Text
+  descriptionEn String
+  descriptionPt String
+  descriptionEs String
   sortOrder     Int      @default(0)
   active        Boolean  @default(true)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId])
   @@map("product_options")
@@ -109,37 +101,37 @@ model ProductOption {
 model ProductActivity {
   id            String   @id @default(cuid())
   productId     String
-  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   nameEn        String
   namePt        String
   nameEs        String
-  descriptionEn String   @db.Text
-  descriptionPt String   @db.Text
-  descriptionEs String   @db.Text
+  descriptionEn String
+  descriptionPt String
+  descriptionEs String
   imageUrl      String?
   sortOrder     Int      @default(0)
   active        Boolean  @default(true)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId])
   @@map("product_activities")
 }
 
 model AvailabilitySlot {
-  id         String   @id @default(cuid())
-  productId  String
-  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  date       DateTime
-  startTime  String
-  endTime    String
-  maxSlots   Int      @default(1)
-  bookedSlots Int     @default(0)
-  status     String   @default("available")
-  guideId    String?
-  guide      Guide?   @relation(fields: [guideId], references: [id])
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id          String   @id @default(cuid())
+  productId   String
+  date        DateTime
+  startTime   String
+  endTime     String
+  maxSlots    Int      @default(1)
+  bookedSlots Int      @default(0)
+  status      String   @default("available")
+  guideId     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  guide       Guide?   @relation(fields: [guideId], references: [id])
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([productId, date, startTime])
   @@index([productId, date])
@@ -148,37 +140,37 @@ model AvailabilitySlot {
 }
 
 model Booking {
-  id               String          @id @default(cuid())
-  bookingNumber    String          @unique
-  customerId       String
-  customer         Customer        @relation(fields: [customerId], references: [id])
-  productId        String
-  product          Product         @relation(fields: [productId], references: [id])
-  date             DateTime
-  startTime        String
-  numberOfPeople   Int
-  selectedOption   String?
+  id                 String         @id @default(cuid())
+  bookingNumber      String         @unique
+  customerId         String
+  productId          String
+  date               DateTime
+  startTime          String
+  numberOfPeople     Int
+  selectedOption     String?
   selectedActivities String[]
-  selectedAddons   BookingAddon[]
-  status           String          @default("pending")
-  season           String
-  priceEur         Decimal         @db.Decimal(10, 2)
-  addonsTotal      Decimal         @default(0) @db.Decimal(10, 2)
-  currency         String          @default("EUR")
-  locale           String          @default("en")
-  pickupLocation   String?
-  dropoffLocation  String?
-  specialRequests  String?         @db.Text
-  guideId          String?
-  guide            Guide?          @relation(fields: [guideId], references: [id])
-  payments         Payment[]
-  messages         Message[]
-  reviews          Review[]
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
-  confirmedAt      DateTime?
-  completedAt      DateTime?
-  cancelledAt      DateTime?
+  status             String         @default("pending")
+  season             String
+  priceEur           Decimal        @db.Decimal(10, 2)
+  addonsTotal        Decimal        @default(0) @db.Decimal(10, 2)
+  currency           String         @default("EUR")
+  locale             String         @default("en")
+  pickupLocation     String?
+  dropoffLocation    String?
+  specialRequests    String?
+  guideId            String?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  confirmedAt        DateTime?
+  completedAt        DateTime?
+  cancelledAt        DateTime?
+  selectedAddons     BookingAddon[]
+  customer           Customer       @relation(fields: [customerId], references: [id])
+  guide              Guide?         @relation(fields: [guideId], references: [id])
+  product            Product        @relation(fields: [productId], references: [id])
+  messages           Message[]
+  payments           Payment[]
+  reviews            Review?
 
   @@index([customerId])
   @@index([productId])
@@ -189,20 +181,20 @@ model Booking {
 }
 
 model Payment {
-  id                  String   @id @default(cuid())
+  id                  String    @id @default(cuid())
   bookingId           String
-  booking             Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  stripePaymentIntent String?  @unique
+  stripePaymentIntent String?   @unique
   stripeChargeId      String?
-  amount              Decimal  @db.Decimal(10, 2)
-  currency            String   @default("EUR")
-  status              String   @default("pending")
+  amount              Decimal   @db.Decimal(10, 2)
+  currency            String    @default("EUR")
+  status              String    @default("pending")
   paymentMethod       String?
   metadata            Json?
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
   paidAt              DateTime?
   refundedAt          DateTime?
+  booking             Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
 
   @@index([bookingId])
   @@index([stripePaymentIntent])
@@ -211,25 +203,25 @@ model Payment {
 }
 
 model Customer {
-  id                  String                @id @default(cuid())
-  name                String
-  email               String                @unique
-  phone               String?
-  whatsapp            String?
-  locale              String                @default("en")
-  country             String?
-  source              String?
-  tags                String[]
-  notes               String?               @db.Text
-  totalBookings       Int                   @default(0)
-  totalSpent          Decimal               @default(0) @db.Decimal(10, 2)
-  lastBookingAt       DateTime?
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
-  bookings            Booking[]
-  accountsReceivable  AccountsReceivable[]
-  messages            Message[]
-  auth                CustomerAuth?
+  id                 String               @id @default(cuid())
+  name               String
+  email              String               @unique
+  phone              String?
+  whatsapp           String?
+  locale             String               @default("en")
+  country            String?
+  source             String?
+  tags               String[]
+  notes              String?
+  totalBookings      Int                  @default(0)
+  totalSpent         Decimal              @default(0) @db.Decimal(10, 2)
+  lastBookingAt      DateTime?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  accountsReceivable AccountsReceivable[]
+  bookings           Booking[]
+  auth               CustomerAuth?
+  messages           Message[]
 
   @@index([email])
   @@index([phone])
@@ -237,19 +229,19 @@ model Customer {
 }
 
 model Guide {
-  id               String             @id @default(cuid())
-  name             String
-  email            String             @unique
-  phone            String
-  languages        String[]
-  bio              String?            @db.Text
-  photoUrl         String?
-  certifications   String[]
-  active           Boolean            @default(true)
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-  bookings         Booking[]
+  id                String             @id @default(cuid())
+  name              String
+  email             String             @unique
+  phone             String
+  languages         String[]
+  bio               String?
+  photoUrl          String?
+  certifications    String[]
+  active            Boolean            @default(true)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
   availabilitySlots AvailabilitySlot[]
+  bookings          Booking[]
 
   @@map("guides")
 }
@@ -268,18 +260,18 @@ model Integration {
 }
 
 model MessageThread {
-  id          String    @id @default(cuid())
-  customerId  String?
-  channel     String
-  channelId   String
-  status      String    @default("open")
-  assignedTo  String?
-  tags        String[]
-  metadata    Json?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  closedAt    DateTime?
-  messages    Message[]
+  id         String    @id @default(cuid())
+  customerId String?
+  channel    String
+  channelId  String
+  status     String    @default("open")
+  assignedTo String?
+  tags       String[]
+  metadata   Json?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  closedAt   DateTime?
+  messages   Message[]
 
   @@unique([channel, channelId])
   @@index([customerId])
@@ -288,21 +280,21 @@ model MessageThread {
 }
 
 model Message {
-  id            String         @id @default(cuid())
-  threadId      String
-  thread        MessageThread  @relation(fields: [threadId], references: [id], onDelete: Cascade)
-  customerId    String?
-  customer      Customer?      @relation(fields: [customerId], references: [id])
-  bookingId     String?
-  booking       Booking?       @relation(fields: [bookingId], references: [id])
-  direction     String
-  channel       String
-  content       String         @db.Text
-  metadata      Json?
-  sentBy        String?
-  sentAt        DateTime       @default(now())
-  readAt        DateTime?
-  createdAt     DateTime       @default(now())
+  id         String        @id @default(cuid())
+  threadId   String
+  customerId String?
+  bookingId  String?
+  direction  String
+  channel    String
+  content    String
+  metadata   Json?
+  sentBy     String?
+  sentAt     DateTime      @default(now())
+  readAt     DateTime?
+  createdAt  DateTime      @default(now())
+  booking    Booking?      @relation(fields: [bookingId], references: [id])
+  customer   Customer?     @relation(fields: [customerId], references: [id])
+  thread     MessageThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
 
   @@index([threadId])
   @@index([customerId])
@@ -311,16 +303,16 @@ model Message {
 }
 
 model AccountsPayable {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   vendor      String
-  description String?  @db.Text
-  amount      Decimal  @db.Decimal(10, 2)
-  currency    String   @default("EUR")
+  description String?
+  amount      Decimal   @db.Decimal(10, 2)
+  currency    String    @default("EUR")
   dueDate     DateTime
-  status      String   @default("open")
+  status      String    @default("open")
   paidAt      DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   @@index([status])
   @@index([dueDate])
@@ -328,17 +320,17 @@ model AccountsPayable {
 }
 
 model AccountsReceivable {
-  id         String    @id @default(cuid())
-  customerId String
-  customer   Customer  @relation(fields: [customerId], references: [id])
-  description String?  @db.Text
-  amount     Decimal   @db.Decimal(10, 2)
-  currency   String    @default("EUR")
-  dueDate    DateTime
-  status     String    @default("open")
-  paidAt     DateTime?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id          String    @id @default(cuid())
+  customerId  String
+  description String?
+  amount      Decimal   @db.Decimal(10, 2)
+  currency    String    @default("EUR")
+  dueDate     DateTime
+  status      String    @default("open")
+  paidAt      DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  customer    Customer  @relation(fields: [customerId], references: [id])
 
   @@index([customerId])
   @@index([status])
@@ -347,18 +339,18 @@ model AccountsReceivable {
 }
 
 model AuroraConversation {
-  id              String   @id @default(cuid())
-  customerId      String?
-  sessionId       String   @unique
-  channel         String
-  locale          String   @default("en")
-  context         Json?
-  sentiment       String?
-  intent          String?
+  id                String   @id @default(cuid())
+  customerId        String?
+  sessionId         String   @unique
+  channel           String
+  locale            String   @default("en")
+  context           Json?
+  sentiment         String?
+  intent            String?
   conversationState Json?
-  lastMessageAt   DateTime @default(now())
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  lastMessageAt     DateTime @default(now())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   @@index([customerId])
   @@index([channel])
@@ -366,24 +358,24 @@ model AuroraConversation {
 }
 
 model AuroraKnowledge {
-  id          String   @id @default(cuid())
+  id          String                 @id @default(cuid())
   category    String
-  questionEn  String   @db.Text
-  questionPt  String   @db.Text
-  questionEs  String   @db.Text
-  answerEn    String   @db.Text
-  answerPt    String   @db.Text
-  answerEs    String   @db.Text
-  embeddingEn Unsupported("vector(1536)")?
-  embeddingPt Unsupported("vector(1536)")?
-  embeddingEs Unsupported("vector(1536)")?
+  questionEn  String
+  questionPt  String
+  questionEs  String
+  answerEn    String
+  answerPt    String
+  answerEs    String
+  embeddingEn Unsupported("vector")?
+  embeddingPt Unsupported("vector")?
+  embeddingEs Unsupported("vector")?
   tags        String[]
-  priority    Int      @default(0)
-  active      Boolean  @default(true)
-  usageCount  Int      @default(0)
+  priority    Int                    @default(0)
+  active      Boolean                @default(true)
+  usageCount  Int                    @default(0)
   lastUsedAt  DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
 
   @@index([category])
   @@index([tags])
@@ -413,12 +405,12 @@ model AuroraConfig {
 }
 
 model AuroraSensoryContext {
-  id          String   @id @default(cuid())
-  sessionId   String
-  content     String   @db.Text
-  metadata    Json?
-  createdAt   DateTime @default(now())
-  expiresAt   DateTime
+  id        String   @id @default(cuid())
+  sessionId String
+  content   String
+  metadata  Json?
+  createdAt DateTime @default(now())
+  expiresAt DateTime
 
   @@index([sessionId])
   @@index([expiresAt])
@@ -426,15 +418,15 @@ model AuroraSensoryContext {
 }
 
 model AuroraWorkingMemory {
-  id              String   @id @default(cuid())
-  sessionId       String
-  conversationId  String?
-  contextWindow   Json
-  activeEntities  Json?
-  currentIntent   String?
-  emotionalState  Json?
-  createdAt       DateTime @default(now())
-  expiresAt       DateTime
+  id             String   @id @default(cuid())
+  sessionId      String
+  conversationId String?
+  contextWindow  Json
+  activeEntities Json?
+  currentIntent  String?
+  emotionalState Json?
+  createdAt      DateTime @default(now())
+  expiresAt      DateTime
 
   @@index([sessionId])
   @@index([conversationId])
@@ -443,19 +435,19 @@ model AuroraWorkingMemory {
 }
 
 model AuroraEpisodicMemory {
-  id              String   @id @default(cuid())
+  id              String    @id @default(cuid())
   customerId      String?
   sessionId       String
   conversationId  String?
   eventType       String
-  content         String   @db.Text
+  content         String
   emotionalVector Json
   outcome         String?
-  importance      Decimal  @default(0.5) @db.Decimal(3, 2)
+  importance      Decimal   @default(0.5) @db.Decimal(3, 2)
   anonymizedAt    DateTime?
   metadata        Json?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   @@index([customerId])
   @@index([sessionId])
@@ -466,26 +458,26 @@ model AuroraEpisodicMemory {
 }
 
 model AuroraSemanticMemory {
-  id            String   @id @default(cuid())
-  contentEn     String   @db.Text
-  contentPt     String   @db.Text
-  contentEs     String   @db.Text
-  embeddingEn   Unsupported("vector(1536)")?
-  embeddingPt   Unsupported("vector(1536)")?
-  embeddingEs   Unsupported("vector(1536)")?
-  category      String
-  subcategory   String?
-  tags          String[]
-  sourceType    String
-  sourceId      String?
-  confidence    Decimal  @default(1.0) @db.Decimal(3, 2)
-  usageCount    Int      @default(0)
-  lastUsedAt    DateTime?
-  version       Int      @default(1)
-  active        Boolean  @default(true)
-  metadata      Json?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id          String                 @id @default(cuid())
+  contentEn   String
+  contentPt   String
+  contentEs   String
+  embeddingEn Unsupported("vector")?
+  embeddingPt Unsupported("vector")?
+  embeddingEs Unsupported("vector")?
+  category    String
+  subcategory String?
+  tags        String[]
+  sourceType  String
+  sourceId    String?
+  confidence  Decimal                @default(1.0) @db.Decimal(3, 2)
+  usageCount  Int                    @default(0)
+  lastUsedAt  DateTime?
+  version     Int                    @default(1)
+  active      Boolean                @default(true)
+  metadata    Json?
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
 
   @@index([category])
   @@index([tags])
@@ -495,20 +487,20 @@ model AuroraSemanticMemory {
 }
 
 model AuroraProceduralMemory {
-  id            String   @id @default(cuid())
-  procedureName String
-  version       Int
-  trigger       String
-  conditions    Json
-  actions       Json
-  priority      Int      @default(0)
-  successRate   Decimal  @default(0) @db.Decimal(5, 2)
-  executionCount Int     @default(0)
+  id             String    @id @default(cuid())
+  procedureName  String
+  version        Int
+  trigger        String
+  conditions     Json
+  actions        Json
+  priority       Int       @default(0)
+  successRate    Decimal   @default(0) @db.Decimal(5, 2)
+  executionCount Int       @default(0)
   lastExecutedAt DateTime?
-  active        Boolean  @default(true)
-  metadata      Json?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  active         Boolean   @default(true)
+  metadata       Json?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   @@unique([procedureName, version])
   @@index([procedureName])
@@ -536,18 +528,18 @@ model AuroraAggregateMemory {
 }
 
 model AuroraTemplateMemory {
-  id            String   @id @default(cuid())
-  templateName  String
-  locale        String
-  category      String
-  templateText  String   @db.Text
-  variables     String[]
-  usageCount    Int      @default(0)
-  lastUsedAt    DateTime?
-  active        Boolean  @default(true)
-  metadata      Json?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id           String    @id @default(cuid())
+  templateName String
+  locale       String
+  category     String
+  templateText String
+  variables    String[]
+  usageCount   Int       @default(0)
+  lastUsedAt   DateTime?
+  active       Boolean   @default(true)
+  metadata     Json?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   @@unique([templateName, locale])
   @@index([category])
@@ -557,24 +549,24 @@ model AuroraTemplateMemory {
 }
 
 model AuroraLead {
-  id              String   @id @default(cuid())
-  customerId      String?
-  conversationId  String?
-  name            String?
-  email           String?
-  phone           String?
-  whatsapp        String?
-  channel         String
-  channelId       String?
-  interest        String?
-  status          String   @default("new")
-  emotionalState  Json?
-  notes           String?  @db.Text
-  assignedTo      String?
-  convertedAt     DateTime?
-  metadata        Json?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             String    @id @default(cuid())
+  customerId     String?
+  conversationId String?
+  name           String?
+  email          String?
+  phone          String?
+  whatsapp       String?
+  channel        String
+  channelId      String?
+  interest       String?
+  status         String    @default("new")
+  emotionalState Json?
+  notes          String?
+  assignedTo     String?
+  convertedAt    DateTime?
+  metadata       Json?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   @@index([customerId])
   @@index([conversationId])
@@ -585,21 +577,21 @@ model AuroraLead {
 }
 
 model AuroraHandoff {
-  id              String   @id @default(cuid())
-  conversationId  String
-  leadId          String?
-  reason          String
-  emotionalState  Json?
-  confidence      Decimal  @db.Decimal(3, 2)
-  assignedTo      String?
-  status          String   @default("pending")
-  acceptedAt      DateTime?
-  acceptedBy      String?
-  resolvedAt      DateTime?
-  notes           String?  @db.Text
-  metadata        Json?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             String    @id @default(cuid())
+  conversationId String
+  leadId         String?
+  reason         String
+  emotionalState Json?
+  confidence     Decimal   @db.Decimal(3, 2)
+  assignedTo     String?
+  status         String    @default("pending")
+  acceptedAt     DateTime?
+  acceptedBy     String?
+  resolvedAt     DateTime?
+  notes          String?
+  metadata       Json?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   @@index([conversationId])
   @@index([leadId])
@@ -624,7 +616,7 @@ model Fleet {
   mileage           Int       @default(0)
   insuranceExpiry   DateTime?
   status            String    @default("active")
-  notes             String?   @db.Text
+  notes             String?
   imageUrl          String?
   active            Boolean   @default(true)
   createdAt         DateTime  @default(now())
@@ -636,22 +628,22 @@ model Fleet {
 }
 
 model MonumentTicket {
-  id                        String   @id @default(cuid())
-  bookingId                 String?
-  monumentId                String
-  monumentName              String
-  ticketType                String
-  numberOfTickets           Int
-  priceEur                  Decimal  @db.Decimal(10, 2)
-  visitDate                 DateTime
-  externalBookingReference  String?
-  provider                  String   @default("parques_sintra")
-  status                    String   @default("pending")
-  rawResponse               Json?
-  createdAt                 DateTime @default(now())
-  updatedAt                 DateTime @updatedAt
-  purchasedAt               DateTime?
-  cancelledAt               DateTime?
+  id                       String    @id @default(cuid())
+  bookingId                String?
+  monumentId               String
+  monumentName             String
+  ticketType               String
+  numberOfTickets          Int
+  priceEur                 Decimal   @db.Decimal(10, 2)
+  visitDate                DateTime
+  externalBookingReference String?
+  provider                 String    @default("parques_sintra")
+  status                   String    @default("pending")
+  rawResponse              Json?
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
+  purchasedAt              DateTime?
+  cancelledAt              DateTime?
 
   @@index([bookingId])
   @@index([visitDate])
@@ -661,18 +653,18 @@ model MonumentTicket {
 }
 
 model MonumentTicketAvailability {
-  id              String   @id @default(cuid())
-  monumentId      String
-  provider        String
-  date            DateTime
-  available       Boolean  @default(true)
-  totalCapacity   Int
-  remainingSlots  Int
-  priceEur        Decimal  @db.Decimal(10, 2)
-  status          String   @default("active")
-  rawResponse     Json?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             String   @id @default(cuid())
+  monumentId     String
+  provider       String
+  date           DateTime
+  available      Boolean  @default(true)
+  totalCapacity  Int
+  remainingSlots Int
+  priceEur       Decimal  @db.Decimal(10, 2)
+  status         String   @default("active")
+  rawResponse    Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@unique([monumentId, date, provider])
   @@index([monumentId])
@@ -682,25 +674,25 @@ model MonumentTicketAvailability {
 }
 
 model Review {
-  id             String   @id @default(cuid())
-  bookingId      String   @unique
-  booking        Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  customerId     String
-  productId      String
-  rating         Int
-  npsScore       Int?
-  comment        String?  @db.Text
-  language       String   @default("en")
-  helpful        Int      @default(0)
-  source         String?
-  publishedAt    DateTime?
-  moderatedBy    String?
-  status         String   @default("pending")
-  responseText   String?  @db.Text
-  respondedAt    DateTime?
-  respondedBy    String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id           String    @id @default(cuid())
+  bookingId    String    @unique
+  customerId   String
+  productId    String
+  rating       Int
+  npsScore     Int?
+  comment      String?
+  language     String    @default("en")
+  helpful      Int       @default(0)
+  source       String?
+  publishedAt  DateTime?
+  moderatedBy  String?
+  status       String    @default("pending")
+  responseText String?
+  respondedAt  DateTime?
+  respondedBy  String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  booking      Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
 
   @@index([productId])
   @@index([customerId])
@@ -717,7 +709,7 @@ model SystemLog {
   userId     String?
   entityType String?
   entityId   String?
-  message    String   @db.Text
+  message    String
   metadata   Json?
   ipAddress  String?
   userAgent  String?
@@ -734,7 +726,6 @@ model SystemLog {
 model CustomerAuth {
   id           String    @id @default(cuid())
   customerId   String    @unique
-  customer     Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
   email        String    @unique
   passwordHash String
   verified     Boolean   @default(false)
@@ -745,6 +736,7 @@ model CustomerAuth {
   loginCount   Int       @default(0)
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
+  customer     Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
 
   @@index([email])
   @@map("customer_auth")
@@ -756,9 +748,9 @@ model TourAddon {
   nameEn        String
   namePt        String
   nameEs        String
-  descriptionEn String         @db.Text
-  descriptionPt String         @db.Text
-  descriptionEs String         @db.Text
+  descriptionEn String
+  descriptionPt String
+  descriptionEs String
   priceEur      Decimal        @db.Decimal(10, 2)
   priceType     String         @default("per_person")
   category      String
@@ -777,15 +769,23 @@ model TourAddon {
 model BookingAddon {
   id        String    @id @default(cuid())
   bookingId String
-  booking   Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   addonId   String
-  addon     TourAddon @relation(fields: [addonId], references: [id])
   quantity  Int       @default(1)
   priceEur  Decimal   @db.Decimal(10, 2)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  addon     TourAddon @relation(fields: [addonId], references: [id])
+  booking   Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
 
   @@index([bookingId])
   @@index([addonId])
   @@map("booking_addons")
+}
+
+enum UserRole {
+  admin
+  director
+  guide
+  finance
+  support
 }
