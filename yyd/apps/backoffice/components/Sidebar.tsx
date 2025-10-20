@@ -12,9 +12,11 @@ export default function Sidebar() {
     { href: '/calendar', label: 'Calendar', icon: '📅' },
     { href: '/bookings', label: 'Reservas', icon: '🎫' },
     { href: '/customers', label: 'Clientes', icon: '👥' },
+    { href: '/reviews', label: 'Reviews', icon: '⭐' },
     { href: '/guides', label: 'Guias', icon: '🚗' },
     { href: '/tours', label: 'Tours', icon: '🗺️' },
     { href: '/financial', label: 'Financeiro', icon: '💰' },
+    { href: '/analytics', label: 'BI Analytics', icon: '📈' },
     { href: '/integrations', label: 'Integrações', icon: '🔗' },
     { href: '/aurora', label: 'Aurora IA', icon: '🤖' },
   ];

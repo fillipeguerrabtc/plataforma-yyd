@@ -428,26 +428,49 @@ model Fleet {
 }
 
 model MonumentTicket {
-  id                String   @id @default(cuid())
-  bookingId         String?
-  monumentName      String
-  ticketType        String
-  quantity          Int
-  priceEur          Decimal  @db.Decimal(10, 2)
-  visitDate         DateTime
-  ticketReference   String?
-  provider          String   @default("parques_sintra")
-  status            String   @default("pending")
-  externalData      Json?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  purchasedAt       DateTime?
-  cancelledAt       DateTime?
+  id                        String   @id @default(cuid())
+  bookingId                 String?
+  monumentId                String
+  monumentName              String
+  ticketType                String
+  numberOfTickets           Int
+  priceEur                  Decimal  @db.Decimal(10, 2)
+  visitDate                 DateTime
+  externalBookingReference  String?
+  provider                  String   @default("parques_sintra")
+  status                    String   @default("pending")
+  rawResponse               Json?
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+  purchasedAt               DateTime?
+  cancelledAt               DateTime?
 
   @@index([bookingId])
   @@index([visitDate])
+  @@index([monumentId])
   @@index([status])
   @@map("monument_tickets")
+}
+
+model MonumentTicketAvailability {
+  id              String   @id @default(cuid())
+  monumentId      String
+  provider        String
+  date            DateTime
+  available       Boolean  @default(true)
+  totalCapacity   Int
+  remainingSlots  Int
+  priceEur        Decimal  @db.Decimal(10, 2)
+  status          String   @default("active")
+  rawResponse     Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([monumentId, date, provider])
+  @@index([monumentId])
+  @@index([date])
+  @@index([provider])
+  @@map("monument_ticket_availability")
 }
 
 model Review {
