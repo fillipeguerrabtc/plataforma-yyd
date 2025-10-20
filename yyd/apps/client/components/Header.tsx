@@ -14,7 +14,7 @@ export default function Header() {
               height={50}
               className="rounded-full"
             />
-            <span className="text-2xl font-bold text-brand-black">
+            <span className="font-pacifico text-xl text-yyd-turquoise">
               Yes, You Deserve!
             </span>
           </Link>
@@ -42,9 +42,9 @@ export default function Header() {
               href="http://wa.link/y0m3y9"
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-brand-black text-white px-6 py-2 rounded hover:bg-gray-800 transition"
+              className="btn-yyd-whatsapp"
             >
-              Book Now
+              💬 Talk With A Human
             </a>
           </div>
         </div>

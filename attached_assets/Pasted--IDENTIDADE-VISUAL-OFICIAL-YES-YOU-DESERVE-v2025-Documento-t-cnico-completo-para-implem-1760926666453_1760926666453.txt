@@ -1,0 +1,142 @@
+# 🎨 IDENTIDADE VISUAL OFICIAL — YES, YOU DESERVE! (v2025)
+
+> Documento técnico completo para implementar a identidade visual da marca Yes, You Deserve!  
+> Baseado em inspeção do site [https://www.yesyoudeserve.tours](https://www.yesyoudeserve.tours) + referências visuais enviadas.
+
+---
+
+## 🌈 PALETA DE CORES PRINCIPAL
+
+| Tipo | Cor | Código HEX | Aplicações |
+|------|------|-------------|------------|
+| **Primária (Turquesa)** | `#23C0E3` | Botões, títulos secundários, ícones e realces. |
+| **Secundária (Verde WhatsApp)** | `#25D366` | Botão “Talk With A Human”, links de contato. |
+| **Apoio Azul-Claro (Hover/Gradient)** | `#89E0F2` | Gradientes de fundo, sombras suaves. |
+| **Cinza-Claro de Fundo** | `#F7F7F7` | Fundo de seções, blocos de pacotes e reviews. |
+| **Cinza-Título / Texto** | `#333333` | Títulos principais, corpo de texto. |
+| **Branco Puro** | `#FFFFFF` | Fundo principal e cartões. |
+| **Preto Suave (Textos finos)** | `#222222` | Cabeçalhos e texto de destaque. |
+| **Amarelo Destaque (Selo “BEST CHOICE”)** | `#FFD700` | Etiquetas promocionais, destaque visual. |
+
+### Gradientes utilizados:
+- Botões de ação: `linear-gradient(180deg, #25D366 0%, #23C0E3 100%)`
+- Fundo “hero”: branco sólido com leve sombra `rgba(0,0,0,0.1)`
+
+---
+
+## ✍️ TIPOGRAFIA
+
+| Elemento | Fonte | Peso | Uso |
+|-----------|--------|------|-----|
+| **Títulos Principais** | *Pacifico*, cursiva | 400 | Estilo manuscrito, “Yes, You Deserve!” e seções “Packages” |
+| **Subtítulos e Corpo de Texto** | *Montserrat*, sans-serif | 400–600 | Clareza e modernidade |
+| **Textos de Destaque / Números** | *Poppins*, sans-serif | 500–700 | Métricas (ex: “1,000+ happy clients”) |
+| **Botões e links** | *Montserrat SemiBold* | 600 | Letras maiúsculas, espaçadas |
+
+**Fallbacks CSS:**
+```css
+font-family: 'Pacifico', 'Montserrat', 'Poppins', sans-serif;
+```
+
+---
+
+## 🧩 COMPONENTES E ESTILO DE INTERFACE
+
+### 🔹 BOTÕES
+- **Primário (turquesa):**
+  ```css
+  background: #23C0E3;
+  color: #FFFFFF;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-weight: 600;
+  text-transform: uppercase;
+  box-shadow: 0px 3px 10px rgba(35, 192, 227, 0.3);
+  transition: all 0.3s ease-in-out;
+  ```
+  **Hover:** `background: #1AA7C9; transform: scale(1.03);`
+
+- **Botão WhatsApp (“Talk With A Human”):**
+  - Fundo: `#25D366`
+  - Cor do texto: `#FFFFFF`
+  - Ícone: `WhatsApp.svg` branco com sombra suave.
+  - Borda arredondada total (`border-radius: 50px;`)
+  - Posição: *fixed bottom-right*, acima da dobra.
+
+---
+
+## 📱 ESTILO DE LAYOUT
+
+### Hero Section
+- Fundo branco, imagem grande de clientes no Tuk Tuk.
+- Título central com Pacifico, subtítulo em Montserrat cinza.
+- CTA principal: “Talk With A Human” + “Click Here (vídeo)” circular com borda azul `#23C0E3`.
+
+### Seção “Packages”
+- Fundo cinza-claro `#F7F7F7`.
+- Tabela com bordas em `#23C0E3` e colunas com cabeçalhos coloridos (`background: #23C0E3; color: #FFF; border-radius: 6px 6px 0 0;`).
+- Linhas alternadas com tons `#FFFFFF` e `#F9F9F9`.
+- Ícones de “+” indicam detalhes expansíveis.
+- Preços exibidos em negrito `#333333` com subtítulo “Starting at €...”.
+
+### Seção “As Seen On”
+- Título com tipografia Pacifico preta e destaque em turquesa.
+- Logos: “Good Morning America”, “Hospitality Awards”.
+- Fundo branco, separadores cinza-claro.
+
+### Reviews
+- Fundo branco com estrelas douradas `#FFD700`.
+- Texto preto `#222222`, nome do cliente em negrito.
+- “Verified by TrustIndex” selo verde `#2ECC71`.
+
+---
+
+## 🖼️ ÍCONES E ELEMENTOS GRÁFICOS
+
+- **Ícones de contato:** WhatsApp, Messenger, Email — padrão flat azul ou verde.
+- **Ícones de Tours:** `map`, `wine-glass`, `monument`, `sun`, `camera` — outline fino preto.
+- **Ícones Sociais:** Redondos, 32px, cores oficiais (FB, IG, YT).
+
+---
+
+## 🧭 ESPAÇAMENTO E GRID
+
+- Margem geral horizontal: `max(5%, 40px)`
+- Padding interno de seções: `60px 0`
+- Espaçamento entre componentes: `24px`
+- Imagens de tours: border-radius `10px`
+- Layout mobile-first responsivo até 380px.
+
+---
+
+## 🪄 INTERAÇÕES E MICROANIMAÇÕES
+
+| Elemento | Efeito | Duração |
+|-----------|--------|----------|
+| Botões principais | scale(1.03) + sombra expandida | 0.2s |
+| Cards de tours | leve “tilt” ao hover | 0.3s |
+| Botão de vídeo “Click Here” | pulsação suave `opacity: 0.7 → 1.0` | loop 2s |
+| “Talk With A Human” | pulso verde + ponto vermelho piscando (`#FF0000`) | 1s loop |
+
+---
+
+## 🧠 MOOD E POSICIONAMENTO VISUAL
+
+- **Tons emocionais:** acolhedor, humano, real, positivo.
+- **Inspiração visual:** turismo boutique, experiência local, exclusividade.
+- **Fotografia predominante:** grupos sorridentes em tuktuks, paisagens de Sintra e Cascais, mesa de almoço portuguesa.
+- **Estilo geral:** autêntico, ensolarado, com luz natural, transições suaves, “handcrafted experience”.
+
+---
+
+## 🧾 COPYRIGHT E USO DE MARCA
+
+> Marca registrada Yes, You Deserve!  
+> Todos os direitos reservados.  
+> A reprodução visual deve manter o tom emocional humano, o branding pessoal de Daniel Ponce e a ligação direta com hospitalidade portuguesa.
+
+---
+
+**Autor técnico:** Fillipe Guerra — 2025  
+**Propósito:** replicação visual fiel da marca YYD para integração nos módulos *Backoffice*, *Clientes* e *Aurora IA*.  
+**Ambiente de destino:** Replit (Next.js / React / TailwindCSS ou equivalente).

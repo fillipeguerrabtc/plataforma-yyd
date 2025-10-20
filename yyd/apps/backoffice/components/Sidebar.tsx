@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import Image from 'next/image';
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -32,13 +33,23 @@ export default function Sidebar() {
         top: 0,
       }}
     >
-      <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-        <h1 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--brand-turquoise)' }}>
-          YYD Backoffice
-        </h1>
-        <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', marginTop: '0.25rem' }}>
-          Yes, You Deserve!
-        </p>
+      <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
+        <Image 
+          src="/logo.png" 
+          alt="Yes, You Deserve!" 
+          width={70} 
+          height={70}
+          priority
+          style={{ objectFit: 'contain', filter: 'brightness(0) invert(1)' }}
+        />
+        <div style={{ textAlign: 'center' }}>
+          <h1 className="font-pacifico" style={{ fontSize: '1.125rem', color: 'var(--brand-turquoise)' }}>
+            Yes, You Deserve!
+          </h1>
+          <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.6)', marginTop: '0.25rem' }}>
+            Backoffice
+          </p>
+        </div>
       </div>
 
       <nav style={{ flex: 1, padding: '1rem 0', overflowY: 'auto' }}>
