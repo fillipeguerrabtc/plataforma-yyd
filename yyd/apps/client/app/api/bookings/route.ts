@@ -132,6 +132,28 @@ export async function POST(request: NextRequest) {
       customerId = customer.id;
     }
 
+    // Calculate addons total if provided
+    let addonsTotal = 0;
+    const addonRecords: Array<{ addonId: string; quantity: number; priceEur: number }> = [];
+    
+    if (addons && Array.isArray(addons)) {
+      for (const addon of addons) {
+        const addonData = await prisma.tourAddon.findUnique({
+          where: { id: addon.addonId },
+        });
+        
+        if (addonData) {
+          const addonPrice = Number(addonData.priceEur);
+          addonsTotal += addonPrice * addon.quantity;
+          addonRecords.push({ 
+            addonId: addon.addonId, 
+            quantity: addon.quantity,
+            priceEur: addonPrice,
+          });
+        }
+      }
+    }
+
     // Generate booking number
     const bookingNumber = `YYD-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
@@ -148,33 +170,58 @@ export async function POST(request: NextRequest) {
         specialRequests: specialRequests || null,
         selectedActivities: selectedActivities || [],
         priceEur,
+        addonsTotal,
         season: bookingSeason,
         status: 'pending',
         locale: customerLocale || 'en',
+        selectedAddons: {
+          create: addonRecords,
+        },
       },
       include: {
         customer: true,
         product: true,
+        selectedAddons: {
+          include: {
+            addon: true,
+          },
+        },
       },
     });
 
     console.log('✅ Booking created successfully:', booking.id);
     
+    // Re-fetch booking with full relations for email
+    const bookingWithRelations = await prisma.booking.findUnique({
+      where: { id: booking.id },
+      include: {
+        customer: true,
+        product: true,
+        selectedAddons: {
+          include: {
+            addon: true,
+          },
+        },
+      },
+    });
+    
     // Send confirmation email asynchronously
-    try {
-      await emailService.sendBookingConfirmation(
-        booking,
-        booking.customer,
-        booking.product,
-        booking.locale || 'en'
-      );
-      console.log('📧 Confirmation email sent to', booking.customer.email);
-    } catch (emailError: any) {
-      console.error('❌ Failed to send confirmation email:', emailError.message);
-      // Don't fail the booking if email fails
+    if (bookingWithRelations) {
+      try {
+        await emailService.sendBookingConfirmation(
+          bookingWithRelations,
+          bookingWithRelations.customer,
+          bookingWithRelations.product,
+          bookingWithRelations.locale || 'en'
+        );
+        console.log('📧 Confirmation email sent to', bookingWithRelations.customer.email);
+      } catch (emailError: any) {
+        console.error('❌ Failed to send confirmation email:', emailError.message);
+        // Don't fail the booking if email fails
+      }
     }
     
-    return NextResponse.json({ booking });
+    return NextResponse.json({ booking: bookingWithRelations || booking });
   } catch (error: any) {
     console.error('❌ ERROR creating booking:', error);
     console.error('Error details:', error.message);
@@ -193,17 +240,17 @@ export async function GET(request: NextRequest) {
     const bookingId = searchParams.get('id');
 
     if (bookingId) {
-      // CRITICAL: Must be authenticated to view booking details
-      if (!auth) {
-        return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
-      }
-
       const booking = await prisma.booking.findUnique({
         where: { id: bookingId },
         include: {
           customer: true,
           product: true,
           payments: true,
+          selectedAddons: {
+            include: {
+              addon: true,
+            },
+          },
         },
       });
 
@@ -211,12 +258,26 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'Reserva não encontrada' }, { status: 404 });
       }
 
-      // CRITICAL: Verify ownership - customer can only see their own bookings
-      if (booking.customerId !== auth.customerId) {
+      // Allow access if:
+      // 1. User is authenticated and owns the booking
+      // 2. Booking is pending and was created in last 15 minutes (checkout flow)
+      const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+      const isRecentPending = booking.status === 'pending' && booking.createdAt > fifteenMinutesAgo;
+      
+      if (!auth && !isRecentPending) {
+        return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+      }
+
+      if (auth && booking.customerId !== auth.customerId) {
         return NextResponse.json({ error: 'Não autorizado' }, { status: 403 });
       }
 
-      return NextResponse.json(booking);
+      // Calculate total with addons
+      const basePrice = Number(booking.priceEur);
+      const addonsTotal = Number(booking.addonsTotal || 0);
+      const totalPriceEur = basePrice + addonsTotal;
+
+      return NextResponse.json({ ...booking, totalPriceEur });
     }
 
     // List bookings for authenticated customer
