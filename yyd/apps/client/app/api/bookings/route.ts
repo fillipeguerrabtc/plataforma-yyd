@@ -60,14 +60,22 @@ export async function POST(request: NextRequest) {
     }
 
     // Fetch product with pricing to recalculate server-side
-    const product = await prisma.product.findUnique({
-      where: { id: productId },
+    // Accept either slug or id
+    const product = await prisma.product.findFirst({
+      where: {
+        OR: [
+          { id: productId },
+          { slug: productId },
+        ],
+        active: true,
+      },
       include: {
         seasonPrices: true,
       },
     });
 
-    if (!product || !product.active) {
+    if (!product) {
+      console.error('❌ Product not found:', productId);
       return NextResponse.json({ error: 'Tour não disponível' }, { status: 404 });
     }
 
@@ -127,12 +135,12 @@ export async function POST(request: NextRequest) {
     // Generate booking number
     const bookingNumber = `YYD-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
-    // Create booking
+    // Create booking (use product.id not productId which might be a slug)
     const booking = await prisma.booking.create({
       data: {
         bookingNumber,
         customerId,
-        productId,
+        productId: product.id,
         date: bookingDate,
         startTime: startTime || '09:00',
         numberOfPeople,

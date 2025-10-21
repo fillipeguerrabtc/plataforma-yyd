@@ -10,4 +10,11 @@ async function getIntegrations() {
 export default async function IntegrationsPage() {
   const integrations = await getIntegrations();
 
-  return <IntegrationManager initialIntegrations={integrations} />;
+  const serializedIntegrations = integrations.map((i) => ({
+    ...i,
+    createdAt: i.createdAt.toISOString(),
+    updatedAt: i.updatedAt.toISOString(),
+  }));
+
+  return <IntegrationManager initialIntegrations={serializedIntegrations} />;
+}

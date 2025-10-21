@@ -496,28 +496,46 @@ export default function TourDetailPage() {
                   {/* Booking Form */}
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-semibold text-black mb-2">
+                      <label 
+                        htmlFor="tour-date-input"
+                        className="block text-sm font-semibold text-black mb-2 cursor-pointer"
+                      >
                         Select Date *
                       </label>
                       <input
+                        id="tour-date-input"
                         type="date"
                         value={selectedDate}
                         onChange={(e) => setSelectedDate(e.target.value)}
                         min={new Date().toISOString().split('T')[0]}
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-[#1FB7C4] focus:outline-none transition-colors"
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-[#1FB7C4] focus:outline-none transition-colors cursor-pointer"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold text-black mb-2">
+                      <label htmlFor="tour-people-input" className="block text-sm font-semibold text-black mb-2">
                         Number of People *
                       </label>
                       <input
+                        id="tour-people-input"
                         type="number"
                         min="1"
                         max={tour.maxGroupSize}
                         value={numberOfPeople}
-                        onChange={(e) => setNumberOfPeople(parseInt(e.target.value) || 1)}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === '') {
+                            setNumberOfPeople(0);
+                          } else {
+                            const num = parseInt(val);
+                            setNumberOfPeople(isNaN(num) ? 0 : num);
+                          }
+                        }}
+                        onBlur={(e) => {
+                          if (numberOfPeople < 1) {
+                            setNumberOfPeople(1);
+                          }
+                        }}
                         className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-[#1FB7C4] focus:outline-none transition-colors"
                       />
                     </div>

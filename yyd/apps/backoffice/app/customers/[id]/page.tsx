@@ -11,7 +11,7 @@ async function getCustomerData(id: string) {
           product: true,
           guide: true,
           payments: true,
-          addons: { include: { addon: true } },
+          selectedAddons: { include: { addon: true } },
         },
         orderBy: { date: 'desc' },
       },
