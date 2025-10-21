@@ -6,10 +6,10 @@ export const PayrollCreateSchema = z.object({
   vendorName: z.string().optional(),
   payrollType: z.enum(['employee', 'guide', 'vendor']),
   period: z.string(),
-  periodStart: z.string().or(z.date()),
-  periodEnd: z.string().or(z.date()),
-  grossAmount: z.number().positive(),
-  deductions: z.number().nonnegative().default(0),
+  periodStart: z.coerce.date(),
+  periodEnd: z.coerce.date(),
+  grossAmount: z.coerce.number().positive(),
+  deductions: z.coerce.number().nonnegative().default(0),
   currency: z.string().default('EUR'),
   status: z.enum(['pending', 'approved', 'paid', 'cancelled']).default('pending'),
   paymentMethod: z.string().optional(),
@@ -19,13 +19,18 @@ export const PayrollCreateSchema = z.object({
   (data) => data.employeeId || data.guideId || data.vendorName,
   { message: 'Must provide employeeId, guideId, or vendorName' }
 ).refine(
-  (data) => new Date(data.periodStart) <= new Date(data.periodEnd),
+  (data) => data.periodStart <= data.periodEnd,
   { message: 'periodStart must be before or equal to periodEnd' }
 );
 
 export const PayrollUpdateSchema = z.object({
+  period: z.string().optional(),
+  periodStart: z.coerce.date().optional(),
+  periodEnd: z.coerce.date().optional(),
+  grossAmount: z.coerce.number().positive().optional(),
+  deductions: z.coerce.number().nonnegative().optional(),
   status: z.enum(['pending', 'approved', 'paid', 'cancelled']).optional(),
-  paidAt: z.string().or(z.date()).optional(),
+  paidAt: z.coerce.date().optional(),
   paymentMethod: z.string().optional(),
   notes: z.string().optional(),
   metadata: z.record(z.any()).optional(),
@@ -41,7 +46,7 @@ export const CustomerUpdateSchema = z.object({
   tags: z.array(z.string()).optional(),
   notes: z.string().optional(),
   leadStatus: z.enum(['lead', 'contact', 'quote', 'booking', 'confirmed', 'cancelled']).optional(),
-  leadScore: z.number().min(0).max(100).optional(),
+  leadScore: z.coerce.number().min(0).max(100).optional(),
   assignedTo: z.string().optional(),
 });
 
