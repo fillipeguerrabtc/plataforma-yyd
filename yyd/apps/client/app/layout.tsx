@@ -14,6 +14,9 @@ export const metadata: Metadata = {
     template: '%s | YYD Tours',
   },
   description: 'Experience unforgettable electric tuk-tuk tours in Sintra and Cascais, Portugal. Featured on ABC Good Morning America with 200+ 5-star TripAdvisor reviews. Book your premium eco-friendly tour today!',
+  icons: {
+    icon: '/favicon.ico',
+  },
   keywords: [
     'Sintra tours',
     'Cascais tours',
@@ -84,16 +87,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Pacifico&family=Montserrat:wght@400;700&family=Poppins:wght@300;400;600&display=swap"
-          rel="stylesheet"
-        />
-        <link rel="icon" href="/favicon.ico" />
-        <meta name="theme-color" content="#37C8C4" />
-      </head>
       <body className="antialiased" style={{ fontFamily: 'Poppins, sans-serif' }}>
         {children}
         <GlobalClientInterface />

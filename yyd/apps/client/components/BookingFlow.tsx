@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { calculatePrice, getSeason } from '@yyd/shared';
 
@@ -29,6 +29,40 @@ export default function BookingFlow({ product }: BookingFlowProps) {
   const [customerPhone, setCustomerPhone] = useState('');
   const [customerLocale, setCustomerLocale] = useState('en');
   const [preferredContact, setPreferredContact] = useState<'whatsapp' | 'messenger' | 'email'>('whatsapp');
+
+  const getSeasonLimits = () => {
+    if (!selectedDate || !product.seasonPrices || product.seasonPrices.length === 0) {
+      return { min: 1, max: 8 };
+    }
+
+    const date = new Date(selectedDate);
+    const season = getSeason(date);
+    
+    // Find the pricing tier for the current season and number of people
+    const seasonPrices = product.seasonPrices.filter((sp: any) => sp.season === season);
+    
+    if (seasonPrices.length === 0) {
+      return { min: 1, max: 8 };
+    }
+
+    // Get min from smallest tier and max from largest tier for this season
+    const min = Math.min(...seasonPrices.map((sp: any) => sp.minPeople));
+    const max = Math.max(...seasonPrices.map((sp: any) => sp.maxPeople));
+    
+    return { min, max };
+  };
+
+  // Revalidate number of people when date changes (season may change)
+  useEffect(() => {
+    if (selectedDate) {
+      const { min, max } = getSeasonLimits();
+      if (numberOfPeople < min) {
+        setNumberOfPeople(min);
+      } else if (numberOfPeople > max) {
+        setNumberOfPeople(max);
+      }
+    }
+  }, [selectedDate]);
 
   const calculateTotalPrice = () => {
     if (!selectedDate) return 0;
@@ -146,20 +180,39 @@ export default function BookingFlow({ product }: BookingFlowProps) {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold mb-2">
+                <label htmlFor="num-people" className="block text-sm font-semibold mb-2">
                   Number of People
                 </label>
-                <select
+                <input
+                  id="num-people"
+                  type="number"
                   value={numberOfPeople}
-                  onChange={(e) => setNumberOfPeople(parseInt(e.target.value))}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value) || 0;
+                    const { min, max } = getSeasonLimits();
+                    if (val >= min && val <= max) {
+                      setNumberOfPeople(val);
+                    } else if (val > max) {
+                      setNumberOfPeople(max);
+                    } else if (e.target.value === '') {
+                      setNumberOfPeople(0);
+                    }
+                  }}
+                  onBlur={(e) => {
+                    const { min } = getSeasonLimits();
+                    if (numberOfPeople < min || numberOfPeople === 0) {
+                      setNumberOfPeople(min);
+                    }
+                  }}
+                  min={getSeasonLimits().min}
+                  max={getSeasonLimits().max}
+                  placeholder={`${getSeasonLimits().min} - ${getSeasonLimits().max} people`}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-turquoise focus:border-transparent"
-                >
-                  {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
-                    <option key={num} value={num}>
-                      {num} {num === 1 ? 'Person' : 'People'}
-                    </option>
-                  ))}
-                </select>
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Min: {getSeasonLimits().min} | Max: {getSeasonLimits().max} people
+                  {selectedDate && ` (${getSeason(new Date(selectedDate))} season)`}
+                </p>
               </div>
 
               {selectedDate && (
