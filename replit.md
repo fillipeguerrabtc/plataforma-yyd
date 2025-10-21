@@ -324,17 +324,60 @@ yyd/
 - Todas rotas protegidas com requirePermission('aurora', ...)
 - Audit logging completo
 
-**⏳ PENDENTES:**
-- Task 9: Folha pagamento (payroll)
-- Task 12: CRM segmentação + pipeline UI
-- Task 13: CRM comunicação integrada UI
-- Task 14: CRM automações
-- Task 17: Dashboard navigation UI
+**8. FINANCEIRO - PAYROLL (Task 9):**
+- Payroll schema: employeeId, guideId, vendorName, type, period, grossAmount, deductions, netAmount, status
+- API completa: /api/financial/payroll (GET/POST), /api/financial/payroll/[id] (PATCH/DELETE)
+- Filtros: status, payrollType, period
+- RBAC + Audit logging
+- Placeholder page: /financial/payroll
+
+**9. CRM - SEGMENTATION (Task 12):**
+- CustomerSegment schema: filters JSON, autoUpdate, active
+- CustomerSegmentMember: many-to-many com Customer
+- Customer updated: leadStatus, leadScore, assignedTo, segmentMemberships
+- API: /api/crm/segments (GET/POST) com member counts
+- RBAC + Audit logging
+- Placeholder page: /crm/segments
+
+**10. CRM - COMMUNICATIONS (Task 13):**
+- Customer PATCH API: /api/crm/customers/[id] (GET/PATCH)
+- Update: tags, notes, leadStatus, assignedTo, etc
+- Include bookings + segmentMemberships
+- MessageThread/Message schemas (já existentes)
+- RBAC + Audit logging
+
+**11. CRM - AUTOMATIONS (Task 14):**
+- CRMAutomation schema: trigger, conditions JSON, actions JSON, active, runCount
+- API: /api/crm/automations (GET/POST), /api/crm/automations/[id] (PATCH/DELETE)
+- Filtro: active automations
+- RBAC + Audit logging
+- Placeholder page: /crm/automations
+
+**12. DASHBOARD NAVIGATION (Task 17):**
+- Sidebar reorganizada em seções:
+  - GERAL: Dashboard, Analytics
+  - PRODUTOS: Tours
+  - PESSOAS: Guias
+  - FINANCEIRO: Visão Geral, Contas, Razão, Payroll, AR/AP
+  - CRM: Clientes, Segmentos, Automações
+  - RESERVAS: Bookings, Calendário
+  - AURORA IA: Aurora
+  - SISTEMA: Integrações, Reviews, Config
+- Placeholder pages criadas: /financial/accounts, /financial/ledger, /financial/payroll, /crm/segments, /crm/automations
+- Mobile responsive
+
+**⏳ NEXT PRIORITIES:**
+- Task 18-N: UIs completas para Payroll, Segments, Automations
+- Aurora chat web endpoint fix
+- Facebook Messenger integration
+- Client platform clone (yesyoudeserve.tours)
 
 **NOTES:**
 - Login backoffice fixed (jsonwebtoken → jose)
 - Aurora autonomy implemented (keyword fallback, no OpenAI required)
 - WhatsApp webhook functional (port 8008)
+- Prisma client regenerated (Tasks 9-17)
+- LSP cache issues (TypeScript server needs refresh)
 
 ## CRITICAL NOTES
 - **NO MVP**: Build complete platform

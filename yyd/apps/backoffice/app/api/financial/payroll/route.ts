@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requirePermission } from '@/lib/auth';
 import { logCRUD } from '@/lib/audit';
+import { PayrollCreateSchema } from '@/lib/validations';
 
 export async function GET(request: NextRequest) {
   try {
@@ -41,47 +42,34 @@ export async function POST(request: NextRequest) {
     const user = requirePermission(request, 'finance', 'create');
     const body = await request.json();
 
-    const {
-      employeeId,
-      guideId,
-      vendorName,
-      payrollType,
-      period,
-      periodStart,
-      periodEnd,
-      grossAmount,
-      deductions,
-      paymentMethod,
-      notes,
-      metadata,
-    } = body;
-
-    if (!payrollType || !period || !periodStart || !periodEnd || !grossAmount) {
+    const validation = PayrollCreateSchema.safeParse(body);
+    if (!validation.success) {
       return NextResponse.json(
-        { error: 'payrollType, period, periodStart, periodEnd, and grossAmount are required' },
+        { error: 'Validation failed', details: validation.error.issues },
         { status: 400 }
       );
     }
 
-    const netAmount = parseFloat(grossAmount) - parseFloat(deductions || 0);
+    const data = validation.data;
+    const netAmount = data.grossAmount - data.deductions;
 
     const payroll = await prisma.payroll.create({
       data: {
-        employeeId,
-        guideId,
-        vendorName,
-        payrollType,
-        period,
-        periodStart: new Date(periodStart),
-        periodEnd: new Date(periodEnd),
-        grossAmount: parseFloat(grossAmount),
-        deductions: parseFloat(deductions || 0),
+        employeeId: data.employeeId,
+        guideId: data.guideId,
+        vendorName: data.vendorName,
+        payrollType: data.payrollType,
+        period: data.period,
+        periodStart: new Date(data.periodStart),
+        periodEnd: new Date(data.periodEnd),
+        grossAmount: data.grossAmount,
+        deductions: data.deductions,
         netAmount,
-        currency: 'EUR',
-        status: 'pending',
-        paymentMethod,
-        notes,
-        metadata: metadata || {},
+        currency: data.currency,
+        status: data.status,
+        paymentMethod: data.paymentMethod,
+        notes: data.notes,
+        metadata: data.metadata || {},
       },
     });
 

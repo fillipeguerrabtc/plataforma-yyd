@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requirePermission } from '@/lib/auth';
 import { logCRUD } from '@/lib/audit';
+import { PayrollUpdateSchema } from '@/lib/validations';
 
 export async function PATCH(
   request: NextRequest,
@@ -11,6 +12,14 @@ export async function PATCH(
     const user = requirePermission(request, 'finance', 'update');
     const body = await request.json();
 
+    const validation = PayrollUpdateSchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: validation.error.issues },
+        { status: 400 }
+      );
+    }
+
     const before = await prisma.payroll.findUnique({
       where: { id: params.id },
     });
@@ -19,17 +28,17 @@ export async function PATCH(
       return NextResponse.json({ error: 'Payroll not found' }, { status: 404 });
     }
 
-    const { status, paidAt, paymentMethod, notes } = body;
+    const data = validation.data;
+    const updateData: any = { updatedAt: new Date() };
+    if (data.status !== undefined) updateData.status = data.status;
+    if (data.paidAt !== undefined) updateData.paidAt = new Date(data.paidAt);
+    if (data.paymentMethod !== undefined) updateData.paymentMethod = data.paymentMethod;
+    if (data.notes !== undefined) updateData.notes = data.notes;
+    if (data.metadata !== undefined) updateData.metadata = data.metadata;
 
     const updated = await prisma.payroll.update({
       where: { id: params.id },
-      data: {
-        ...(status && { status }),
-        ...(paidAt && { paidAt: new Date(paidAt) }),
-        ...(paymentMethod && { paymentMethod }),
-        ...(notes !== undefined && { notes }),
-        updatedAt: new Date(),
-      },
+      data: updateData,
     });
 
     await logCRUD(user.userId, user.email, 'update', 'payroll', updated.id, { before, after: updated }, request);

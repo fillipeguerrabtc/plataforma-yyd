@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requirePermission } from '@/lib/auth';
 import { logCRUD } from '@/lib/audit';
+import { SegmentCreateSchema } from '@/lib/validations';
 
 export async function GET(request: NextRequest) {
   try {
@@ -27,19 +28,22 @@ export async function POST(request: NextRequest) {
     const user = requirePermission(request, 'customers', 'create');
     const body = await request.json();
 
-    const { name, description, filters, autoUpdate } = body;
-
-    if (!name || !filters) {
-      return NextResponse.json({ error: 'name and filters are required' }, { status: 400 });
+    const validation = SegmentCreateSchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: validation.error.issues },
+        { status: 400 }
+      );
     }
 
+    const data = validation.data;
     const segment = await prisma.customerSegment.create({
       data: {
-        name,
-        description,
-        filters,
-        autoUpdate: autoUpdate !== false,
-        active: true,
+        name: data.name,
+        description: data.description,
+        filters: data.filters,
+        autoUpdate: data.autoUpdate,
+        active: data.active,
       },
     });
 

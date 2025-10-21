@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requirePermission } from '@/lib/auth';
 import { logCRUD } from '@/lib/audit';
+import { AutomationCreateSchema } from '@/lib/validations';
 
 export async function GET(request: NextRequest) {
   try {
-    requirePermission(request, 'customers', 'read');
+    requirePermission(request, 'aurora', 'read');
 
     const { searchParams } = new URL(request.url);
     const active = searchParams.get('active');
@@ -26,23 +27,26 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = requirePermission(request, 'customers', 'create');
+    const user = requirePermission(request, 'aurora', 'create');
     const body = await request.json();
 
-    const { name, description, trigger, conditions, actions } = body;
-
-    if (!name || !trigger || !actions) {
-      return NextResponse.json({ error: 'name, trigger, and actions are required' }, { status: 400 });
+    const validation = AutomationCreateSchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: validation.error.issues },
+        { status: 400 }
+      );
     }
 
+    const data = validation.data;
     const automation = await prisma.cRMAutomation.create({
       data: {
-        name,
-        description,
-        trigger,
-        conditions: conditions || {},
-        actions,
-        active: true,
+        name: data.name,
+        description: data.description,
+        trigger: data.trigger,
+        conditions: data.conditions || {},
+        actions: data.actions,
+        active: data.active,
       },
     });
 

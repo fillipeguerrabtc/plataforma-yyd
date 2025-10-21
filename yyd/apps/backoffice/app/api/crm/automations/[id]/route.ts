@@ -2,14 +2,23 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requirePermission } from '@/lib/auth';
 import { logCRUD } from '@/lib/audit';
+import { AutomationUpdateSchema } from '@/lib/validations';
 
 export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const user = requirePermission(request, 'customers', 'update');
+    const user = requirePermission(request, 'aurora', 'update');
     const body = await request.json();
+
+    const validation = AutomationUpdateSchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: validation.error.issues },
+        { status: 400 }
+      );
+    }
 
     const before = await prisma.cRMAutomation.findUnique({
       where: { id: params.id },
@@ -22,7 +31,7 @@ export async function PATCH(
     const updated = await prisma.cRMAutomation.update({
       where: { id: params.id },
       data: {
-        ...body,
+        ...validation.data,
         updatedAt: new Date(),
       },
     });
@@ -40,7 +49,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const user = requirePermission(request, 'customers', 'delete');
+    const user = requirePermission(request, 'aurora', 'delete');
 
     const before = await prisma.cRMAutomation.findUnique({
       where: { id: params.id },

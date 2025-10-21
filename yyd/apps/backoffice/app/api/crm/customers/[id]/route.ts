@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requirePermission } from '@/lib/auth';
 import { logCRUD } from '@/lib/audit';
+import { CustomerUpdateSchema } from '@/lib/validations';
 
 export async function GET(
   request: NextRequest,
@@ -43,6 +44,14 @@ export async function PATCH(
     const user = requirePermission(request, 'customers', 'update');
     const body = await request.json();
 
+    const validation = CustomerUpdateSchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: validation.error.issues },
+        { status: 400 }
+      );
+    }
+
     const before = await prisma.customer.findUnique({
       where: { id: params.id },
     });
@@ -54,7 +63,7 @@ export async function PATCH(
     const updated = await prisma.customer.update({
       where: { id: params.id },
       data: {
-        ...body,
+        ...validation.data,
         updatedAt: new Date(),
       },
     });
