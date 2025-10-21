@@ -26,18 +26,33 @@ export default function CheckoutForm({ bookingId }: CheckoutFormProps) {
     setErrorMessage('');
 
     try {
-      const { error } = await stripe.confirmPayment({
+      // Step 1: Validate form before submission (Stripe best practice)
+      const { error: submitError } = await elements.submit();
+      if (submitError) {
+        setErrorMessage(submitError.message || 'Please check your payment details');
+        setIsLoading(false);
+        return;
+      }
+
+      // Step 2: Confirm payment with redirect: 'if_required' for cards
+      const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
           return_url: `${window.location.origin}/booking-confirmation?bookingId=${bookingId}`,
         },
+        redirect: 'if_required', // Only redirect for payment methods that require it
       });
 
       if (error) {
+        // Only shows for immediate errors (card declined, etc)
         setErrorMessage(error.message || 'An error occurred during payment');
         setIsLoading(false);
+      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+        // Payment succeeded without redirect (most cards)
+        router.push(`/booking-confirmation?bookingId=${bookingId}&payment_intent=${paymentIntent.id}`);
       }
     } catch (err) {
+      console.error('Payment error:', err);
       setErrorMessage('Payment failed. Please try again.');
       setIsLoading(false);
     }

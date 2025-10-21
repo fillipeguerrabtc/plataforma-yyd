@@ -107,11 +107,15 @@ async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
     return;
   }
 
-  // CRITICAL: Verify payment amount matches booking total
-  const expectedAmount = Math.round(parseFloat(booking.priceEur.toString()) * 100);
+  // CRITICAL: Verify payment amount matches booking total (base + addons)
+  const baseAmount = parseFloat(booking.priceEur.toString());
+  const addonsAmount = parseFloat((booking.addonsTotal || 0).toString());
+  const totalAmount = baseAmount + addonsAmount;
+  const expectedAmount = Math.round(totalAmount * 100);
+  
   if (paymentIntent.amount !== expectedAmount) {
     console.error(
-      `Payment amount mismatch for booking ${bookingId}: expected ${expectedAmount}, got ${paymentIntent.amount}`
+      `⚠️ Payment amount mismatch for booking ${bookingId}: expected €${totalAmount} (${expectedAmount} cents), got ${paymentIntent.amount} cents`
     );
   }
 
