@@ -218,35 +218,10 @@ export default function BookTourPage() {
         throw new Error('Booking ID not received from server');
       }
 
-      // 3. Create Stripe payment intent
-      const paymentRes = await fetch('/api/payments/create-intent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          bookingId,
-          customerEmail: formData.email,
-        }),
-      });
-
-      const paymentData = await paymentRes.json();
-      const clientSecret = paymentData.clientSecret;
-
-      // 4. Redirect to Stripe Checkout
-      const stripe = await stripePromise;
-      if (!stripe) throw new Error('Stripe failed to load');
-
-      // For now, simple redirect - later integrate Stripe Elements
-      const { error } = await stripe.confirmPayment({
-        clientSecret,
-        confirmParams: {
-          return_url: `${window.location.origin}/booking-success?bookingId=${bookingId}`,
-        },
-      });
-
-      if (error) {
-        alert(`Payment failed: ${error.message}`);
-        setProcessing(false);
-      }
+      // 3. Redirect to checkout page with Stripe Elements
+      const totalPrice = calculateTotal();
+      router.push(`/checkout?bookingId=${bookingId}&amount=${totalPrice}`);
+      setProcessing(false);
 
     } catch (error) {
       console.error('Booking error:', error);
