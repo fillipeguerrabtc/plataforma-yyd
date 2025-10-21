@@ -908,6 +908,27 @@ enum UserRole {
   support
 }
 
+model EmailTemplate {
+  id              String   @id @default(cuid())
+  name            String
+  templateKey     String   @unique
+  subjectEn       String
+  subjectPt       String
+  subjectEs       String
+  bodyEn          String
+  bodyPt          String
+  bodyEs          String
+  category        String
+  variables       String[]
+  enabled         Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([category])
+  @@index([enabled])
+  @@map("email_templates")
+}
+
 model AuditLog {
   id         String   @id @default(cuid())
   userId     String?

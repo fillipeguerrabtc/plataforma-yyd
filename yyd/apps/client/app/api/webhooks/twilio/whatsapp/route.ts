@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const AURORA_SERVICE_URL = process.env.AURORA_SERVICE_URL || 'http://localhost:8000';
+const AURORA_SERVICE_URL = process.env.AURORA_SERVICE_URL || 'http://localhost:8008';
 
 export async function GET(request: NextRequest) {
   try {

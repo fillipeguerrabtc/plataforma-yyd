@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requirePermission } from '@/lib/auth';
 
-const AURORA_URL = process.env.AURORA_SERVICE_URL || 'http://localhost:8000';
+const AURORA_URL = process.env.AURORA_SERVICE_URL || 'http://localhost:8008';
 
 export async function POST(request: NextRequest) {
   try {
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json({
       success: false,
-      error: 'Failed to connect to Aurora service. Make sure Aurora FastAPI is running on port 8000.',
+      error: 'Failed to connect to Aurora service. Make sure Aurora FastAPI is running on port 8008.',
     }, { status: 500 });
   }
 }

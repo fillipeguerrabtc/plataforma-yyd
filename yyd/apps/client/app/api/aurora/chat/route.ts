@@ -7,12 +7,15 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
-const AURORA_URL = process.env.AURORA_SERVICE_URL || 'http://localhost:8000';
+const AURORA_URL = process.env.AURORA_SERVICE_URL || 'http://localhost:8008';
 
 export async function POST(request: NextRequest) {
+  let language = 'en';
+  
   try {
     const body = await request.json();
-    const { message, sessionId, language = 'en' } = body;
+    const { message, sessionId, language: requestLanguage = 'en' } = body;
+    language = requestLanguage;
 
     if (!message) {
       return NextResponse.json(
@@ -49,9 +52,7 @@ export async function POST(request: NextRequest) {
     console.error('❌ Aurora proxy error:', error);
     console.error('Aurora service URL:', AURORA_URL);
     
-    // Try to return a helpful response instead of error
-    const { language = 'en' } = await request.json();
-    
+    // Return a helpful fallback response using the language from earlier
     const messages: Record<string, string> = {
       en: 'I\'m having a brief connection issue. Let me help you anyway! What would you like to know about our tours?',
       pt: 'Estou com um problema de conexão momentâneo. Mas posso te ajudar mesmo assim! O que gostaria de saber sobre nossos tours?',
