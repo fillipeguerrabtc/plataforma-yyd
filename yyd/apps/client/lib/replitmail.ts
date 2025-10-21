@@ -30,6 +30,11 @@ export const zSmtpMessage = z.object({
 export type SmtpMessage = z.infer<typeof zSmtpMessage>
 
 function getAuthToken(): string {
+  console.log('🔍 Checking Replit tokens:', {
+    hasReplIdentity: !!process.env.REPL_IDENTITY,
+    hasWebReplRenewal: !!process.env.WEB_REPL_RENEWAL,
+  });
+
   const xReplitToken = process.env.REPL_IDENTITY
     ? "repl " + process.env.REPL_IDENTITY
     : process.env.WEB_REPL_RENEWAL
@@ -38,10 +43,11 @@ function getAuthToken(): string {
 
   if (!xReplitToken) {
     throw new Error(
-      "No authentication token found. Please set REPL_IDENTITY or ensure you're running in Replit environment."
+      "Repl util authentication required"
     );
   }
 
+  console.log('✅ Using Replit token type:', xReplitToken.substring(0, 10) + '...');
   return xReplitToken;
 }
 
@@ -74,9 +80,18 @@ export async function sendEmail(message: SmtpMessage): Promise<{
   );
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Failed to send email");
+    const errorText = await response.text();
+    console.error('❌ Replit Mail API error:', response.status, errorText);
+    let error;
+    try {
+      error = JSON.parse(errorText);
+    } catch {
+      error = { message: errorText };
+    }
+    throw new Error(error.message || `Failed to send email: ${response.status}`);
   }
 
-  return await response.json();
+  const result = await response.json();
+  console.log('✅ Replit Mail sent successfully:', result.messageId);
+  return result;
 }
