@@ -42,7 +42,7 @@ export async function GET(
     const pdfBuffer = await generateVoucherPDF({
       bookingNumber: booking.bookingNumber,
       customerName: booking.customer.name,
-      tourTitle: booking.product.title,
+      tourTitle: booking.product.titleEn || booking.product.titlePt || booking.product.titleEs || 'Tour',
       date: booking.date,
       time: booking.startTime,
       numberOfPeople: booking.numberOfPeople,

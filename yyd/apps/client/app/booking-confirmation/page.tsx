@@ -20,17 +20,39 @@ export default function BookingConfirmationPage() {
       return;
     }
 
-    // Fetch booking details
-    fetch(`/api/bookings?id=${bookingId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setBooking(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error('Error fetching booking:', err);
-        setLoading(false);
-      });
+    // Function to fetch booking details
+    const fetchBooking = () => {
+      fetch(`/api/bookings?id=${bookingId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setBooking(data);
+          setLoading(false);
+          
+          // Stop polling if confirmed or failed
+          if (data.status === 'confirmed' || data.status === 'payment_failed' || data.status === 'cancelled') {
+            if (intervalRef) {
+              clearInterval(intervalRef);
+            }
+          }
+        })
+        .catch((err) => {
+          console.error('Error fetching booking:', err);
+          setLoading(false);
+        });
+    };
+
+    // Initial fetch
+    fetchBooking();
+
+    // Auto-refresh every 3 seconds if pending (waiting for webhook)
+    const intervalRef = setInterval(fetchBooking, 3000);
+
+    // Cleanup on unmount
+    return () => {
+      if (intervalRef) {
+        clearInterval(intervalRef);
+      }
+    };
   }, [bookingId]);
 
   if (loading) {

@@ -212,7 +212,7 @@ export class EmailService {
             </div>
             <div class="detail-row">
               <span class="label">${t.tour}:</span>
-              <span class="value" style="float: right;">${product.title}</span>
+              <span class="value" style="float: right;">${product.titleEn || product.titlePt || product.titleEs}</span>
             </div>
             <div class="detail-row">
               <span class="label">${t.date}:</span>
@@ -308,7 +308,7 @@ export class EmailService {
             <p style="font-size: 18px;">${t.greeting} <strong>${customer.name}</strong>,</p>
             <p>${t.reminder}</p>
             <div style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0;">
-              <p><strong>${t.tour}:</strong> ${product.title}</p>
+              <p><strong>${t.tour}:</strong> ${product.titleEn || product.titlePt || product.titleEs}</p>
               <p><strong>${t.date}:</strong> ${new Date(booking.date).toLocaleDateString(locale)}</p>
               <p><strong>${t.time}:</strong> ${booking.startTime}</p>
               <p><strong>${t.pickup}:</strong> ${booking.pickupLocation}</p>
