@@ -22,10 +22,7 @@ async function getCustomerData(id: string) {
 
   const messages = await prisma.message.findMany({
     where: {
-      OR: [
-        { senderEmail: customer.email },
-        { customerPhone: customer.phone },
-      ],
+      customerId: customer.id,
     },
     orderBy: { sentAt: 'desc' },
     take: 100,

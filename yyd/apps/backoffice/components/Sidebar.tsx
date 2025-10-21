@@ -27,6 +27,8 @@ export default function Sidebar() {
       title: 'PESSOAS',
       items: [
         { href: '/guides', label: 'Guias', icon: '🚗' },
+        { href: '/staff', label: 'Funcionários', icon: '👤' },
+        { href: '/vendors', label: 'Fornecedores', icon: '🏢' },
       ],
     },
     {
