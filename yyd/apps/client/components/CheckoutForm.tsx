@@ -43,13 +43,24 @@ export default function CheckoutForm({ bookingId }: CheckoutFormProps) {
         redirect: 'if_required', // Only redirect for payment methods that require it
       });
 
+      console.log('🔍 Payment confirmation result:', { error, paymentIntent });
+
       if (error) {
         // Only shows for immediate errors (card declined, etc)
+        console.error('❌ Payment error:', error);
         setErrorMessage(error.message || 'An error occurred during payment');
         setIsLoading(false);
-      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-        // Payment succeeded without redirect (most cards)
-        router.push(`/booking-confirmation?bookingId=${bookingId}&payment_intent=${paymentIntent.id}`);
+      } else if (paymentIntent) {
+        // Log the payment intent status for debugging
+        console.log('✅ Payment Intent:', paymentIntent.id, 'Status:', paymentIntent.status);
+        
+        if (paymentIntent.status === 'succeeded' || paymentIntent.status === 'processing') {
+          // Payment succeeded or is processing (webhook will confirm)
+          router.push(`/booking-confirmation?bookingId=${bookingId}&payment_intent=${paymentIntent.id}&redirect_status=succeeded`);
+        } else {
+          setErrorMessage(`Payment status: ${paymentIntent.status}. Please contact support.`);
+          setIsLoading(false);
+        }
       }
     } catch (err) {
       console.error('Payment error:', err);

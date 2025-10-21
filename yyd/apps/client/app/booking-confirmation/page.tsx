@@ -73,7 +73,7 @@ export default function BookingConfirmationPage() {
   }
 
   const isConfirmed = booking.status === 'confirmed';
-  const isPending = booking.status === 'pending_payment';
+  const isPending = booking.status === 'pending' || booking.status === 'pending_payment' || booking.status === 'processing';
 
   return (
     <>
@@ -180,9 +180,9 @@ export default function BookingConfirmationPage() {
             </div>
           ) : isPending ? (
             <div className="bg-white rounded-lg shadow-md p-8 text-center">
-              <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <svg
-                  className="w-12 h-12 text-yellow-500"
+                  className="w-12 h-12 text-blue-500 animate-spin"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -191,18 +191,26 @@ export default function BookingConfirmationPage() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                   />
                 </svg>
               </div>
 
-              <h1 className="text-4xl font-bold mb-4">Payment Pending</h1>
-              <p className="text-xl text-gray-600 mb-8">
-                Your booking is waiting for payment confirmation.
+              <h1 className="text-4xl font-bold mb-4">Payment Processing...</h1>
+              <p className="text-xl text-gray-600 mb-4">
+                Your payment was received successfully! ✅
               </p>
               <p className="text-gray-600 mb-8">
-                This usually takes a few moments. Please refresh the page or check your email for confirmation.
+                We're confirming your booking now. This usually takes just a few seconds.
+                You'll receive a confirmation email at <strong>{booking.customer?.email}</strong> shortly.
               </p>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8 text-left">
+                <h3 className="font-semibold mb-2">📋 Your Booking</h3>
+                <p className="text-sm text-gray-700">Booking Reference: <strong>{booking.bookingNumber}</strong></p>
+                <p className="text-sm text-gray-700">Tour: <strong>{booking.product?.titleEn}</strong></p>
+                <p className="text-sm text-gray-700">Date: <strong>{new Date(booking.date).toLocaleDateString()}</strong></p>
+              </div>
 
               <div className="flex gap-4 justify-center">
                 <button
