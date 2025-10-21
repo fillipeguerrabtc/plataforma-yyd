@@ -28,9 +28,10 @@ export default function LoginPage() {
 
       if (response.ok) {
         localStorage.setItem('yyd-user', JSON.stringify(data.user));
-        setTimeout(() => {
-          window.location.href = '/';
-        }, 100);
+        // Wait longer for cookie to be set, then use router.push
+        await new Promise(resolve => setTimeout(resolve, 300));
+        router.push('/');
+        router.refresh();
       } else {
         setError(data.error || 'Login failed');
       }
