@@ -58,6 +58,14 @@ export const SegmentCreateSchema = z.object({
   active: z.boolean().default(true),
 });
 
+export const SegmentUpdateSchema = z.object({
+  name: z.string().min(1).optional(),
+  description: z.string().optional(),
+  filters: z.record(z.any()).optional(),
+  autoUpdate: z.boolean().optional(),
+  active: z.boolean().optional(),
+});
+
 export const AutomationCreateSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
