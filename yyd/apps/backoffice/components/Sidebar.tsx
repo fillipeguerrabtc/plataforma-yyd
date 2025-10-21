@@ -35,6 +35,7 @@ export default function Sidebar() {
       title: 'FINANCEIRO',
       items: [
         { href: '/financial', label: 'Visão Geral', icon: '💰' },
+        { href: '/finance/payments', label: 'Pagamentos', icon: '💳' },
         { href: '/financial/accounts', label: 'Contas', icon: '🏦' },
         { href: '/financial/ledger', label: 'Razão', icon: '📖' },
         { href: '/financial/payroll', label: 'Folha Pagamento', icon: '💵' },
