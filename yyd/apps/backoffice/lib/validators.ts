@@ -42,18 +42,50 @@ export const tourSchema = z.object({
 export type TourFormData = z.infer<typeof tourSchema>;
 
 export const priceSchema = z.object({
-  productId: z.string().uuid('ID de produto inválido'),
-  season: z.enum(['low', 'high', 'peak', 'special'], {
-    errorMap: () => ({ message: 'Temporada inválida' }),
-  }),
-  minGroupSize: z.number().int().min(1, 'Tamanho mínimo: 1').max(36),
-  maxGroupSize: z.number().int().min(1, 'Tamanho máximo: 1').max(36),
-  priceEur: z.number().min(0, 'Preço deve ser positivo'),
-  validFrom: z.date().optional().nullable(),
-  validUntil: z.date().optional().nullable(),
+  productId: z.string().cuid('ID de produto inválido'),
+  season: z.string().min(1, 'Temporada obrigatória').max(50),
+  tier: z.string().min(1, 'Tier obrigatório').max(50),
+  startMonth: z.coerce.number().int().min(1, 'Mês inicial: 1-12').max(12),
+  endMonth: z.coerce.number().int().min(1, 'Mês final: 1-12').max(12),
+  minPeople: z.coerce.number().int().min(1, 'Mínimo: 1').max(36),
+  maxPeople: z.coerce.number().int().min(1, 'Máximo: 1').max(36).optional().nullable(),
+  priceEur: z.coerce.number().min(0, 'Preço deve ser positivo'),
+  pricePerPerson: z.boolean().optional().default(false),
+}).refine((data) => data.minPeople <= (data.maxPeople || 999), {
+  message: 'Mínimo deve ser menor ou igual ao máximo',
+  path: ['maxPeople'],
 });
 
 export type PriceFormData = z.infer<typeof priceSchema>;
+
+export const activitySchema = z.object({
+  productId: z.string().cuid('ID de produto inválido'),
+  nameEn: z.string().min(3, 'English name required').max(255),
+  namePt: z.string().min(3, 'Nome português obrigatório').max(255),
+  nameEs: z.string().min(3, 'Nombre español requerido').max(255),
+  descriptionEn: z.string().min(10, 'English description required').max(1000),
+  descriptionPt: z.string().min(10, 'Descrição portuguesa obrigatória').max(1000),
+  descriptionEs: z.string().min(10, 'Descripción española requerida').max(1000),
+  imageUrl: z.string().url('URL inválida').optional().nullable(),
+  sortOrder: z.coerce.number().int().min(0).optional().default(0),
+  active: z.boolean().optional().default(true),
+});
+
+export type ActivityFormData = z.infer<typeof activitySchema>;
+
+export const optionSchema = z.object({
+  productId: z.string().cuid('ID de produto inválido'),
+  nameEn: z.string().min(3, 'English name required').max(255),
+  namePt: z.string().min(3, 'Nome português obrigatório').max(255),
+  nameEs: z.string().min(3, 'Nombre español requerido').max(255),
+  descriptionEn: z.string().min(10, 'English description required').max(1000),
+  descriptionPt: z.string().min(10, 'Descrição portuguesa obrigatória').max(1000),
+  descriptionEs: z.string().min(10, 'Descripción española requerida').max(1000),
+  sortOrder: z.coerce.number().int().min(0).optional().default(0),
+  active: z.boolean().optional().default(true),
+});
+
+export type OptionFormData = z.infer<typeof optionSchema>;
 
 export const bookingSchema = z.object({
   customerId: z.string().uuid('ID de cliente inválido'),

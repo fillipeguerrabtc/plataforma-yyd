@@ -1,6 +1,8 @@
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import TourForm from '@/components/TourForm';
+import TourPricesManager from '@/components/TourPricesManager';
+import TourActivitiesManager from '@/components/TourActivitiesManager';
 
 async function getTour(id: string) {
   const tour = await prisma.product.findUnique({
@@ -31,7 +33,13 @@ export default async function EditTourPage({ params }: { params: { id: string } 
         </p>
       </div>
 
-      <TourForm initialData={tour} />
+      <div style={{ marginBottom: '2rem' }}>
+        <TourForm initialData={tour} />
+      </div>
+
+      <TourActivitiesManager tourId={params.id} />
+
+      <TourPricesManager tourId={params.id} />
     </div>
   );
 }

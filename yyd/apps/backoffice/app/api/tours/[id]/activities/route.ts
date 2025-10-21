@@ -1,57 +1,76 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requirePermission } from '@/lib/auth';
+import { logCRUD } from '@/lib/audit';
+import { activitySchema } from '@/lib/validators';
 
+/**
+ * GET /api/tours/[id]/activities
+ * List all activities for a tour
+ */
 export async function GET(
-  request: NextRequest,
+  request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    requirePermission(request, 'products', 'update');
+    requirePermission(request, 'products', 'read');
 
     const activities = await prisma.productActivity.findMany({
       where: { productId: params.id },
       orderBy: { sortOrder: 'asc' },
     });
 
-    return NextResponse.json(activities);
+    return NextResponse.json({ activities });
   } catch (error: any) {
+    console.error('Error fetching activities:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-export async function PUT(
-  request: NextRequest,
+/**
+ * POST /api/tours/[id]/activities
+ * Create a new activity
+ */
+export async function POST(
+  request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    requirePermission(request, 'products', 'update');
-    const body = await request.json();
+    const user = requirePermission(request, 'products', 'update');
 
-    // Delete all existing activities
-    await prisma.productActivity.deleteMany({
-      where: { productId: params.id },
+    const rawData = await request.json();
+    const validationResult = activitySchema.safeParse({
+      ...rawData,
+      productId: params.id,
     });
 
-    // Create new activities
-    const created = await prisma.productActivity.createMany({
-      data: body.activities.map((a: any) => ({
-        productId: params.id,
-        nameEn: a.nameEn,
-        namePt: a.namePt,
-        nameEs: a.nameEs,
-        descriptionEn: a.descriptionEn,
-        descriptionPt: a.descriptionPt,
-        descriptionEs: a.descriptionEs,
-        imageUrl: a.imageUrl,
-        sortOrder: a.sortOrder,
-        active: a.active,
-      })),
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: validationResult.error.format() },
+        { status: 400 }
+      );
+    }
+
+    const data = validationResult.data;
+
+    const activity = await prisma.productActivity.create({
+      data,
     });
 
-    return NextResponse.json({ success: true, created: created.count });
+    // Audit logging
+    await logCRUD(
+      user.userId,
+      user.email,
+      'create',
+      'products_activities',
+      activity.id,
+      { before: null, after: activity },
+      request
+    );
+
+    return NextResponse.json({ success: true, activity });
   } catch (error: any) {
-    console.error('Activities update error:', error);
+    console.error('Error creating activity:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
