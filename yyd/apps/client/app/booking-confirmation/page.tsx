@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -10,6 +10,7 @@ export default function BookingConfirmationPage() {
   const searchParams = useSearchParams();
   const [booking, setBooking] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const bookingId = searchParams.get('bookingId');
   const paymentIntent = searchParams.get('payment_intent');
@@ -30,8 +31,9 @@ export default function BookingConfirmationPage() {
           
           // Stop polling if confirmed or failed
           if (data.status === 'confirmed' || data.status === 'payment_failed' || data.status === 'cancelled') {
-            if (intervalRef) {
-              clearInterval(intervalRef);
+            if (intervalRef.current) {
+              clearInterval(intervalRef.current);
+              intervalRef.current = null;
             }
           }
         })
@@ -45,12 +47,13 @@ export default function BookingConfirmationPage() {
     fetchBooking();
 
     // Auto-refresh every 3 seconds if pending (waiting for webhook)
-    const intervalRef = setInterval(fetchBooking, 3000);
+    intervalRef.current = setInterval(fetchBooking, 3000);
 
     // Cleanup on unmount
     return () => {
-      if (intervalRef) {
-        clearInterval(intervalRef);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     };
   }, [bookingId]);
