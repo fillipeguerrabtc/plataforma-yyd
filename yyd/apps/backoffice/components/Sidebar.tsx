@@ -60,7 +60,9 @@ export default function Sidebar() {
     {
       title: 'AURORA IA',
       items: [
-        { href: '/aurora', label: 'Aurora IA', icon: '🤖' },
+        { href: '/aurora', label: 'Chat Aurora', icon: '🤖' },
+        { href: '/aurora/knowledge', label: 'Knowledge Base', icon: '🧠' },
+        { href: '/aurora/config', label: 'Configuração', icon: '⚙️' },
       ],
     },
     {

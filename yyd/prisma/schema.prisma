@@ -951,6 +951,7 @@ model Staff {
   id              String   @id @default(cuid())
   name            String
   email           String   @unique
+  passwordHash    String?
   phone           String?
   position        String
   department      String
