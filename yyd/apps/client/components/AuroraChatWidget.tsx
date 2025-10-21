@@ -54,13 +54,14 @@ export default function AuroraChatWidget({ language = 'en' }: AuroraChatWidgetPr
 
     try {
       // Call Aurora via internal proxy API (not hardcoded localhost)
+      // Send language='auto' to let Aurora detect from message content
       const response = await fetch('/api/aurora/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: input,
           sessionId: 'dashboard-' + Date.now(),
-          language: language,
+          language: 'auto',
         }),
       });
 

@@ -185,25 +185,22 @@ export default function BookingFlow({ product }: BookingFlowProps) {
                 <input
                   id="num-people"
                   type="number"
-                  value={numberOfPeople === 0 ? '' : numberOfPeople}
+                  value={numberOfPeople || ''}
                   onChange={(e) => {
-                    if (e.target.value === '') {
+                    const val = e.target.value;
+                    if (val === '') {
                       setNumberOfPeople(0);
                       return;
                     }
-                    const val = parseInt(e.target.value);
-                    if (isNaN(val)) return;
+                    const num = parseInt(val);
+                    if (isNaN(num)) return;
                     
-                    const { min, max } = getSeasonLimits();
-                    if (val <= max) {
-                      setNumberOfPeople(val);
-                    } else {
-                      setNumberOfPeople(max);
-                    }
+                    const { max } = getSeasonLimits();
+                    setNumberOfPeople(Math.min(num, max));
                   }}
-                  onBlur={(e) => {
+                  onBlur={() => {
                     const { min } = getSeasonLimits();
-                    if (numberOfPeople < min || numberOfPeople === 0) {
+                    if (!numberOfPeople || numberOfPeople < min) {
                       setNumberOfPeople(min);
                     }
                   }}
