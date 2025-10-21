@@ -47,6 +47,8 @@ export default function StaffPage() {
     canAccessModules: [] as string[],
     accessLevel: 'read',
     notes: '',
+    password: '',
+    confirmPassword: '',
   });
 
   const allModules = [
@@ -105,16 +107,34 @@ export default function StaffPage() {
       canAccessModules: member.canAccessModules,
       accessLevel: member.accessLevel,
       notes: member.notes || '',
+      password: '',
+      confirmPassword: '',
     });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const payload = {
+    if (formData.password && formData.password !== formData.confirmPassword) {
+      alert('As senhas não coincidem');
+      return;
+    }
+
+    if (!editingId && !formData.password) {
+      alert('Senha é obrigatória para novo funcionário');
+      return;
+    }
+    
+    const payload: any = {
       ...formData,
       salary: formData.salary ? Number(formData.salary) : null,
     };
+
+    if (formData.password) {
+      payload.password = formData.password;
+    }
+
+    delete payload.confirmPassword;
 
     try {
       const url = editingId ? `/api/staff/${editingId}` : '/api/staff';
@@ -174,6 +194,8 @@ export default function StaffPage() {
       canAccessModules: [],
       accessLevel: 'read',
       notes: '',
+      password: '',
+      confirmPassword: '',
     });
     setEditingId(null);
     setShowAddForm(false);
@@ -253,6 +275,34 @@ export default function StaffPage() {
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '500' }}>
+                Senha {!editingId && '*'}
+              </label>
+              <input
+                type="password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                placeholder={editingId ? 'Deixe em branco para manter' : ''}
+                required={!editingId}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '500' }}>
+                Confirmar Senha {!editingId && '*'}
+              </label>
+              <input
+                type="password"
+                value={formData.confirmPassword}
+                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+                placeholder={editingId ? 'Deixe em branco para manter' : ''}
+                required={!editingId}
               />
             </div>
 

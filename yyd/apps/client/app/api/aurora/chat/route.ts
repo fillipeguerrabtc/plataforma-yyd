@@ -24,14 +24,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Forward to Aurora FastAPI service
+    // Forward to Aurora FastAPI service with correct format
     const auroraResponse = await fetch(`${AURORA_URL}/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        message,
-        sessionId: sessionId || `web-${Date.now()}`,
+        messages: [
+          { role: 'user', content: message }
+        ],
+        customer_id: null,
         language,
+        context: {
+          session_id: sessionId || `web-${Date.now()}`,
+          conversation_id: sessionId || `web-${Date.now()}`,
+        },
       }),
     });
 
@@ -43,9 +49,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      response: data.response,
-      affectiveState: data.affectiveState,
-      suggestedActions: data.suggestedActions,
+      response: data.message || data.response,
+      affectiveState: data.affective_state || data.affectiveState,
+      suggestedActions: data.suggested_actions || data.suggestedActions || [],
     });
 
   } catch (error: any) {

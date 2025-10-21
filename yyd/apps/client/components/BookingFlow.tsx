@@ -153,25 +153,24 @@ export default function BookingFlow({ product }: BookingFlowProps) {
                 <label htmlFor="tour-date" className="block text-sm font-semibold mb-2">
                   Tour Date
                 </label>
-                <div className="relative cursor-pointer" onClick={() => {
-                  const input = document.getElementById('tour-date') as HTMLInputElement;
-                  if (input) {
-                    if (input.showPicker) {
-                      input.showPicker();
-                    } else {
-                      input.focus();
+                <input
+                  id="tour-date"
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  onClick={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    try {
+                      if (target.showPicker) {
+                        target.showPicker();
+                      }
+                    } catch (err) {
+                      console.log('showPicker not available:', err);
                     }
-                  }
-                }}>
-                  <input
-                    id="tour-date"
-                    type="date"
-                    value={selectedDate}
-                    onChange={(e) => setSelectedDate(e.target.value)}
-                    min={new Date().toISOString().split('T')[0]}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-turquoise focus:border-transparent cursor-pointer"
-                  />
-                </div>
+                  }}
+                  min={new Date().toISOString().split('T')[0]}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-turquoise focus:border-transparent cursor-pointer"
+                />
                 {selectedDate && (
                   <p className="text-sm text-gray-600 mt-2">
                     Season: {getSeason(new Date(selectedDate)) === 'high' ? '☀️ High Season' : '📅 Low Season'}

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import bcrypt from 'bcryptjs';
 
 export async function GET(req: NextRequest) {
   try {
@@ -17,6 +18,12 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+
+    if (!body.password) {
+      return NextResponse.json({ error: 'Password is required' }, { status: 400 });
+    }
+
+    const hashedPassword = await bcrypt.hash(body.password, 10);
     
     const staff = await prisma.staff.create({
       data: {
@@ -36,12 +43,13 @@ export async function POST(req: NextRequest) {
         canAccessModules: body.canAccessModules || [],
         accessLevel: body.accessLevel || 'read',
         notes: body.notes || null,
+        passwordHash: hashedPassword,
       },
     });
 
     return NextResponse.json(staff);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating staff:', error);
-    return NextResponse.json({ error: 'Failed to create staff member' }, { status: 500 });
+    return NextResponse.json({ error: error.message || 'Failed to create staff member' }, { status: 500 });
   }
 }
