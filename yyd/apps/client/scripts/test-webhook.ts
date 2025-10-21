@@ -29,6 +29,14 @@ async function simulateWebhookSuccess(bookingId: string, paymentIntentId: string
   console.log('   Status:', booking.status);
   console.log('   Price:', booking.priceEur.toString(), 'EUR');
 
+  // Check if already confirmed to prevent double-processing
+  const alreadyConfirmed = booking.status === 'confirmed';
+  if (alreadyConfirmed) {
+    console.log('⚠️  WARNING: Booking already confirmed. Skipping duplicate processing to prevent double-booking.');
+    console.log('   To reprocess anyway, first reset booking status to "pending" in database.');
+    process.exit(0);
+  }
+
   // Update booking status
   await prisma.booking.update({
     where: { id: bookingId },
@@ -73,8 +81,8 @@ async function simulateWebhookSuccess(bookingId: string, paymentIntentId: string
     console.log('✅ Payment created:', payment.id);
   }
 
-  // Create calendar event
-  await prisma.availabilitySlot.upsert({
+  // Create or update calendar event (idempotent - safe to rerun)
+  const slot = await prisma.availabilitySlot.findUnique({
     where: {
       productId_date_startTime: {
         productId: booking.productId,
@@ -82,21 +90,41 @@ async function simulateWebhookSuccess(bookingId: string, paymentIntentId: string
         startTime: booking.startTime || '09:00',
       },
     },
-    create: {
-      productId: booking.productId,
-      date: booking.date,
-      startTime: booking.startTime || '09:00',
-      endTime: `${parseInt((booking.startTime || '09:00').split(':')[0]) + booking.product.durationHours}:00`,
-      maxSlots: 1,
-      bookedSlots: 1,
-      status: 'booked',
-    },
-    update: {
-      bookedSlots: { increment: 1 },
-    },
   });
 
-  console.log('✅ Calendar event created');
+  if (!slot) {
+    // Create new slot
+    await prisma.availabilitySlot.create({
+      data: {
+        productId: booking.productId,
+        date: booking.date,
+        startTime: booking.startTime || '09:00',
+        endTime: `${parseInt((booking.startTime || '09:00').split(':')[0]) + booking.product.durationHours}:00`,
+        maxSlots: 1,
+        bookedSlots: 1,
+        status: 'booked',
+      },
+    });
+    console.log('✅ Calendar event created');
+  } else if (slot.bookedSlots < slot.maxSlots) {
+    // Increment only if not at capacity
+    await prisma.availabilitySlot.update({
+      where: {
+        productId_date_startTime: {
+          productId: booking.productId,
+          date: booking.date,
+          startTime: booking.startTime || '09:00',
+        },
+      },
+      data: {
+        bookedSlots: { increment: 1 },
+        status: 'booked',
+      },
+    });
+    console.log('✅ Calendar event updated (bookedSlots incremented)');
+  } else {
+    console.log('⚠️  Calendar slot already at max capacity - not incrementing');
+  }
 
   // Update customer stats
   await prisma.customer.update({

@@ -54,6 +54,15 @@ npx tsx scripts/test-webhook.ts cmh10e8ag000181odsf32hyqu pi_3SKlhWBkC2gtgckm1el
 
 This manually confirms a pending booking as if the Stripe webhook had fired.
 
+**⚠️ IMPORTANT - Idempotency Protection:**
+- The script is **safe to rerun** - it will detect already-confirmed bookings and skip processing
+- This prevents **double-booking** and duplicate customer stats
+- If you need to reprocess, first reset the booking status to `pending` in the database
+
+**Finding Booking ID:**
+1. Check the URL in the browser after payment: `/booking-confirmation?bookingId=xxx`
+2. Or check the database: `SELECT id, bookingNumber, status FROM bookings ORDER BY createdAt DESC LIMIT 5;`
+
 ---
 
 ## Production Setup
