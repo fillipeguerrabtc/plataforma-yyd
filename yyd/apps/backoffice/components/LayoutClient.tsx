@@ -29,9 +29,9 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
     <div className="min-h-screen bg-gray-50">
       {showSidebar && <Sidebar />}
       <main
-        className={`${showSidebar ? 'ml-0 lg:ml-[260px]' : ''} ${
-          isLoginPage ? '' : 'p-4 lg:p-8'
-        }`}
+        className={`${showSidebar ? 'ml-0 md:ml-[260px]' : ''} ${
+          isLoginPage ? '' : 'p-4 md:p-6 lg:p-8'
+        } min-h-screen`}
       >
         {children}
       </main>

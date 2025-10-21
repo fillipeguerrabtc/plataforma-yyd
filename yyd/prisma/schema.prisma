@@ -946,3 +946,55 @@ model AuditLog {
   @@index([createdAt])
   @@map("audit_logs")
 }
+
+model Staff {
+  id              String   @id @default(cuid())
+  name            String
+  email           String   @unique
+  phone           String?
+  position        String
+  department      String
+  hireDate        DateTime
+  salary          Decimal? @db.Decimal(10, 2)
+  salaryCurrency  String   @default("EUR")
+  contractType    String   @default("full-time")
+  status          String   @default("active")
+  photoUrl        String?
+  bio             String?
+  permissions     Json?
+  role            UserRole @default(support)
+  canAccessModules String[]
+  accessLevel     String   @default("read")
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@index([department])
+  @@map("staff")
+}
+
+model Vendor {
+  id              String   @id @default(cuid())
+  name            String
+  companyName     String?
+  email           String
+  phone           String?
+  address         String?
+  taxId           String?
+  category        String
+  bankAccount     String?
+  paymentTerms    String?
+  notes           String?
+  status          String   @default("active")
+  totalPaid       Decimal  @default(0) @db.Decimal(10, 2)
+  currency        String   @default("EUR")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@index([category])
+  @@map("vendors")
+}

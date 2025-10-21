@@ -29,6 +29,9 @@ export default function PayrollPage() {
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [staff, setStaff] = useState<any[]>([]);
+  const [guides, setGuides] = useState<any[]>([]);
+  const [vendors, setVendors] = useState<any[]>([]);
 
   const [formData, setFormData] = useState({
     employeeId: '',
@@ -47,7 +50,46 @@ export default function PayrollPage() {
 
   useEffect(() => {
     fetchPayrolls();
+    fetchStaff();
+    fetchGuides();
+    fetchVendors();
   }, [statusFilter, typeFilter]);
+
+  const fetchStaff = async () => {
+    try {
+      const res = await fetch('/api/staff');
+      if (res.ok) {
+        const data = await res.json();
+        setStaff(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch staff:', error);
+    }
+  };
+
+  const fetchGuides = async () => {
+    try {
+      const res = await fetch('/api/guides');
+      if (res.ok) {
+        const data = await res.json();
+        setGuides(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch guides:', error);
+    }
+  };
+
+  const fetchVendors = async () => {
+    try {
+      const res = await fetch('/api/vendors');
+      if (res.ok) {
+        const data = await res.json();
+        setVendors(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch vendors:', error);
+    }
+  };
 
   const fetchPayrolls = async () => {
     setLoading(true);
@@ -256,37 +298,58 @@ export default function PayrollPage() {
 
             {formData.payrollType === 'employee' && (
               <div>
-                <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '500' }}>Employee ID</label>
-                <input
-                  type="text"
+                <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '500' }}>Funcionário *</label>
+                <select
                   value={formData.employeeId}
                   onChange={(e) => setFormData({ ...formData, employeeId: e.target.value })}
                   style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
-                />
+                  required
+                >
+                  <option value="">Selecione um funcionário</option>
+                  {staff.map((member) => (
+                    <option key={member.id} value={member.id}>
+                      {member.name} - {member.position}
+                    </option>
+                  ))}
+                </select>
               </div>
             )}
 
             {formData.payrollType === 'guide' && (
               <div>
-                <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '500' }}>Guide ID</label>
-                <input
-                  type="text"
+                <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '500' }}>Guia *</label>
+                <select
                   value={formData.guideId}
                   onChange={(e) => setFormData({ ...formData, guideId: e.target.value })}
                   style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
-                />
+                  required
+                >
+                  <option value="">Selecione um guia</option>
+                  {guides.map((guide) => (
+                    <option key={guide.id} value={guide.id}>
+                      {guide.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             )}
 
             {formData.payrollType === 'vendor' && (
               <div>
-                <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '500' }}>Vendor Name</label>
-                <input
-                  type="text"
+                <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '500' }}>Fornecedor *</label>
+                <select
                   value={formData.vendorName}
                   onChange={(e) => setFormData({ ...formData, vendorName: e.target.value })}
                   style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
-                />
+                  required
+                >
+                  <option value="">Selecione um fornecedor</option>
+                  {vendors.map((vendor) => (
+                    <option key={vendor.id} value={vendor.name}>
+                      {vendor.name} {vendor.companyName ? `- ${vendor.companyName}` : ''}
+                    </option>
+                  ))}
+                </select>
               </div>
             )}
 
