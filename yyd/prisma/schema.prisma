@@ -203,24 +203,24 @@ model Payment {
 }
 
 model Customer {
-  id                 String               @id @default(cuid())
+  id                 String                  @id @default(cuid())
   name               String
-  email              String               @unique
+  email              String                  @unique
   phone              String?
   whatsapp           String?
-  locale             String               @default("en")
+  locale             String                  @default("en")
   country            String?
   source             String?
   tags               String[]
   notes              String?
-  totalBookings      Int                  @default(0)
-  totalSpent         Decimal              @default(0) @db.Decimal(10, 2)
+  totalBookings      Int                     @default(0)
+  totalSpent         Decimal                 @default(0) @db.Decimal(10, 2)
   lastBookingAt      DateTime?
-  leadStatus         String               @default("lead")
-  leadScore          Int                  @default(0)
+  leadStatus         String                  @default("lead")
+  leadScore          Int                     @default(0)
   assignedTo         String?
-  createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @updatedAt
+  createdAt          DateTime                @default(now())
+  updatedAt          DateTime                @updatedAt
   accountsReceivable AccountsReceivable[]
   bookings           Booking[]
   auth               CustomerAuth?
@@ -391,17 +391,17 @@ model AccountsReceivable {
 }
 
 model Account {
-  id             String        @id @default(cuid())
-  code           String        @unique
-  name           String
-  type           String
-  category       String?
-  balance        Decimal       @default(0) @db.Decimal(10, 2)
-  currency       String        @default("EUR")
-  active         Boolean       @default(true)
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  ledgerEntries  LedgerEntry[]
+  id            String        @id @default(cuid())
+  code          String        @unique
+  name          String
+  type          String
+  category      String?
+  balance       Decimal       @default(0) @db.Decimal(10, 2)
+  currency      String        @default("EUR")
+  active        Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  ledgerEntries LedgerEntry[]
 
   @@index([type])
   @@index([code])
@@ -428,26 +428,26 @@ model LedgerEntry {
 }
 
 model Payroll {
-  id              String    @id @default(cuid())
-  employeeId      String?
-  guideId         String?
-  vendorName      String?
-  payrollType     String
-  period          String
-  periodStart     DateTime
-  periodEnd       DateTime
-  grossAmount     Decimal   @db.Decimal(10, 2)
-  deductions      Decimal   @default(0) @db.Decimal(10, 2)
-  netAmount       Decimal   @db.Decimal(10, 2)
-  currency        String    @default("EUR")
-  status          String    @default("pending")
-  paidAt          DateTime?
-  paymentMethod   String?
-  notes           String?
-  metadata        Json?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  guide           Guide?    @relation(fields: [guideId], references: [id])
+  id            String    @id @default(cuid())
+  employeeId    String?
+  guideId       String?
+  vendorName    String?
+  payrollType   String
+  period        String
+  periodStart   DateTime
+  periodEnd     DateTime
+  grossAmount   Decimal   @db.Decimal(10, 2)
+  deductions    Decimal   @default(0) @db.Decimal(10, 2)
+  netAmount     Decimal   @db.Decimal(10, 2)
+  currency      String    @default("EUR")
+  status        String    @default("pending")
+  paidAt        DateTime?
+  paymentMethod String?
+  notes         String?
+  metadata      Json?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  guide         Guide?    @relation(fields: [guideId], references: [id])
 
   @@index([employeeId])
   @@index([guideId])
@@ -909,20 +909,20 @@ enum UserRole {
 }
 
 model EmailTemplate {
-  id              String   @id @default(cuid())
-  name            String
-  templateKey     String   @unique
-  subjectEn       String
-  subjectPt       String
-  subjectEs       String
-  bodyEn          String
-  bodyPt          String
-  bodyEs          String
-  category        String
-  variables       String[]
-  enabled         Boolean  @default(true)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id          String   @id @default(cuid())
+  name        String
+  templateKey String   @unique
+  subjectEn   String
+  subjectPt   String
+  subjectEs   String
+  bodyEn      String
+  bodyPt      String
+  bodyEs      String
+  category    String
+  variables   String[]
+  enabled     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([category])
   @@index([enabled])
@@ -948,27 +948,27 @@ model AuditLog {
 }
 
 model Staff {
-  id              String   @id @default(cuid())
-  name            String
-  email           String   @unique
-  passwordHash    String?
-  phone           String?
-  position        String
-  department      String
-  hireDate        DateTime
-  salary          Decimal? @db.Decimal(10, 2)
-  salaryCurrency  String   @default("EUR")
-  contractType    String   @default("full-time")
-  status          String   @default("active")
-  photoUrl        String?
-  bio             String?
-  permissions     Json?
-  role            UserRole @default(support)
+  id               String   @id @default(cuid())
+  name             String
+  email            String   @unique
+  passwordHash     String?
+  phone            String?
+  position         String
+  department       String
+  hireDate         DateTime
+  salary           Decimal? @db.Decimal(10, 2)
+  salaryCurrency   String   @default("EUR")
+  contractType     String   @default("full-time")
+  status           String   @default("active")
+  photoUrl         String?
+  bio              String?
+  permissions      Json?
+  role             UserRole @default(support)
   canAccessModules String[]
-  accessLevel     String   @default("read")
-  notes           String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  accessLevel      String   @default("read")
+  notes            String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   @@index([email])
   @@index([status])
@@ -977,22 +977,22 @@ model Staff {
 }
 
 model Vendor {
-  id              String   @id @default(cuid())
-  name            String
-  companyName     String?
-  email           String
-  phone           String?
-  address         String?
-  taxId           String?
-  category        String
-  bankAccount     String?
-  paymentTerms    String?
-  notes           String?
-  status          String   @default("active")
-  totalPaid       Decimal  @default(0) @db.Decimal(10, 2)
-  currency        String   @default("EUR")
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id           String   @id @default(cuid())
+  name         String
+  companyName  String?
+  email        String
+  phone        String?
+  address      String?
+  taxId        String?
+  category     String
+  bankAccount  String?
+  paymentTerms String?
+  notes        String?
+  status       String   @default("active")
+  totalPaid    Decimal  @default(0) @db.Decimal(10, 2)
+  currency     String   @default("EUR")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@index([email])
   @@index([status])

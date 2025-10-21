@@ -26,12 +26,15 @@ export default function LayoutClient({ children }: { children: React.ReactNode }
   const showSidebar = mounted && isAuthenticated && !isLoginPage;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50" style={{ display: 'flex' }}>
       {showSidebar && <Sidebar />}
       <main
-        className={`${showSidebar ? 'ml-0 md:ml-[260px]' : ''} ${
-          isLoginPage ? '' : 'p-4 md:p-6 lg:p-8'
-        } min-h-screen`}
+        style={{
+          marginLeft: showSidebar ? '260px' : '0',
+          flex: 1,
+          minHeight: '100vh',
+          padding: isLoginPage ? '0' : '1.5rem',
+        }}
       >
         {children}
       </main>
