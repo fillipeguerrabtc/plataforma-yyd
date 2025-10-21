@@ -1,92 +1,65 @@
 import { NextResponse } from 'next/server';
-import { getAuroraResponse, saveConversation } from '@/lib/aurora';
 
-const WHATSAPP_ACCESS_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;
-const WHATSAPP_VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || 'yyd_verify_token_2025';
+const AURORA_SERVICE_URL = process.env.AURORA_SERVICE_URL || 'http://localhost:8000';
 
-// Webhook verification
+/**
+ * WhatsApp Business API Webhook - Proxies to Aurora IA FastAPI Service
+ * 
+ * This endpoint forwards WhatsApp webhook requests to Aurora's advanced IA system
+ * which includes RAG, 7-layer memory, affective mathematics, and handoff detection.
+ */
+
+// Webhook verification (GET)
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const mode = searchParams.get('hub.mode');
-  const token = searchParams.get('hub.verify_token');
-  const challenge = searchParams.get('hub.challenge');
+  
+  // Forward verification request to Aurora FastAPI
+  const queryString = searchParams.toString();
+  const auroraUrl = `${AURORA_SERVICE_URL}/webhooks/whatsapp?${queryString}`;
 
-  if (mode === 'subscribe' && token === WHATSAPP_VERIFY_TOKEN) {
-    console.log('WhatsApp webhook verified');
-    return new Response(challenge, { status: 200 });
+  try {
+    const response = await fetch(auroraUrl);
+    
+    if (response.ok) {
+      const challenge = await response.text();
+      console.log('✅ WhatsApp webhook verified via Aurora');
+      return new Response(challenge, { status: 200 });
+    }
+    
+    return NextResponse.json({ error: 'Verification failed' }, { status: 403 });
+  } catch (error: any) {
+    console.error('❌ Aurora service connection error:', error);
+    return NextResponse.json({ error: 'Aurora service unavailable' }, { status: 503 });
   }
-
-  return NextResponse.json({ error: 'Verification failed' }, { status: 403 });
 }
 
-// Webhook message handler
+// Webhook message handler (POST)
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+    
+    console.log('📥 WhatsApp webhook received, forwarding to Aurora...');
 
-    // Extract message
-    const entry = body.entry?.[0];
-    const change = entry?.changes?.[0];
-    const message = change?.value?.messages?.[0];
-
-    if (!message) {
-      return NextResponse.json({ status: 'no_message' });
-    }
-
-    const from = message.from; // Phone number
-    const text = message.text?.body || '';
-    const sessionId = `whatsapp_${from}`;
-
-    // Get Aurora response
-    const auroraResponse = await getAuroraResponse(
-      [{ role: 'user', content: text }],
-      'en' // Default to English, detect language later
-    );
-
-    // Save conversation
-    await saveConversation(sessionId, 'whatsapp', null, 'en', [
-      { role: 'user', content: text },
-      { role: 'assistant', content: auroraResponse },
-    ]);
-
-    // Send response via WhatsApp
-    if (WHATSAPP_ACCESS_TOKEN) {
-      await sendWhatsAppMessage(from, auroraResponse);
-    }
-
-    return NextResponse.json({ status: 'success' });
-  } catch (error: any) {
-    console.error('WhatsApp webhook error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-}
-
-async function sendWhatsAppMessage(to: string, text: string) {
-  const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
-
-  if (!PHONE_NUMBER_ID || !WHATSAPP_ACCESS_TOKEN) {
-    console.error('WhatsApp credentials not configured');
-    return;
-  }
-
-  const response = await fetch(
-    `https://graph.facebook.com/v17.0/${PHONE_NUMBER_ID}/messages`,
-    {
+    // Forward to Aurora FastAPI for processing
+    const auroraUrl = `${AURORA_SERVICE_URL}/webhooks/whatsapp`;
+    const response = await fetch(auroraUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        messaging_product: 'whatsapp',
-        to,
-        type: 'text',
-        text: { body: text },
-      }),
-    }
-  );
+      body: JSON.stringify(body),
+    });
 
-  if (!response.ok) {
-    console.error('Failed to send WhatsApp message:', await response.text());
+    if (response.ok) {
+      console.log('✅ WhatsApp message processed by Aurora');
+      return NextResponse.json({ status: 'success' });
+    } else {
+      const error = await response.text();
+      console.error('❌ Aurora processing error:', error);
+      return NextResponse.json({ error: 'Processing failed' }, { status: 500 });
+    }
+  } catch (error: any) {
+    console.error('❌ WhatsApp webhook proxy error:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

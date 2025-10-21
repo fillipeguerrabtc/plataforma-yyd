@@ -1,87 +1,65 @@
 import { NextResponse } from 'next/server';
-import { getAuroraResponse, saveConversation } from '@/lib/aurora';
 
-const FACEBOOK_VERIFY_TOKEN = process.env.FACEBOOK_VERIFY_TOKEN || 'yyd_fb_verify_2025';
-const FACEBOOK_PAGE_ACCESS_TOKEN = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
+const AURORA_SERVICE_URL = process.env.AURORA_SERVICE_URL || 'http://localhost:8000';
 
-// Webhook verification
+/**
+ * Facebook Messenger Webhook - Proxies to Aurora IA FastAPI Service
+ * 
+ * This endpoint forwards Facebook webhook requests to Aurora's advanced IA system
+ * which includes RAG, 7-layer memory, affective mathematics, and handoff detection.
+ */
+
+// Webhook verification (GET)
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const mode = searchParams.get('hub.mode');
-  const token = searchParams.get('hub.verify_token');
-  const challenge = searchParams.get('hub.challenge');
+  
+  // Forward verification request to Aurora FastAPI
+  const queryString = searchParams.toString();
+  const auroraUrl = `${AURORA_SERVICE_URL}/webhooks/facebook?${queryString}`;
 
-  if (mode === 'subscribe' && token === FACEBOOK_VERIFY_TOKEN) {
-    console.log('Facebook webhook verified');
-    return new Response(challenge, { status: 200 });
+  try {
+    const response = await fetch(auroraUrl);
+    
+    if (response.ok) {
+      const challenge = await response.text();
+      console.log('✅ Facebook webhook verified via Aurora');
+      return new Response(challenge, { status: 200 });
+    }
+    
+    return NextResponse.json({ error: 'Verification failed' }, { status: 403 });
+  } catch (error: any) {
+    console.error('❌ Aurora service connection error:', error);
+    return NextResponse.json({ error: 'Aurora service unavailable' }, { status: 503 });
   }
-
-  return NextResponse.json({ error: 'Verification failed' }, { status: 403 });
 }
 
-// Webhook message handler
+// Webhook message handler (POST)
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+    
+    console.log('📥 Facebook webhook received, forwarding to Aurora...');
 
-    // Extract message
-    const entry = body.entry?.[0];
-    const messaging = entry?.messaging?.[0];
-    const message = messaging?.message;
-
-    if (!message || !message.text) {
-      return NextResponse.json({ status: 'no_message' });
-    }
-
-    const senderId = messaging.sender.id;
-    const text = message.text;
-    const sessionId = `facebook_${senderId}`;
-
-    // Get Aurora response
-    const auroraResponse = await getAuroraResponse(
-      [{ role: 'user', content: text }],
-      'en' // Default to English
-    );
-
-    // Save conversation
-    await saveConversation(sessionId, 'facebook', null, 'en', [
-      { role: 'user', content: text },
-      { role: 'assistant', content: auroraResponse },
-    ]);
-
-    // Send response via Facebook
-    if (FACEBOOK_PAGE_ACCESS_TOKEN) {
-      await sendFacebookMessage(senderId, auroraResponse);
-    }
-
-    return NextResponse.json({ status: 'success' });
-  } catch (error: any) {
-    console.error('Facebook webhook error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-}
-
-async function sendFacebookMessage(recipientId: string, text: string) {
-  if (!FACEBOOK_PAGE_ACCESS_TOKEN) {
-    console.error('Facebook Page Access Token not configured');
-    return;
-  }
-
-  const response = await fetch(
-    `https://graph.facebook.com/v17.0/me/messages?access_token=${FACEBOOK_PAGE_ACCESS_TOKEN}`,
-    {
+    // Forward to Aurora FastAPI for processing
+    const auroraUrl = `${AURORA_SERVICE_URL}/webhooks/facebook`;
+    const response = await fetch(auroraUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        recipient: { id: recipientId },
-        message: { text },
-      }),
-    }
-  );
+      body: JSON.stringify(body),
+    });
 
-  if (!response.ok) {
-    console.error('Failed to send Facebook message:', await response.text());
+    if (response.ok) {
+      console.log('✅ Facebook message processed by Aurora');
+      return NextResponse.json({ status: 'success' });
+    } else {
+      const error = await response.text();
+      console.error('❌ Aurora processing error:', error);
+      return NextResponse.json({ error: 'Processing failed' }, { status: 500 });
+    }
+  } catch (error: any) {
+    console.error('❌ Facebook webhook proxy error:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

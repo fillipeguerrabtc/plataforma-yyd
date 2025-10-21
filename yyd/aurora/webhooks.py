@@ -452,11 +452,12 @@ async def send_facebook_message(recipient_id: str, text: str):
         print("⚠️  Facebook credentials not configured")
         return
     
-    url = f"{WHATSAPP_API_URL}/me/messages"
+    url = "https://graph.facebook.com/v18.0/me/messages"
     headers = {"Content-Type": "application/json"}
     params = {"access_token": FACEBOOK_ACCESS_TOKEN}
     payload = {
         "recipient": {"id": recipient_id},
+        "messaging_type": "RESPONSE",
         "message": {"text": text},
     }
     
