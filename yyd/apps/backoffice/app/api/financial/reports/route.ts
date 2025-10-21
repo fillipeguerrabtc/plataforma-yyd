@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
     const [payments, payables] = await Promise.all([
       prisma.payment.findMany({
         where: {
-          createdAt: {
+          paidAt: {
             gte: startDate,
             lte: endDate,
           },
@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
       }),
       prisma.accountsPayable.findMany({
         where: {
-          createdAt: {
+          paidAt: {
             gte: startDate,
             lte: endDate,
           },

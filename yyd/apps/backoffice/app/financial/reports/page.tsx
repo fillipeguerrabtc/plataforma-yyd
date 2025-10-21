@@ -182,45 +182,24 @@ export default function ReportsPage() {
             <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1.5rem' }}>
               📈 Demonstração de Resultados (P&L)
             </h2>
+            <p style={{ fontSize: '0.875rem', color: 'var(--gray-600)', marginBottom: '1rem' }}>
+              Valores líquidos (ex-IVA a 23%). Consulte o Relatório IVA acima para detalhes do IVA.
+            </p>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <tbody>
                 <tr style={{ borderBottom: '1px solid var(--gray-200)' }}>
-                  <td style={{ padding: '1rem 0', fontWeight: '600' }}>Receita de Vendas</td>
+                  <td style={{ padding: '1rem 0', fontWeight: '600' }}>Receita Líquida (ex-IVA)</td>
                   <td style={{ padding: '1rem 0', textAlign: 'right', fontWeight: '700', color: 'var(--brand-turquoise)' }}>
-                    €{Number(reportData.revenue || 0).toFixed(2)}
-                  </td>
-                </tr>
-                <tr style={{ borderBottom: '1px solid var(--gray-200)' }}>
-                  <td style={{ padding: '1rem 0', paddingLeft: '2rem', color: 'var(--gray-600)' }}>(-) Custos Operacionais</td>
-                  <td style={{ padding: '1rem 0', textAlign: 'right', color: 'var(--brand-bordeaux)' }}>
-                    €{Number(reportData.expenses || 0).toFixed(2)}
+                    €{((reportData.revenue || 0) / (1 + IVA_RATE)).toFixed(2)}
                   </td>
                 </tr>
                 <tr style={{ borderBottom: '2px solid var(--gray-300)' }}>
-                  <td style={{ padding: '1rem 0', fontWeight: '700', fontSize: '1.125rem' }}>LUCRO OPERACIONAL (EBITDA)</td>
-                  <td
-                    style={{
-                      padding: '1rem 0',
-                      textAlign: 'right',
-                      fontWeight: '700',
-                      fontSize: '1.125rem',
-                      color: (reportData.revenue || 0) - (reportData.expenses || 0) >= 0 ? '#10b981' : '#ef4444',
-                    }}
-                  >
-                    €{((reportData.revenue || 0) - (reportData.expenses || 0)).toFixed(2)}
+                  <td style={{ padding: '1rem 0', paddingLeft: '2rem', color: 'var(--gray-600)' }}>(-) Custos Operacionais (ex-IVA)</td>
+                  <td style={{ padding: '1rem 0', textAlign: 'right', color: 'var(--brand-bordeaux)' }}>
+                    €{((reportData.expenses || 0) / (1 + IVA_RATE)).toFixed(2)}
                   </td>
                 </tr>
                 <tr>
-                  <td style={{ padding: '1rem 0', color: 'var(--gray-600)' }}>(-) IVA a Pagar</td>
-                  <td style={{ padding: '1rem 0', textAlign: 'right', color: 'var(--gray-600)' }}>
-                    €
-                    {(
-                      (reportData.revenue || 0) / (1 + IVA_RATE) * IVA_RATE -
-                      (reportData.expenses || 0) / (1 + IVA_RATE) * IVA_RATE
-                    ).toFixed(2)}
-                  </td>
-                </tr>
-                <tr style={{ borderTop: '2px solid var(--gray-300)' }}>
                   <td style={{ padding: '1rem 0', fontWeight: '700', fontSize: '1.125rem' }}>LUCRO LÍQUIDO</td>
                   <td
                     style={{
@@ -228,16 +207,10 @@ export default function ReportsPage() {
                       textAlign: 'right',
                       fontWeight: '700',
                       fontSize: '1.125rem',
-                      color: (reportData.revenue || 0) - (reportData.expenses || 0) >= 0 ? '#10b981' : '#ef4444',
+                      color: ((reportData.revenue || 0) / (1 + IVA_RATE) - (reportData.expenses || 0) / (1 + IVA_RATE)) >= 0 ? '#10b981' : '#ef4444',
                     }}
                   >
-                    €
-                    {(
-                      (reportData.revenue || 0) -
-                      (reportData.expenses || 0) -
-                      ((reportData.revenue || 0) / (1 + IVA_RATE) * IVA_RATE -
-                        (reportData.expenses || 0) / (1 + IVA_RATE) * IVA_RATE)
-                    ).toFixed(2)}
+                    €{(((reportData.revenue || 0) / (1 + IVA_RATE)) - ((reportData.expenses || 0) / (1 + IVA_RATE))).toFixed(2)}
                   </td>
                 </tr>
               </tbody>
