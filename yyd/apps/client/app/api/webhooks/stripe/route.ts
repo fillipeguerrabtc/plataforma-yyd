@@ -128,14 +128,34 @@ async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
     },
   });
 
-  // Update payment record (created by create-intent OR checkout-session)
-  await prisma.payment.updateMany({
+  // Create or update payment record (use upsert to handle edge cases)
+  const existingPayment = await prisma.payment.findFirst({
     where: { stripePaymentIntent: paymentIntent.id },
-    data: {
-      status: 'succeeded',
-      paidAt: new Date(),
-    },
   });
+
+  if (existingPayment) {
+    // Update existing payment
+    await prisma.payment.update({
+      where: { id: existingPayment.id },
+      data: {
+        status: 'succeeded',
+        paidAt: new Date(),
+      },
+    });
+  } else {
+    // Create new payment (edge case: payment intent created outside our create-intent endpoint)
+    const totalAmount = baseAmount + addonsAmount;
+    await prisma.payment.create({
+      data: {
+        bookingId: booking.id,
+        stripePaymentIntent: paymentIntent.id,
+        amount: totalAmount,
+        currency: 'EUR',
+        status: 'succeeded',
+        paidAt: new Date(),
+      },
+    });
+  }
 
   // Create calendar event (AvailabilitySlot) - use upsert to handle duplicates
   await prisma.availabilitySlot.upsert({
@@ -422,10 +442,16 @@ async function handlePaymentFailure(paymentIntent: Stripe.PaymentIntent) {
   }
 
   // Update payment record
-  await prisma.payment.updateMany({
+  const existingPayment = await prisma.payment.findFirst({
     where: { stripePaymentIntent: paymentIntent.id },
-    data: { status: 'failed' },
   });
+  
+  if (existingPayment) {
+    await prisma.payment.update({
+      where: { id: existingPayment.id },
+      data: { status: 'failed' },
+    });
+  }
 
   // Update booking status to failed
   await prisma.booking.update({
@@ -447,10 +473,16 @@ async function handlePaymentCanceled(paymentIntent: Stripe.PaymentIntent) {
   }
 
   // Update payment record
-  await prisma.payment.updateMany({
+  const existingPayment = await prisma.payment.findFirst({
     where: { stripePaymentIntent: paymentIntent.id },
-    data: { status: 'canceled' },
   });
+  
+  if (existingPayment) {
+    await prisma.payment.update({
+      where: { id: existingPayment.id },
+      data: { status: 'canceled' },
+    });
+  }
 
   // Update booking status to canceled
   await prisma.booking.update({
