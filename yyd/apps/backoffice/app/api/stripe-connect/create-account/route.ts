@@ -33,7 +33,7 @@ async function updateEntity(entityType: EntityType, entityId: string, data: any)
 
 export async function POST(request: NextRequest) {
   try {
-    requirePermission(request, 'finance', 'manage_stripe_connect');
+    requirePermission(request, 'finance', 'manage');
     
     const { entityType, entityId } = await request.json();
 
