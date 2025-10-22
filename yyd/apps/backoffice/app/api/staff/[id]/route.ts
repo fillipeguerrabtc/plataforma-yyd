@@ -71,9 +71,28 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   try {
-    await prisma.staff.delete({
+    // Get staff email before deletion
+    const staff = await prisma.staff.findUnique({
       where: { id: params.id },
+      select: { email: true },
     });
+
+    if (!staff) {
+      return NextResponse.json({ error: 'Staff member not found' }, { status: 404 });
+    }
+
+    // Delete staff and deactivate corresponding user
+    await prisma.$transaction([
+      prisma.staff.delete({
+        where: { id: params.id },
+      }),
+      prisma.user.updateMany({
+        where: { email: staff.email },
+        data: { active: false },
+      }),
+    ]);
+
+    console.log(`✅ Deleted staff and deactivated user for: ${staff.email}`);
 
     return NextResponse.json({ success: true });
   } catch (error) {
