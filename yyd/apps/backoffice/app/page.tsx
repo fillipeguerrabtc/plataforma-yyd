@@ -1,5 +1,8 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
+import { cookies } from 'next/headers';
+import { getUserFromRequest } from '@/lib/auth';
+import { hasPermission, canAccess, UserRole } from '@/lib/rbac';
 
 async function getDashboardStats() {
   const [
@@ -43,8 +46,34 @@ async function getDashboardStats() {
   };
 }
 
+async function getUserRoleFromCookies(): Promise<UserRole> {
+  const cookieStore = cookies();
+  const token = cookieStore.get('auth-token');
+  
+  if (!token) {
+    return 'staff'; // Default role for unauthenticated users
+  }
+
+  try {
+    // Create a fake request object to reuse getUserFromRequest
+    const request = new Request('http://localhost', {
+      headers: { cookie: `auth-token=${token.value}` },
+    });
+    const user = getUserFromRequest(request);
+    return user?.role || 'staff';
+  } catch {
+    return 'staff';
+  }
+}
+
 export default async function Dashboard() {
   const stats = await getDashboardStats();
+  const userRole = await getUserRoleFromCookies();
+  
+  // Check permissions for each card
+  const canViewBookings = canAccess(userRole, 'bookings');
+  const canViewCustomers = canAccess(userRole, 'customers');
+  const canViewFinance = canAccess(userRole, 'finance');
 
   return (
     <div>
@@ -65,57 +94,66 @@ export default async function Dashboard() {
           marginBottom: '2rem',
         }}
       >
-        <StatCard
-          title="Total de Reservas"
-          value={stats.totalBookings}
-          icon="🎫"
-          color="var(--brand-turquoise)"
-        />
-        <StatCard
-          title="Confirmadas"
-          value={stats.confirmedBookings}
-          icon="✅"
-          color="var(--brand-turquoise)"
-        />
-        <StatCard
-          title="Pendentes"
-          value={stats.pendingBookings}
-          icon="⏳"
-          color="var(--brand-gold)"
-        />
-        <StatCard
-          title="Total de Clientes"
-          value={stats.totalCustomers}
-          icon="👥"
-          color="var(--brand-bordeaux)"
-        />
-        <StatCard
-          title="Receita Total"
-          value={`€${parseFloat(stats.totalRevenue.toString()).toFixed(0)}`}
-          icon="💰"
-          color="var(--brand-turquoise)"
-        />
+        {canViewBookings && (
+          <>
+            <StatCard
+              title="Total de Reservas"
+              value={stats.totalBookings}
+              icon="🎫"
+              color="var(--brand-turquoise)"
+            />
+            <StatCard
+              title="Confirmadas"
+              value={stats.confirmedBookings}
+              icon="✅"
+              color="var(--brand-turquoise)"
+            />
+            <StatCard
+              title="Pendentes"
+              value={stats.pendingBookings}
+              icon="⏳"
+              color="var(--brand-gold)"
+            />
+          </>
+        )}
+        {canViewCustomers && (
+          <StatCard
+            title="Total de Clientes"
+            value={stats.totalCustomers}
+            icon="👥"
+            color="var(--brand-bordeaux)"
+          />
+        )}
+        {canViewFinance && (
+          <StatCard
+            title="Receita Total"
+            value={`€${parseFloat(stats.totalRevenue.toString()).toFixed(0)}`}
+            icon="💰"
+            color="var(--brand-turquoise)"
+          />
+        )}
       </div>
 
-      <div style={{ marginTop: '2rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>🗓️ Próximos Tours</h2>
-          <Link
-            href="/calendar"
-            style={{
-              padding: '0.5rem 1rem',
-              background: 'var(--brand-turquoise)',
-              color: 'white',
-              borderRadius: '8px',
-              fontSize: '0.9rem',
-              fontWeight: '600',
-            }}
-          >
-            Ver Calendário Completo
-          </Link>
-        </div>
+      {canViewBookings && (
+        <div style={{ marginTop: '2rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>🗓️ Próximos Tours</h2>
+            <Link
+              href="/calendar"
+              style={{
+                padding: '0.5rem 1rem',
+                background: 'var(--brand-turquoise)',
+                color: 'white',
+                borderRadius: '8px',
+                fontSize: '0.9rem',
+                fontWeight: '600',
+              }}
+            >
+              Ver Calendário Completo
+            </Link>
+          </div>
 
-        {stats.upcomingTours.length === 0 ? (
+          {stats.upcomingTours.length === 0 ? (
           <div
             style={{
               background: 'white',
@@ -179,8 +217,9 @@ export default async function Dashboard() {
               </tbody>
             </table>
           </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
