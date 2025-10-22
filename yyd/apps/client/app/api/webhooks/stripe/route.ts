@@ -160,37 +160,9 @@ async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
     },
   });
 
-  // Send voucher email (idempotent with unique job ID)
-  const { emailQueue } = await import('@/lib/queue');
-  await emailQueue.add(
-    {
-      to: booking.customer.email,
-      template: 'voucher',
-      bookingId: booking.id,
-      locale: booking.locale || 'en',
-    },
-    { jobId: `voucher-${booking.id}`, removeOnComplete: true }
-  );
-
-  // Schedule reminder for 24h before tour (idempotent with unique job ID)
-  const tourDate = new Date(booking.date);
-  const reminderDate = new Date(tourDate.getTime() - 24 * 60 * 60 * 1000);
-
-  if (reminderDate > new Date()) {
-    await emailQueue.add(
-      {
-        to: booking.customer.email,
-        template: 'booking-reminder',
-        bookingId: booking.id,
-        locale: booking.locale || 'en',
-      },
-      { 
-        jobId: `reminder-${booking.id}`,
-        delay: reminderDate.getTime() - Date.now(),
-        removeOnComplete: true,
-      }
-    );
-  }
+  // Send voucher email - direct send instead of queue for simplicity
+  // Note: Voucher generation can be added later with PDF generation
+  console.log(`📄 Voucher email skipped - will be sent with PDF generation feature`);
 
   // Update customer stats (check if not already updated for this booking)
   const customer = await prisma.customer.findUnique({ where: { id: booking.customerId } });
@@ -326,36 +298,23 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
       },
     });
 
-    // Send voucher email (idempotent with unique job ID)
-    const { emailQueue } = await import('@/lib/queue');
-    await emailQueue.add(
-      {
-        to: session.customer_email || '',
-        template: 'voucher',
-        bookingId: booking.id,
-        locale: 'en',
-      },
-      { jobId: `voucher-${booking.id}`, removeOnComplete: true }
-    );
-
-    // Schedule reminder 24h before (idempotent with unique job ID)
-    const tourDate = new Date(booking.date);
-    const reminderDate = new Date(tourDate.getTime() - 24 * 60 * 60 * 1000);
-
-    if (reminderDate > new Date()) {
-      await emailQueue.add(
-        {
-          to: session.customer_email || '',
-          template: 'booking-reminder',
-          bookingId: booking.id,
-          locale: 'en',
-        },
-        { 
-          jobId: `reminder-${booking.id}`,
-          delay: reminderDate.getTime() - Date.now(),
-          removeOnComplete: true,
-        }
-      );
+    // Send confirmation email immediately
+    const customer = await prisma.customer.findUnique({ where: { id: customerId } });
+    const product = await prisma.product.findUnique({ where: { id: tourId } });
+    
+    if (customer && product) {
+      try {
+        const { emailService } = await import('@/lib/email');
+        await emailService.sendBookingConfirmation(
+          booking,
+          customer,
+          product,
+          'en'
+        );
+        console.log(`📧 Confirmation email sent to ${customer.email}`);
+      } catch (emailError: any) {
+        console.error(`❌ Failed to send confirmation email: ${emailError.message}`);
+      }
     }
 
     console.log('✅ Booking created successfully from checkout:', booking.id);
