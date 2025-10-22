@@ -66,5 +66,19 @@ Complete end-to-end payment confirmation system:
 - Multi-language support (EN/PT/ES)
 - Only accepts real email addresses (rejects `@example.com` test emails)
 - Confirmation emails sent ONLY after Stripe webhook confirms payment (no duplicates)
+- **Direct sending** (no queue): Emails sent synchronously in webhook handler for simplicity (removed Bull Queue/Redis dependency)
 
 **Test Script**: `npx tsx scripts/quick-email-test.ts` to send test emails
+
+### BI Analytics ✅
+**Revenue Analytics Dashboard** (Oct 22, 2025):
+- Fixed data format mismatch between backend API and frontend charts
+- API now returns structured data: `{ totals, daily, byProduct }`
+- Displays: Revenue Total, Average per Booking, Total Bookings
+- Charts: Daily Revenue (30 days), Revenue by Tour (pie), Performance by Tour (bar)
+
+### Stripe Payouts Documentation ✅
+**Comprehensive guides created** (Oct 22, 2025):
+- **STRIPE_PAYROLL_GUIDE.md**: Complete guide on using Stripe Payouts API for employee/contractor payments
+- **STRIPE_PAYOUTS_TEST_MODE.md**: Testing guide with test bank account numbers, complete flow examples, and implementation code
+- Covers: Payouts API, Stripe Connect, test mode, webhooks, cost structure, and production considerations
