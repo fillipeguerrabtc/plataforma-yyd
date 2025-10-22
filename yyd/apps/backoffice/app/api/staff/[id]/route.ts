@@ -3,6 +3,28 @@ import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { requirePermission } from '@/lib/auth';
 
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    requirePermission(req, 'staff', 'view');
+    
+    const staff = await prisma.staff.findUnique({
+      where: { id: params.id },
+      include: {
+        departmentRel: true,
+      },
+    });
+
+    if (!staff) {
+      return NextResponse.json({ error: 'Staff member not found' }, { status: 404 });
+    }
+
+    return NextResponse.json(staff);
+  } catch (error: any) {
+    console.error('Error fetching staff:', error);
+    return NextResponse.json({ error: error.message || 'Failed to fetch staff member' }, { status: 500 });
+  }
+}
+
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     requirePermission(req, 'staff', 'update');

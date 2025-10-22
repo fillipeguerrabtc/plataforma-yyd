@@ -35,6 +35,7 @@ export default function PermissionsManager({ userId, departmentId, mode, onSave 
   const [saving, setSaving] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [actualUserId, setActualUserId] = useState<string | null>(null);
 
   const categories = [
     { id: 'all', label: 'Todas as Categorias' },
@@ -64,13 +65,23 @@ export default function PermissionsManager({ userId, departmentId, mode, onSave 
       setAllPermissions(permissionsData.permissions || []);
 
       if (mode === 'user' && userId) {
-        const [userPermsRes, staffRes] = await Promise.all([
-          fetch(`/api/user-permissions?userId=${userId}`),
-          fetch(`/api/staff/${userId}`)
-        ]);
-
-        const userPermsData = await userPermsRes.json();
+        const staffRes = await fetch(`/api/staff/${userId}`);
         const staffData = await staffRes.json();
+
+        // Buscar o User correspondente pelo email do Staff
+        const userRes = await fetch(`/api/user-by-email?email=${encodeURIComponent(staffData.email)}`);
+        const userData = await userRes.json();
+        
+        if (!userData.user) {
+          console.error('❌ User not found for staff:', staffData.email);
+          return;
+        }
+
+        const realUserId = userData.user.id;
+        setActualUserId(realUserId);
+
+        const userPermsRes = await fetch(`/api/user-permissions?userId=${realUserId}`);
+        const userPermsData = await userPermsRes.json();
 
         const deptPermsMap = new Map<string, PermissionState>();
         if (staffData.departmentId) {
@@ -205,11 +216,11 @@ export default function PermissionsManager({ userId, departmentId, mode, onSave 
         canWrite: perm.canWrite,
       }));
 
-      if (mode === 'user' && userId) {
+      if (mode === 'user' && actualUserId) {
         await fetch('/api/user-permissions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId, permissions }),
+          body: JSON.stringify({ userId: actualUserId, permissions }),
         });
       } else if (mode === 'department' && departmentId) {
         await fetch('/api/department-permissions', {
