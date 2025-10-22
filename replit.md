@@ -82,3 +82,21 @@ Complete end-to-end payment confirmation system:
 - **STRIPE_PAYROLL_GUIDE.md**: Complete guide on using Stripe Payouts API for employee/contractor payments
 - **STRIPE_PAYOUTS_TEST_MODE.md**: Testing guide with test bank account numbers, complete flow examples, and implementation code
 - Covers: Payouts API, Stripe Connect, test mode, webhooks, cost structure, and production considerations
+
+### Stripe Connect Implementation ✅
+**Complete Stripe Connect integration for guide/employee payments** (Oct 22, 2025):
+- **Schema updates**: Added `stripeConnectedAccountId`, `stripeAccountStatus`, `stripeAccountType`, `stripeOnboardingCompleted` to Guide model
+- **Payroll tracking**: Added `stripeTransferId` and `stripePayoutId` to Payroll model
+- **5 API Routes created**:
+  - `/api/stripe-connect/create-account` - Create Stripe Express account for guide
+  - `/api/stripe-connect/onboarding-link` - Generate onboarding URL for guide to complete setup
+  - `/api/stripe-connect/login-link` - Generate login link to guide's Stripe dashboard
+  - `/api/stripe-connect/transfer` - Transfer payment from platform to guide's account (validates account is active)
+  - `/api/stripe-connect/balance` - Check guide's Stripe balance
+- **Test Mode support**: All APIs work with Stripe test mode using test accounts
+- **Complete Flow**: 
+  1. Create account (creates Express account)
+  2. Generate onboarding link (guide completes Stripe onboarding)
+  3. Transfer funds (platform pays guide - validates account is active first)
+  4. Guide logs in to dashboard (views balance)
+  5. Guide makes payout to bank account
