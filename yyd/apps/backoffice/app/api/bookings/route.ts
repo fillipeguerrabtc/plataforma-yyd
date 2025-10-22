@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
     const date = searchParams.get('date');
+    const guideId = searchParams.get('guideId');
     const limit = parseInt(searchParams.get('limit') || '100');
 
     const where: any = {};
@@ -28,6 +29,10 @@ export async function GET(request: NextRequest) {
         gte: targetDate,
         lt: nextDay,
       };
+    }
+
+    if (guideId) {
+      where.guideId = guideId;
     }
 
     const bookings = await prisma.booking.findMany({

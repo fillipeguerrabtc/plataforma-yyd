@@ -80,6 +80,7 @@ export default function Sidebar() {
       title: 'RESERVAS',
       items: [
         { href: '/bookings', label: 'Reservas', icon: '🎫' },
+        { href: '/bookings/my-tours', label: 'Meus Tours', icon: '🗺️' },
         { href: '/calendar', label: 'Calendário', icon: '📅' },
       ],
     },
