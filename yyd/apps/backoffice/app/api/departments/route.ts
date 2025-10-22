@@ -4,7 +4,7 @@ import { requirePermission } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
   try {
-    requirePermission(req, 'staff', 'read');
+    requirePermission(req, 'departments', 'view');
     
     const departments = await prisma.department.findMany({
       include: {
@@ -27,20 +27,29 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    requirePermission(req, 'staff', 'create');
+    requirePermission(req, 'departments', 'create');
     
     const body = await req.json();
 
     if (!body.name) {
-      return NextResponse.json({ error: 'Name is required' }, { status: 400 });
+      return NextResponse.json({ error: 'Nome é obrigatório' }, { status: 400 });
     }
 
     const department = await prisma.department.create({
       data: {
         name: body.name,
         description: body.description || null,
-        color: body.color || null,
+        email: body.email || null,
+        color: body.color || '#1FB7C4',
         active: body.active !== undefined ? body.active : true,
+      },
+      include: {
+        _count: {
+          select: {
+            staff: true,
+            guides: true,
+          },
+        },
       },
     });
 
@@ -49,6 +58,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(department);
   } catch (error: any) {
     console.error('Error creating department:', error);
-    return NextResponse.json({ error: error.message || 'Failed to create department' }, { status: 500 });
+    
+    if (error.code === 'P2002') {
+      return NextResponse.json(
+        { error: 'Já existe um departamento com este nome' },
+        { status: 400 }
+      );
+    }
+    
+    return NextResponse.json({ error: error.message || 'Falha ao criar departamento' }, { status: 500 });
   }
 }

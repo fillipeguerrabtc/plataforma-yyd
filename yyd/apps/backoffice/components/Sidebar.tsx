@@ -74,22 +74,22 @@ export default function Sidebar() {
           if (permsRes.ok) {
             const permsData = await permsRes.json();
             
-            // Check if user is administrator
-            const adminFullAccess = permsData.permissions?.find(
-              (p: any) => p.resource === 'administrator' && p.action === 'full_access' && p.canRead
-            );
-            setIsAdmin(!!adminFullAccess);
+            // Check if user is administrator (permissions is an object, not array)
+            const adminFullAccess = permsData.permissions?.['administrator.full_access'];
+            setIsAdmin(!!adminFullAccess?.canRead);
 
-            // Build permission map: "resource.action" -> { canRead, canWrite }
+            // Build permission map from object: "resource.action" -> { canRead, canWrite }
             const permMap = new Map<string, { canRead: boolean; canWrite: boolean }>();
-            (permsData.permissions || []).forEach((perm: any) => {
-              const key = `${perm.resource}.${perm.action}`;
+            Object.entries(permsData.permissions || {}).forEach(([key, perm]: [string, any]) => {
               permMap.set(key, {
                 canRead: perm.canRead || false,
                 canWrite: perm.canWrite || false,
               });
             });
             setUserPermissions(permMap);
+            
+            console.log('✅ Admin status:', !!adminFullAccess?.canRead);
+            console.log('✅ Total permissions:', permMap.size);
           }
         }
       } catch (error) {

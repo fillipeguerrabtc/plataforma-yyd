@@ -95,7 +95,23 @@ export async function GET(req: NextRequest) {
     });
 
     // Check if user is Administrator
-    const isAdministrator = permissionMap.has('administrator.full_access');
+    const adminPerm = permissionMap.get('administrator.full_access');
+    const isAdministrator = adminPerm?.canRead === true;
+
+    // If Administrator, grant Read+Write to EVERYTHING
+    if (isAdministrator) {
+      // Get all permissions from database
+      const allPermissions = await prisma.permission.findMany();
+      
+      // Grant full access to all permissions
+      allPermissions.forEach((perm) => {
+        const key = `${perm.resource}.${perm.action}`;
+        permissionMap.set(key, {
+          canRead: true,
+          canWrite: true,
+        });
+      });
+    }
 
     // Filter menu items based on permissions
     const allowedMenuItems = ALL_MENU_ITEMS.filter((item) => {
@@ -112,11 +128,6 @@ export async function GET(req: NextRequest) {
     permissionMap.forEach((value, key) => {
       permissions[key] = value;
     });
-
-    // Add administrator flag if applicable
-    if (isAdministrator) {
-      permissions['administrator.full_access'] = { canRead: true, canWrite: true };
-    }
 
     return NextResponse.json({
       user: {

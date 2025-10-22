@@ -10,7 +10,8 @@ type Staff = {
   email: string;
   phone?: string;
   position: string;
-  department: string;
+  department?: string;
+  departmentId?: string;
   hireDate: string;
   salary?: number;
   salaryCurrency: string;
@@ -24,9 +25,18 @@ type Staff = {
   notes?: string;
 };
 
+type Department = {
+  id: string;
+  name: string;
+  description?: string;
+  color?: string;
+  active: boolean;
+};
+
 export default function StaffPage() {
   const router = useRouter();
   const [staff, setStaff] = useState<Staff[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -36,7 +46,7 @@ export default function StaffPage() {
     email: '',
     phone: '',
     position: '',
-    department: '',
+    departmentId: '',
     hireDate: '',
     salary: 0,
     salaryCurrency: 'EUR',
@@ -52,25 +62,9 @@ export default function StaffPage() {
     confirmPassword: '',
   });
 
-  const allModules = [
-    'Dashboard',
-    'BI Analytics',
-    'Tours',
-    'Guides',
-    'Staff',
-    'Vendors',
-    'Financial',
-    'CRM',
-    'Bookings',
-    'Calendar',
-    'Aurora IA',
-    'Integrations',
-    'Reviews',
-    'Settings',
-  ];
-
   useEffect(() => {
     fetchStaff();
+    fetchDepartments();
   }, []);
 
   const fetchStaff = async () => {
@@ -88,6 +82,18 @@ export default function StaffPage() {
     }
   };
 
+  const fetchDepartments = async () => {
+    try {
+      const res = await fetch('/api/departments');
+      if (res.ok) {
+        const data = await res.json();
+        setDepartments(data.filter((d: Department) => d.active));
+      }
+    } catch (error) {
+      console.error('Failed to fetch departments:', error);
+    }
+  };
+
   const handleEdit = (member: Staff) => {
     setEditingId(member.id);
     setShowAddForm(true);
@@ -96,7 +102,7 @@ export default function StaffPage() {
       email: member.email,
       phone: member.phone || '',
       position: member.position,
-      department: member.department,
+      departmentId: member.departmentId || '',
       hireDate: member.hireDate.split('T')[0],
       salary: member.salary || 0,
       salaryCurrency: member.salaryCurrency,
@@ -185,7 +191,7 @@ export default function StaffPage() {
       email: '',
       phone: '',
       position: '',
-      department: '',
+      departmentId: '',
       hireDate: '',
       salary: 0,
       salaryCurrency: 'EUR',
@@ -328,18 +334,17 @@ export default function StaffPage() {
             <div>
               <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '500' }}>Departamento *</label>
               <select
-                value={formData.department}
-                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                value={formData.departmentId}
+                onChange={(e) => setFormData({ ...formData, departmentId: e.target.value })}
                 style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
                 required
               >
                 <option value="">Selecione</option>
-                <option value="Operations">Operações</option>
-                <option value="Finance">Financeiro</option>
-                <option value="Sales">Vendas</option>
-                <option value="Customer Service">Atendimento ao Cliente</option>
-                <option value="Marketing">Marketing</option>
-                <option value="IT">TI</option>
+                {departments.map((dept) => (
+                  <option key={dept.id} value={dept.id}>
+                    {dept.name}
+                  </option>
+                ))}
               </select>
             </div>
 
