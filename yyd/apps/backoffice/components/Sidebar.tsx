@@ -52,6 +52,7 @@ export default function Sidebar() {
         { href: '/guides', label: 'Guias', icon: '🚗' },
         { href: '/staff', label: 'Funcionários', icon: '👤' },
         { href: '/vendors', label: 'Fornecedores', icon: '🏢' },
+        { href: '/departments', label: 'Departamentos', icon: '🏛️' },
       ],
     },
     {
