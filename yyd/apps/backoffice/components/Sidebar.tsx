@@ -12,25 +12,103 @@ interface User {
   role: string;
 }
 
+interface UserPermission {
+  permissionId: string;
+  canRead: boolean;
+  canWrite: boolean;
+  permission: {
+    resource: string;
+    action: string;
+  };
+}
+
+// Map routes to required permissions (resource.action format)
+const routePermissionMap: Record<string, string> = {
+  '/': 'dashboard.view',
+  '/analytics': 'bi_analytics.view',
+  '/tours': 'products.view',
+  '/guides': 'guides.view',
+  '/staff': 'staff.view',
+  '/vendors': 'vendors.view',
+  '/departments': 'departments.view',
+  '/financial': 'finance.view_dashboard',
+  '/finance/payments': 'payments.view',
+  '/finance/stripe-connect': 'finance.manage_stripe_connect',
+  '/financial/accounts': 'accounts.view',
+  '/financial/ledger': 'ledger.view',
+  '/financial/payroll': 'payroll.view',
+  '/financial/ar': 'ar.view',
+  '/financial/ap': 'ap.view',
+  '/customers': 'crm.view_customers',
+  '/crm/segments': 'crm.view_segments',
+  '/crm/automations': 'crm.view_automations',
+  '/bookings': 'bookings.view',
+  '/bookings/my-tours': 'bookings.view_my_tours',
+  '/calendar': 'calendar.view',
+  '/aurora': 'aurora.chat',
+  '/aurora/knowledge': 'aurora.view_kb',
+  '/aurora/config': 'aurora.config',
+  '/chat': 'chat.view',
+  '/integrations': 'integrations.view',
+  '/reviews': 'reviews.view',
+  '/settings/emails': 'settings.view_emails',
+};
+
 export default function Sidebar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [userPermissions, setUserPermissions] = useState<Map<string, { canRead: boolean; canWrite: boolean }>>(new Map());
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    async function fetchCurrentUser() {
+    async function fetchCurrentUserAndPermissions() {
       try {
         const response = await fetch('/api/auth/me');
         if (response.ok) {
           const data = await response.json();
           setCurrentUser(data.user);
+
+          // Fetch user's effective permissions
+          const permsRes = await fetch('/api/auth/permissions');
+          if (permsRes.ok) {
+            const permsData = await permsRes.json();
+            
+            // Check if user is administrator
+            const adminFullAccess = permsData.permissions?.find(
+              (p: any) => p.resource === 'administrator' && p.action === 'full_access' && p.canRead
+            );
+            setIsAdmin(!!adminFullAccess);
+
+            // Build permission map: "resource.action" -> { canRead, canWrite }
+            const permMap = new Map<string, { canRead: boolean; canWrite: boolean }>();
+            (permsData.permissions || []).forEach((perm: any) => {
+              const key = `${perm.resource}.${perm.action}`;
+              permMap.set(key, {
+                canRead: perm.canRead || false,
+                canWrite: perm.canWrite || false,
+              });
+            });
+            setUserPermissions(permMap);
+          }
         }
       } catch (error) {
-        console.error('Erro ao buscar usuário:', error);
+        console.error('Erro ao buscar usuário e permissões:', error);
       }
     }
-    fetchCurrentUser();
+    fetchCurrentUserAndPermissions();
   }, []);
+
+  const hasPermission = (route: string): boolean => {
+    // Administrators see everything
+    if (isAdmin) return true;
+
+    const requiredPerm = routePermissionMap[route];
+    if (!requiredPerm) return true; // If no permission required, allow access
+
+    const perm = userPermissions.get(requiredPerm);
+    return perm?.canRead || false;
+  };
 
   const navSections = [
     {
@@ -108,6 +186,14 @@ export default function Sidebar() {
     },
   ];
 
+  // Filter sections and items based on permissions
+  const filteredSections = navSections
+    .map((section) => ({
+      ...section,
+      items: section.items.filter((item) => hasPermission(item.href)),
+    }))
+    .filter((section) => section.items.length > 0); // Hide empty sections
+
   return (
     <>
       {/* Mobile Menu Button */}
@@ -164,14 +250,14 @@ export default function Sidebar() {
               Yes, You Deserve!
             </h1>
             <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.6)', marginTop: '0.25rem' }}>
-              Backoffice
+              Backoffice {isAdmin && '• Admin'}
             </p>
           </div>
         </div>
       </Link>
 
       <nav style={{ flex: 1, padding: '1rem 0', overflowY: 'auto' }}>
-        {navSections.map((section) => (
+        {filteredSections.map((section) => (
           <div key={section.title} style={{ marginBottom: '1.5rem' }}>
             <div
               style={{
