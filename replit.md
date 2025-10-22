@@ -41,8 +41,30 @@ The client-facing platform aims for an identical visual identity to the original
 
 ## External Dependencies
 - **Database**: PostgreSQL with pgvector
-- **Payments**: Stripe
+- **Payments**: Stripe (with webhook integration for payment confirmation)
 - **Messaging**: Twilio (for WhatsApp), Facebook Messenger API
 - **AI**: OpenAI (optional fallback for Aurora IA)
-- **Email**: Nodemailer
+- **Email**: Replit Mail (automatic authentication, works in dev & production)
 - **Job Queues**: Bull
+
+## Recent Implementations (Oct 2025)
+
+### Payment & Confirmation Flow ✅
+Complete end-to-end payment confirmation system:
+- **Auto-refresh confirmation page**: Polls every 3 seconds, shows success/failure/processing states
+- **Booking API authorization**: 30-minute access window for unauthenticated users (post-payment)
+- **Webhook handling**: Stripe webhooks confirm bookings, update payments, send emails
+- **Email integration**: Replit Mail with HTML templates (EN/PT/ES) sent ONLY after payment success
+- **Idempotent processing**: Double-booking protection, safe to rerun webhooks
+- **Documentation**: Complete flow documented in `PAYMENT_CONFIRMATION_FLOW.md`
+
+### Email System ✅
+**Replit Mail Integration** (blueprint:replitmail):
+- Automatic authentication via `REPL_IDENTITY` (dev) or `WEB_REPL_RENEWAL` (production)
+- Works in BOTH development and production environments
+- Professional HTML email templates with YYD branding
+- Multi-language support (EN/PT/ES)
+- Only accepts real email addresses (rejects `@example.com` test emails)
+- Confirmation emails sent ONLY after Stripe webhook confirms payment (no duplicates)
+
+**Test Script**: `npx tsx scripts/quick-email-test.ts` to send test emails
