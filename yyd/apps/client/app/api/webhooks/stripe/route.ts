@@ -300,15 +300,15 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
 
     // Send confirmation email immediately
     const customer = await prisma.customer.findUnique({ where: { id: customerId } });
-    const product = await prisma.product.findUnique({ where: { id: tourId } });
+    const productForEmail = await prisma.product.findUnique({ where: { id: tourId } });
     
-    if (customer && product) {
+    if (customer && productForEmail) {
       try {
         const { emailService } = await import('@/lib/email');
         await emailService.sendBookingConfirmation(
           booking,
           customer,
-          product,
+          productForEmail,
           'en'
         );
         console.log(`📧 Confirmation email sent to ${customer.email}`);
