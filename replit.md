@@ -110,3 +110,25 @@ Complete end-to-end payment confirmation system:
 - **Guide Active Status**: Booking approval endpoints now verify guide.active status before allowing approval/rejection
 - **Universal Permissions**: All 20+ API endpoints now use action-level authorization (create/read/update/delete) ensuring proper role-based access control
 - **Audit Logging**: All permission denials are logged with user ID, resource, action, and request details for security monitoring
+
+### Permission-Based Dashboard & Notifications System ✅
+**Dynamic dashboard with role-based UI and complete notification system** (Oct 22, 2025):
+- **Permission API** (`/api/auth/permissions`): Returns allowed menu items filtered by RBAC permissions for each user role
+- **Notification System**: Complete in-app notification system with Notification model (userId, type, title, message, read, actionUrl, metadata)
+- **Tour Assignment Notifications**: When staff assigns guide to tour → automatic email + in-app notification sent to guide
+- **Auto-Approval System**: Tours automatically approved after 1 hour if guide doesn't respond (uses durable ScheduledTask model + cron endpoint)
+- **48-Hour Rejection Rule**: Guides can only reject tours if >48 hours until tour start time (enforced in guide-approval endpoint)
+- **Email System (Staff Only)**: Complete email management with inbox/sent/trash folders, personal + department emails for staff members
+- **Payment Notifications**: Automatic emails sent when payments processed (beneficiary + Finance department)
+- **Scheduled Tasks**: Durable task scheduling system using database table + `/api/cron/scheduled-tasks` endpoint for execution
+
+**New Database Models:**
+- `Notification` - In-app notifications for guides and staff
+- `EmailMessage` - Email storage with folders (inbox/sent/trash), read status, starred
+- `ScheduledTask` - Durable task scheduling for auto-approval and future automated tasks
+- `Department.email` - Department email addresses for team communications
+
+**Security:**
+- Email system access restricted to Staff only (Guides explicitly blocked)
+- Permission-based dashboard ensures users only see features they have access to
+- Auto-approval uses database-backed scheduling (not in-memory setTimeout)

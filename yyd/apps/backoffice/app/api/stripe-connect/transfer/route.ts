@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { prisma } from '@/lib/prisma';
 import { requirePermission } from '@/lib/auth';
+import { sendPaymentNotifications } from '@/lib/payment-notifications';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-06-20',
@@ -21,6 +22,8 @@ export async function POST(request: NextRequest) {
       where: { id: payrollId },
       include: {
         guide: true,
+        staff: true,
+        vendor: true,
       },
     });
     
@@ -34,28 +37,49 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    
-    if (!payroll.guide) {
+
+    // Detect beneficiary type and get Stripe account ID
+    let stripeAccountId = '';
+    let beneficiaryName = '';
+    let beneficiaryId = '';
+    let beneficiaryType = '';
+
+    if (payroll.guide) {
+      stripeAccountId = payroll.guide.stripeConnectedAccountId || '';
+      beneficiaryName = payroll.guide.name;
+      beneficiaryId = payroll.guide.id;
+      beneficiaryType = 'guide';
+    } else if (payroll.staff) {
+      stripeAccountId = payroll.staff.stripeConnectedAccountId || '';
+      beneficiaryName = payroll.staff.name;
+      beneficiaryId = payroll.staff.id;
+      beneficiaryType = 'staff';
+    } else if (payroll.vendor) {
+      stripeAccountId = payroll.vendor.stripeConnectedAccountId || '';
+      beneficiaryName = payroll.vendor.name;
+      beneficiaryId = payroll.vendor.id;
+      beneficiaryType = 'vendor';
+    } else {
       return NextResponse.json(
-        { error: 'Payroll não possui guia associado' },
+        { error: 'Payroll não possui beneficiário associado (guide/staff/vendor)' },
+        { status: 400 }
+      );
+    }
+
+    if (!stripeAccountId) {
+      return NextResponse.json(
+        { error: `${beneficiaryType} não possui conta Stripe Connect configurada` },
         { status: 400 }
       );
     }
     
-    if (!payroll.guide.stripeConnectedAccountId) {
-      return NextResponse.json(
-        { error: 'Guia não possui conta Stripe Connect' },
-        { status: 400 }
-      );
-    }
-    
-    // Verificar se a conta do guia está ativa
-    const account = await stripe.accounts.retrieve(payroll.guide.stripeConnectedAccountId);
+    // Verificar se a conta está ativa
+    const account = await stripe.accounts.retrieve(stripeAccountId);
     
     if (!account.charges_enabled || !account.payouts_enabled) {
       return NextResponse.json(
         { 
-          error: 'Conta do guia não está ativa. O guia precisa completar o onboarding primeiro.',
+          error: `Conta Stripe do ${beneficiaryType} não está ativa. É necessário completar o onboarding primeiro.`,
           accountStatus: {
             charges_enabled: account.charges_enabled,
             payouts_enabled: account.payouts_enabled,
@@ -66,16 +90,17 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Fazer transfer do seu saldo para o saldo do guia
+    // Fazer transfer do saldo da plataforma para o saldo do beneficiário
     const transfer = await stripe.transfers.create({
       amount: Math.round(parseFloat(payroll.netAmount.toString()) * 100), // Converter para centavos
       currency: 'eur',
-      destination: payroll.guide.stripeConnectedAccountId,
-      description: `Salário ${payroll.guide.name} - ${payroll.period}`,
+      destination: stripeAccountId,
+      description: `Pagamento ${beneficiaryName} - ${payroll.period}`,
       metadata: {
         payroll_id: payroll.id,
-        guide_id: payroll.guide.id,
-        guide_name: payroll.guide.name,
+        beneficiary_id: beneficiaryId,
+        beneficiary_name: beneficiaryName,
+        beneficiary_type: beneficiaryType,
         period: payroll.period,
       },
     });
@@ -90,6 +115,14 @@ export async function POST(request: NextRequest) {
         stripeTransferId: transfer.id,
       },
     });
+
+    // Send payment notification emails (beneficiary + finance dept)
+    try {
+      await sendPaymentNotifications({ payrollId });
+    } catch (emailError) {
+      console.error('❌ Error sending payment notification emails:', emailError);
+      // Don't fail the transfer if email notification fails
+    }
     
     return NextResponse.json({
       success: true,

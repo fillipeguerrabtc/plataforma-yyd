@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requirePermission } from '@/lib/auth';
 import { logCRUD } from '@/lib/audit';
+import { createNotification } from '@/lib/notifications';
+import { sendTourAssignmentEmail } from '@/lib/email-service';
+import { scheduleAutoApproval } from '@/lib/tour-auto-approval';
 
 export async function GET(request: NextRequest) {
   try {
@@ -104,6 +107,12 @@ export async function PATCH(request: NextRequest) {
     // Get before state for audit log
     const before = await prisma.booking.findUnique({ where: { id: bookingId } });
 
+    // Detect if guide is being assigned for the first time
+    const guideAssigned = guideId && (!before?.guideId || before.guideId !== guideId);
+    if (guideAssigned) {
+      updateData.guideApprovalStatus = 'pending';
+    }
+
     const booking = await prisma.booking.update({
       where: { id: bookingId },
       data: updateData,
@@ -113,6 +122,42 @@ export async function PATCH(request: NextRequest) {
         guide: true,
       },
     });
+
+    // Send notification and email when guide is assigned
+    if (guideAssigned && booking.guide) {
+      try {
+        // Create in-app notification
+        await createNotification({
+          userId: booking.guide.id,
+          userType: 'guide',
+          type: 'tour_assigned',
+          title: 'Novo Tour Atribuído',
+          message: `Você foi designado para o tour "${booking.product?.titlePt || 'Tour'}" em ${booking.date.toLocaleDateString('pt-PT')}`,
+          actionUrl: `/bookings/${booking.id}`,
+          metadata: {
+            bookingId: booking.id,
+            tourDate: booking.date,
+          },
+        });
+
+        // Send email notification
+        await sendTourAssignmentEmail({
+          guideEmail: booking.guide.email,
+          guideName: booking.guide.name,
+          tourTitle: booking.product?.titlePt || 'Tour',
+          tourDate: booking.date,
+          bookingId: booking.id,
+        });
+
+        // Schedule auto-approval after 1 hour
+        await scheduleAutoApproval(booking.id);
+
+        console.log(`✅ Notificações enviadas para guia ${booking.guide.name}`);
+      } catch (notifError) {
+        console.error('❌ Error sending notifications:', notifError);
+        // Don't fail the booking update if notifications fail
+      }
+    }
 
     // Log update in audit log
     await logCRUD(

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getUserFromRequest } from '@/lib/auth';
+import { canRejectTour, getHoursUntilTour } from '@/lib/tour-auto-approval';
 
 export async function PATCH(
   req: NextRequest,
@@ -51,6 +52,21 @@ export async function PATCH(
         { error: 'This booking has already been processed' },
         { status: 400 }
       );
+    }
+
+    // Validate 48-hour rule for rejections
+    if (status === 'rejected') {
+      const canReject = canRejectTour(booking.date);
+      if (!canReject) {
+        const hoursRemaining = getHoursUntilTour(booking.date);
+        return NextResponse.json(
+          {
+            error: `Cannot reject tour less than 48 hours before start time. Tour is in ${hoursRemaining.toFixed(1)} hours.`,
+            hoursRemaining,
+          },
+          { status: 400 }
+        );
+      }
     }
 
     const updatedBooking = await prisma.booking.update({

@@ -1034,6 +1034,7 @@ model Vendor {
 model Department {
   id          String   @id @default(cuid())
   name        String   @unique
+  email       String?  @unique
   description String?
   color       String?
   active      Boolean  @default(true)
@@ -1068,4 +1069,72 @@ model InternalMessage {
   @@index([departmentTarget])
   @@index([createdAt])
   @@map("internal_messages")
+}
+
+model Notification {
+  id         String    @id @default(cuid())
+  userId     String
+  userType   String
+  type       String
+  title      String
+  message    String
+  metadata   Json?
+  read       Boolean   @default(false)
+  readAt     DateTime?
+  actionUrl  String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([userType])
+  @@index([type])
+  @@index([read])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+model EmailMessage {
+  id            String    @id @default(cuid())
+  fromEmail     String
+  toEmail       String
+  ccEmails      String[]
+  bccEmails     String[]
+  subject       String
+  bodyText      String?
+  bodyHtml      String?
+  folder        String    @default("sent")
+  read          Boolean   @default(false)
+  starred       Boolean   @default(false)
+  labels        String[]
+  metadata      Json?
+  sentAt        DateTime?
+  receivedAt    DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([fromEmail])
+  @@index([toEmail])
+  @@index([folder])
+  @@index([read])
+  @@index([sentAt])
+  @@index([receivedAt])
+  @@map("email_messages")
+}
+
+model ScheduledTask {
+  id          String    @id @default(cuid())
+  taskType    String
+  entityId    String
+  entityType  String?
+  scheduledFor DateTime
+  executed    Boolean   @default(false)
+  executedAt  DateTime?
+  metadata    Json?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([taskType])
+  @@index([scheduledFor])
+  @@index([executed])
+  @@map("scheduled_tasks")
 }
