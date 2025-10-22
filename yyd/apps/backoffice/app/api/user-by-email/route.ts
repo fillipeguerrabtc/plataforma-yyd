@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requirePermission } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
   try {
+    requirePermission(req, 'staff', 'view');
+    
     const searchParams = req.nextUrl.searchParams;
     const email = searchParams.get('email');
 
