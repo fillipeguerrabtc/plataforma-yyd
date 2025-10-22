@@ -2,7 +2,18 @@
 const nextConfig = {
   experimental: {
     serverActions: {
-      allowedOrigins: ['*'],
+      allowedOrigins: [
+        'localhost:3001',
+        '127.0.0.1:3001',
+        ...(process.env.REPLIT_DEV_DOMAIN ? [
+          process.env.REPLIT_DEV_DOMAIN,
+          `${process.env.REPLIT_DEV_DOMAIN}:3001`,
+        ] : []),
+        ...(process.env.BACKOFFICE_ALLOWED_ORIGINS 
+          ? process.env.BACKOFFICE_ALLOWED_ORIGINS.split(',').map(o => o.trim())
+          : []
+        ),
+      ],
       bodySizeLimit: '2mb',
     }
   },
