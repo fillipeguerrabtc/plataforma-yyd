@@ -132,3 +132,45 @@ Complete end-to-end payment confirmation system:
 - Email system access restricted to Staff only (Guides explicitly blocked)
 - Permission-based dashboard ensures users only see features they have access to
 - Auto-approval uses database-backed scheduling (not in-memory setTimeout)
+
+### Granular Permissions System & Product Configuration ✅
+**Universal permission system with product management** (Oct 22, 2025):
+- **Granular Permissions**: 82 permissions across 11 categories (super_admin, dashboard, products, bookings, crm, people, admin, finance, aurora, communication, reports)
+- **Administrator Permission**: Full read+write access to everything, required to manage permissions
+- **Permission Management**: Only Administrators can create/edit/delete permissions
+- **User Permissions**: Granular read/write per permission, per user
+- **Department Permissions**: Granular read/write per permission, per department
+- **Staff-Only Admin**: Only Staff can have Administrator permission (Guides/Vendors blocked)
+
+**Product Management System:**
+- **Tours**: Configurable duration, monuments, min/max activities
+- **Activities**: Type (activity/extra/monument), pricing, All-Inclusive flag
+- **Extras**: Product options with multi-language support
+- **Product Configuration**: Tours can specify:
+  - `includeMonuments` - Whether tour includes monuments
+  - `minActivities` / `maxActivities` - Activity selection limits
+  - `maxActivitiesWithMonuments` - Override when monuments selected (Half Day: 1, Full Day: 3)
+  - Activity types: `activity` (included), `extra` (paid), `monument` (monument visits)
+  - `includedInAllInclusive` - Activities/extras included in All-Inclusive packages
+
+**New Database Models:**
+- `Permission` - System permissions (resource, action, labels, category)
+- `UserPermission` - User-specific permissions (canRead, canWrite)
+- `DepartmentPermission` - Department-wide permissions (canRead, canWrite)
+- `ActivityType` enum - activity, extra, monument
+
+**Product Schema Updates:**
+- `Product.includeMonuments`, `minActivities`, `maxActivities`, `maxActivitiesWithMonuments`
+- `ProductActivity.type`, `priceEur`, `includedInAllInclusive`
+
+**APIs Created:**
+- `/api/permissions` - CRUD permissions (Admin only)
+- `/api/user-permissions` - Manage user permissions
+- `/api/user-permissions/batch` - Batch assign permissions with Staff-only Admin validation
+- `/api/department-permissions` - Manage department permissions
+- `/api/activities` - CRUD product activities
+- `/api/extras` - CRUD product extras
+
+**Scripts:**
+- `scripts/seed-permissions.ts` - Seeds 82 system permissions
+- `scripts/grant-admin-permissions.ts` - Grants all permissions to admin user
