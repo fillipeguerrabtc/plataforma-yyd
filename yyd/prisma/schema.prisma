@@ -299,6 +299,7 @@ model Guide {
   name                      String
   email                     String             @unique
   phone                     String
+  passwordHash              String?
   languages                 String[]
   bio                       String?
   photoUrl                  String?

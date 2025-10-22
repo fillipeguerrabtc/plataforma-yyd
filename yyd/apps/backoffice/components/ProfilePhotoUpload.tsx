@@ -77,7 +77,7 @@ export default function ProfilePhotoUpload({
 
       <div className="flex items-start gap-4">
         <div className="flex-shrink-0">
-          <div className="w-32 h-32 rounded-lg border-2 border-gray-300 overflow-hidden bg-gray-100 flex items-center justify-center">
+          <div className="w-16 h-16 rounded-lg border-2 border-gray-300 overflow-hidden bg-gray-100 flex items-center justify-center">
             {preview ? (
               <img
                 src={preview}
@@ -86,7 +86,7 @@ export default function ProfilePhotoUpload({
               />
             ) : (
               <svg
-                className="w-12 h-12 text-gray-400"
+                className="w-6 h-6 text-gray-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"

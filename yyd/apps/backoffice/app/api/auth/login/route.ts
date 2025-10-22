@@ -14,11 +14,49 @@ export async function POST(request: Request) {
       );
     }
 
-    const user = await prisma.user.findUnique({
+    // Try to find user in User table first
+    let user = await prisma.user.findUnique({
       where: { email },
     });
 
-    if (!user || !user.active) {
+    let userType: 'user' | 'guide' = 'user';
+    let passwordHash: string | null = null;
+    let userId: string = '';
+    let userName: string = '';
+    let userRole: string = '';
+    let isActive: boolean = false;
+
+    if (user) {
+      userId = user.id;
+      userName = user.name;
+      userRole = user.role;
+      passwordHash = user.passwordHash;
+      isActive = user.active;
+      userType = 'user';
+    } else {
+      // Try to find in Guide table
+      const guide = await prisma.guide.findUnique({
+        where: { email },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          passwordHash: true,
+          active: true,
+        },
+      });
+
+      if (guide && guide.passwordHash) {
+        userId = guide.id;
+        userName = guide.name;
+        userRole = 'guide' as any;
+        passwordHash = guide.passwordHash;
+        isActive = guide.active;
+        userType = 'guide';
+      }
+    }
+
+    if (!passwordHash || !isActive) {
       // Log failed login attempt
       await logAuth('LOGIN_FAILED', email, request);
       
@@ -28,7 +66,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const isValidPassword = await comparePassword(password, user.passwordHash);
+    const isValidPassword = await comparePassword(password, passwordHash);
 
     if (!isValidPassword) {
       // Log failed login attempt
@@ -40,30 +78,26 @@ export async function POST(request: Request) {
       );
     }
 
-    // Update last login
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { lastLoginAt: new Date() },
-    });
-
     // Log successful login
-    await logAuth('LOGIN', user.email, request);
+    await logAuth('LOGIN', email, request);
 
-    // Generate JWT token
+    // Generate JWT token with userType
     const token = generateToken({
-      userId: user.id,
-      email: user.email,
-      role: user.role,
+      userId: userId,
+      email: email,
+      role: userRole,
+      userType: userType,
     });
 
     // Create response with token in cookie
     const response = NextResponse.json({
       success: true,
       user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
+        id: userId,
+        email: email,
+        name: userName,
+        role: userRole,
+        userType: userType,
       },
       token,
     });

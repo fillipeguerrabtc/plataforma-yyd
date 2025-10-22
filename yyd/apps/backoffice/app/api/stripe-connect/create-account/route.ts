@@ -33,7 +33,7 @@ async function updateEntity(entityType: EntityType, entityId: string, data: any)
 
 export async function POST(request: NextRequest) {
   try {
-    requirePermission(request, 'finance', 'create');
+    requirePermission(request, 'finance', 'manage_stripe_connect');
     
     const { entityType, entityId } = await request.json();
 
@@ -87,6 +87,18 @@ export async function POST(request: NextRequest) {
     });
   } catch (error: any) {
     console.error('Erro ao criar conta Stripe Connect:', error);
+    
+    // Check if it's a Stripe Connect not enabled error
+    if (error.message && error.message.includes("signed up for Connect")) {
+      return NextResponse.json(
+        { 
+          error: 'Stripe Connect não está ativado na sua conta Stripe. Por favor, acesse https://dashboard.stripe.com/settings/applications e ative o Stripe Connect primeiro.',
+          needsSetup: true
+        },
+        { status: 400 }
+      );
+    }
+    
     return NextResponse.json(
       { error: error.message || 'Erro ao criar conta' },
       { status: 500 }

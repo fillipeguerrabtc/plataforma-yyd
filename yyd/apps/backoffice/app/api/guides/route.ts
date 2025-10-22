@@ -38,15 +38,24 @@ export async function POST(request: NextRequest) {
     const user = requirePermission(request, 'guides', 'create');
     const body = await request.json();
 
+    // Hash password if provided
+    let passwordHash: string | undefined = undefined;
+    if (body.password) {
+      const bcrypt = await import('bcryptjs');
+      passwordHash = await bcrypt.hash(body.password, 10);
+    }
+
     const guide = await prisma.guide.create({
       data: {
         name: body.name,
         email: body.email,
         phone: body.phone,
+        passwordHash: passwordHash,
         languages: body.languages || [],
         bio: body.bio || null,
         photoUrl: body.photoUrl || null,
         certifications: body.certifications || [],
+        departmentId: body.departmentId || null,
         active: body.active !== undefined ? body.active : true,
       },
     });

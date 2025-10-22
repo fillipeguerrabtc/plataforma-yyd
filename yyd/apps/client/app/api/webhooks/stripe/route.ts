@@ -193,6 +193,82 @@ async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
     // Don't fail the webhook - booking is still confirmed
   }
 
+  // CREATE LEDGER ENTRIES FOR DOUBLE-ENTRY ACCOUNTING
+  try {
+    const totalAmount = baseAmount + addonsAmount;
+    const transactionDate = new Date();
+
+    // Find or create "Stripe Account" (Cash) and "Tour Sales" (Revenue) accounts
+    const stripeAccount = await prisma.account.upsert({
+      where: { code: 'STRIPE-CASH' },
+      create: {
+        code: 'STRIPE-CASH',
+        name: 'Stripe Account',
+        type: 'asset',
+        category: 'current_assets',
+        balance: 0,
+        active: true,
+      },
+      update: {},
+    });
+
+    const salesAccount = await prisma.account.upsert({
+      where: { code: 'TOUR-SALES' },
+      create: {
+        code: 'TOUR-SALES',
+        name: 'Tour Sales Revenue',
+        type: 'revenue',
+        category: 'sales',
+        balance: 0,
+        active: true,
+      },
+      update: {},
+    });
+
+    // Create ledger entries (Double-Entry: Debit Cash, Credit Revenue)
+    // Debit: Stripe Account (increases asset)
+    await prisma.ledgerEntry.create({
+      data: {
+        accountId: stripeAccount.id,
+        type: 'debit',
+        amount: totalAmount,
+        description: `Payment received for booking ${booking.bookingNumber} - ${booking.customer.name}`,
+        transactionDate: transactionDate,
+        reference: paymentIntent.id,
+        status: 'posted',
+      },
+    });
+
+    // Credit: Tour Sales Revenue (increases revenue)
+    await prisma.ledgerEntry.create({
+      data: {
+        accountId: salesAccount.id,
+        type: 'credit',
+        amount: totalAmount,
+        description: `Tour sale for booking ${booking.bookingNumber} - ${booking.customer.name}`,
+        transactionDate: transactionDate,
+        reference: paymentIntent.id,
+        status: 'posted',
+      },
+    });
+
+    // Update account balances
+    await prisma.account.update({
+      where: { id: stripeAccount.id },
+      data: { balance: { increment: totalAmount } },
+    });
+
+    await prisma.account.update({
+      where: { id: salesAccount.id },
+      data: { balance: { increment: totalAmount } },
+    });
+
+    console.log(`💰 Ledger entries created for €${totalAmount} - Payment ${paymentIntent.id}`);
+  } catch (ledgerError: any) {
+    console.error(`❌ Failed to create ledger entries: ${ledgerError.message}`);
+    // Don't fail the webhook - booking/payment is still confirmed
+  }
+
   console.log(`✅ Booking ${bookingId} confirmed for ${booking.customer.name}`);
 }
 

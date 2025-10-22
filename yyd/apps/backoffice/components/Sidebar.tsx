@@ -44,12 +44,12 @@ const routePermissionMap: Record<string, string> = {
   '/crm/segments': 'crm_segments.view',
   '/crm/automations': 'crm_automations.view',
   '/bookings': 'bookings.view',
-  '/bookings/my-tours': 'bookings.view_my_tours',
+  '/my-tours': 'no-permission-required',
   '/calendar': 'calendar.view',
   '/aurora': 'aurora.view',
   '/aurora/knowledge': 'aurora.manage_knowledge',
   '/aurora/config': 'aurora.configure',
-  '/chat': 'internal_chat.view',
+  '/chat': 'no-permission-required',
   '/integrations': 'integrations.view',
   '/reviews': 'reviews.view',
   '/settings/emails': 'emails.view',
@@ -105,7 +105,12 @@ export default function Sidebar() {
     if (isAdmin) return true;
 
     const requiredPerm = routePermissionMap[route];
-    if (!requiredPerm) return true; // If no permission required, allow access
+    if (!requiredPerm || requiredPerm === 'no-permission-required') return true; // If no permission required, allow access
+
+    // Guides always have access to My Tours and Chat
+    if (currentUser?.userType === 'guide' && (route === '/my-tours' || route === '/chat' || route === '/calendar')) {
+      return true;
+    }
 
     const perm = userPermissions.get(requiredPerm);
     return perm?.canRead || false;
@@ -165,7 +170,7 @@ export default function Sidebar() {
       title: 'RESERVAS',
       items: [
         { href: '/bookings', label: 'Reservas', icon: '🎫' },
-        { href: '/bookings/my-tours', label: 'Meus Tours', icon: '🗺️' },
+        { href: '/my-tours', label: 'Meus Tours', icon: '🚗' },
         { href: '/calendar', label: 'Calendário', icon: '📅' },
       ],
     },

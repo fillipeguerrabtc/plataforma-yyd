@@ -11,6 +11,7 @@ export default function NewGuidePage() {
     name: '',
     email: '',
     phone: '',
+    password: '',
     languages: '',
     certifications: '',
     photoUrl: '',
@@ -23,17 +24,24 @@ export default function NewGuidePage() {
     setSubmitting(true);
 
     try {
+      const payload: any = {
+        ...formData,
+        languages: formData.languages.split(',').map((l) => l.trim()),
+        certifications: formData.certifications
+          .split(',')
+          .map((c) => c.trim())
+          .filter((c) => c),
+      };
+
+      // Only include password if it's set
+      if (!formData.password) {
+        delete payload.password;
+      }
+
       const res = await fetch('/api/guides', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formData,
-          languages: formData.languages.split(',').map((l) => l.trim()),
-          certifications: formData.certifications
-            .split(',')
-            .map((c) => c.trim())
-            .filter((c) => c),
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (res.ok) {
@@ -161,6 +169,36 @@ export default function NewGuidePage() {
                   }}
                 />
               </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="password"
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  marginBottom: '0.5rem',
+                  color: 'var(--gray-700)',
+                }}
+              >
+                Senha (Opcional)
+              </label>
+              <input
+                type="password"
+                id="password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                placeholder="Deixe em branco se não quiser definir senha agora"
+                disabled={submitting}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '1px solid var(--gray-300)',
+                  borderRadius: '8px',
+                  fontSize: '0.9375rem',
+                }}
+              />
             </div>
 
             <div>

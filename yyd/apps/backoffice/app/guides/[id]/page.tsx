@@ -26,6 +26,7 @@ export default function EditGuidePage({ params }: { params: { id: string } }) {
     name: '',
     email: '',
     phone: '',
+    password: '',
     languages: '',
     certifications: '',
     photoUrl: '',
@@ -212,6 +213,36 @@ export default function EditGuidePage({ params }: { params: { id: string } }) {
                   }}
                 />
               </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="password"
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  marginBottom: '0.5rem',
+                  color: 'var(--gray-700)',
+                }}
+              >
+                Senha (deixe em branco para não alterar)
+              </label>
+              <input
+                type="password"
+                id="password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                placeholder="Digite uma nova senha ou deixe em branco"
+                disabled={submitting}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '1px solid var(--gray-300)',
+                  borderRadius: '8px',
+                  fontSize: '0.9375rem',
+                }}
+              />
             </div>
 
             <div>

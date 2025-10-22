@@ -189,7 +189,10 @@ export default async function CalendarPage({
                       fontSize: '0.75rem',
                     }}
                   >
-                    <div style={{ fontWeight: '600', marginBottom: '2px' }}>
+                    <div style={{ fontWeight: '600', marginBottom: '2px', color: 'var(--brand-black)' }}>
+                      {booking.customer.name}
+                    </div>
+                    <div style={{ fontWeight: '500', marginBottom: '2px', fontSize: '0.7rem' }}>
                       {booking.product.titlePt.substring(0, 20)}...
                     </div>
                     <div style={{ color: 'var(--gray-600)' }}>

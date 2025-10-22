@@ -49,18 +49,32 @@ export async function PUT(
     // Get before state for audit log
     const before = await prisma.guide.findUnique({ where: { id: params.id } });
 
+    // Hash password if provided
+    let passwordHash: string | undefined = undefined;
+    if (body.password) {
+      const bcrypt = await import('bcryptjs');
+      passwordHash = await bcrypt.hash(body.password, 10);
+    }
+
+    const updateData: any = {
+      name: body.name,
+      email: body.email,
+      phone: body.phone,
+      languages: body.languages,
+      bio: body.bio,
+      photoUrl: body.photoUrl,
+      certifications: body.certifications,
+      departmentId: body.departmentId,
+      active: body.active,
+    };
+
+    if (passwordHash) {
+      updateData.passwordHash = passwordHash;
+    }
+
     const guide = await prisma.guide.update({
       where: { id: params.id },
-      data: {
-        name: body.name,
-        email: body.email,
-        phone: body.phone,
-        languages: body.languages,
-        bio: body.bio,
-        photoUrl: body.photoUrl,
-        certifications: body.certifications,
-        active: body.active,
-      },
+      data: updateData,
     });
 
     // Log update in audit log
