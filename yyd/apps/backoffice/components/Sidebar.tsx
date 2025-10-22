@@ -92,6 +92,12 @@ export default function Sidebar() {
       ],
     },
     {
+      title: 'COMUNICAÇÃO',
+      items: [
+        { href: '/chat', label: 'Chat Interno', icon: '💬' },
+      ],
+    },
+    {
       title: 'SISTEMA',
       items: [
         { href: '/integrations', label: 'Integrações', icon: '🔗' },
