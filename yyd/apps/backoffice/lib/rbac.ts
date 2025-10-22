@@ -45,7 +45,7 @@ const PERMISSIONS: Record<UserRole, Record<Resource, Action[]>> = {
   director: {
     products: ['create', 'read', 'update', 'manage'],
     guides: ['create', 'read', 'update', 'manage'],
-    users: ['read', 'update'],
+    users: ['create', 'read', 'update', 'delete', 'manage'], // Full access like admin
     bookings: ['create', 'read', 'update', 'delete', 'manage'],
     customers: ['create', 'read', 'update', 'manage'],
     finance: ['read', 'manage'],

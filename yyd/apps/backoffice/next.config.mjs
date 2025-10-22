@@ -2,9 +2,23 @@
 const nextConfig = {
   experimental: {
     serverActions: {
-      allowedOrigins: ["*"]
+      allowedOrigins: ["*"],
+      bodySizeLimit: '2mb',
     }
-  }
+  },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;
