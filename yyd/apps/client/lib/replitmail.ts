@@ -66,7 +66,7 @@ export async function sendEmail(message: SmtpMessage): Promise<{
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-Replit-Token": authToken,
+        "X_REPLIT_TOKEN": authToken,
       },
       body: JSON.stringify({
         to: message.to,
