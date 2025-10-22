@@ -76,10 +76,23 @@ The client-facing platform aims for an identical visual identity to the original
   - Guides cannot access full booking management, only their assigned tours
   - All guide APIs verify `userType` and restrict access to guide's own tours
 
-### Financial System Bug Fixes
+### Financial System Bug Fixes & Data Integrity
 - **Stripe Webhook Ledger Entries**: Fixed critical bug where ledger entry creation failed with "Argument transactionId is missing" error
   - Now creates Transaction record first before LedgerEntry records
   - Proper double-entry accounting maintained (Debit Stripe, Credit Tour Sales)
+
+- **Payment Record Creation (CRITICAL)**: Fixed major bug where Stripe webhook used `updateMany` instead of upsert
+  - Problem: 8 confirmed bookings had only 3 Payment records in database
+  - Old behavior: Webhook assumed Payment record was created by create-intent endpoint
+  - New behavior: Webhook checks if Payment exists; if not, creates it (edge case handling)
+  - Data Migration: Created 5 missing Payment records for confirmed bookings
+  - Result: Corrected revenue from €1220 to actual €5116 (all 8 confirmed bookings now have payments)
+  
+- **Financial Data Consistency**: All dashboards now show consistent data across Dashboard, BI Analytics, and Payments screens
+  - Total bookings: 10
+  - Confirmed bookings: 8
+  - Total payments: 8
+  - Total revenue: €5116
 
 ### Security & RBAC Updates
 - **Server Actions Security**: Implemented environment-driven allowlist for Next.js Server Actions to prevent CSRF vulnerabilities. Configuration now uses:
