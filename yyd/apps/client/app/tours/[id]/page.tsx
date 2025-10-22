@@ -183,7 +183,7 @@ export default function TourDetailPage() {
   };
 
   const getMaxActivities = () => {
-    if (isAllInclusive()) return 10;
+    if (isAllInclusive()) return 6;
     
     if (isHalfDayTour()) {
       const option1 = tour?.options.find((_, idx) => idx === 0);
@@ -422,7 +422,7 @@ export default function TourDetailPage() {
               {tour.activities && tour.activities.length > 0 && (
                 <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
                   <h2 className="text-2xl font-bold text-black mb-4 font-montserrat">
-                    {isAllInclusive() ? 'Choose Your Experiences (up to 10)' : 'Available Activities'}
+                    {isAllInclusive() ? 'Choose Your Experiences (up to 6)' : 'Available Activities'}
                   </h2>
                   {activitiesHelperText() && (
                     <p className="text-gray-600 mb-6 text-sm">
@@ -436,9 +436,9 @@ export default function TourDetailPage() {
                   )}
                   {isAllInclusive() && (
                     <p className="text-gray-600 mb-6 text-sm">
-                      Select up to 10 experiences for your all-inclusive tour. All activities and extras are included!
+                      Select up to 6 experiences for your all-inclusive tour. All activities and extras are included!
                       <span className="font-semibold ml-1">
-                        ({selectedActivities.length}/10 selected)
+                        ({selectedActivities.length}/6 selected)
                       </span>
                     </p>
                   )}
