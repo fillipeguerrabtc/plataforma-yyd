@@ -280,20 +280,24 @@ model CRMAutomation {
 }
 
 model Guide {
-  id                String             @id @default(cuid())
-  name              String
-  email             String             @unique
-  phone             String
-  languages         String[]
-  bio               String?
-  photoUrl          String?
-  certifications    String[]
-  active            Boolean            @default(true)
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-  availabilitySlots AvailabilitySlot[]
-  bookings          Booking[]
-  payrolls          Payroll[]
+  id                        String             @id @default(cuid())
+  name                      String
+  email                     String             @unique
+  phone                     String
+  languages                 String[]
+  bio                       String?
+  photoUrl                  String?
+  certifications            String[]
+  active                    Boolean            @default(true)
+  stripeConnectedAccountId  String?            @unique
+  stripeAccountStatus       String?
+  stripeAccountType         String?
+  stripeOnboardingCompleted Boolean            @default(false)
+  createdAt                 DateTime           @default(now())
+  updatedAt                 DateTime           @updatedAt
+  availabilitySlots         AvailabilitySlot[]
+  bookings                  Booking[]
+  payrolls                  Payroll[]
 
   @@map("guides")
 }
@@ -428,26 +432,28 @@ model LedgerEntry {
 }
 
 model Payroll {
-  id            String    @id @default(cuid())
-  employeeId    String?
-  guideId       String?
-  vendorName    String?
-  payrollType   String
-  period        String
-  periodStart   DateTime
-  periodEnd     DateTime
-  grossAmount   Decimal   @db.Decimal(10, 2)
-  deductions    Decimal   @default(0) @db.Decimal(10, 2)
-  netAmount     Decimal   @db.Decimal(10, 2)
-  currency      String    @default("EUR")
-  status        String    @default("pending")
-  paidAt        DateTime?
-  paymentMethod String?
-  notes         String?
-  metadata      Json?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  guide         Guide?    @relation(fields: [guideId], references: [id])
+  id               String    @id @default(cuid())
+  employeeId       String?
+  guideId          String?
+  vendorName       String?
+  payrollType      String
+  period           String
+  periodStart      DateTime
+  periodEnd        DateTime
+  grossAmount      Decimal   @db.Decimal(10, 2)
+  deductions       Decimal   @default(0) @db.Decimal(10, 2)
+  netAmount        Decimal   @db.Decimal(10, 2)
+  currency         String    @default("EUR")
+  status           String    @default("pending")
+  paidAt           DateTime?
+  paymentMethod    String?
+  stripeTransferId String?   @unique
+  stripePayoutId   String?   @unique
+  notes            String?
+  metadata         Json?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  guide            Guide?    @relation(fields: [guideId], references: [id])
 
   @@index([employeeId])
   @@index([guideId])
