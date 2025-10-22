@@ -137,6 +137,21 @@ async function simulateWebhookSuccess(bookingId: string, paymentIntentId: string
   });
 
   console.log('✅ Customer stats updated');
+
+  // Send immediate confirmation email
+  try {
+    const { emailService } = await import('../lib/email');
+    await emailService.sendBookingConfirmation(
+      booking,
+      booking.customer,
+      booking.product,
+      'en'
+    );
+    console.log(`📧 Confirmation email sent to ${booking.customer.email}`);
+  } catch (emailError: any) {
+    console.error(`❌ Failed to send confirmation email: ${emailError.message}`);
+  }
+
   console.log('\n🎉 Webhook simulation complete! Booking is now confirmed.');
 }
 

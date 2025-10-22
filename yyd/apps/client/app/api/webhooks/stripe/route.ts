@@ -206,6 +206,21 @@ async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
     });
   }
 
+  // Send immediate confirmation email (critical for customer experience)
+  try {
+    const { emailService } = await import('@/lib/email');
+    await emailService.sendBookingConfirmation(
+      booking,
+      booking.customer,
+      booking.product,
+      booking.locale || 'en'
+    );
+    console.log(`📧 Confirmation email sent to ${booking.customer.email}`);
+  } catch (emailError: any) {
+    console.error(`❌ Failed to send confirmation email: ${emailError.message}`);
+    // Don't fail the webhook - booking is still confirmed
+  }
+
   console.log(`✅ Booking ${bookingId} confirmed for ${booking.customer.name}`);
 }
 
