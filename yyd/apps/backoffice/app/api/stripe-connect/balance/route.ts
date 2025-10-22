@@ -1,62 +1,59 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { prisma } from '@/lib/prisma';
-import { requireResourceAccess } from '@/lib/auth';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-06-20',
 });
 
+type EntityType = 'guide' | 'staff' | 'vendor';
+
+async function getEntity(entityType: EntityType, entityId: string) {
+  switch (entityType) {
+    case 'guide':
+      return await prisma.guide.findUnique({ where: { id: entityId } });
+    case 'staff':
+      return await prisma.staff.findUnique({ where: { id: entityId } });
+    case 'vendor':
+      return await prisma.vendor.findUnique({ where: { id: entityId } });
+  }
+}
+
 export async function GET(request: NextRequest) {
   try {
-    requireResourceAccess(request, 'guides');
-    
     const { searchParams } = new URL(request.url);
-    const guideId = searchParams.get('guideId');
-    
-    if (!guideId) {
-      return NextResponse.json({ error: 'guideId é obrigatório' }, { status: 400 });
+    const entityType = searchParams.get('entityType') as EntityType;
+    const entityId = searchParams.get('entityId');
+
+    if (!entityType || !entityId) {
+      return NextResponse.json({ error: 'entityType e entityId são obrigatórios' }, { status: 400 });
     }
-    
-    const guide = await prisma.guide.findUnique({
-      where: { id: guideId },
-    });
-    
-    if (!guide) {
-      return NextResponse.json({ error: 'Guia não encontrado' }, { status: 404 });
+
+    const entity = await getEntity(entityType, entityId);
+
+    if (!entity) {
+      return NextResponse.json({ error: 'Entidade não encontrada' }, { status: 404 });
     }
-    
-    if (!guide.stripeConnectedAccountId) {
-      return NextResponse.json(
-        { error: 'Guia não possui conta Stripe Connect' },
-        { status: 400 }
-      );
+
+    if (!entity.stripeConnectedAccountId) {
+      return NextResponse.json({ error: 'Conta Stripe não criada' }, { status: 400 });
     }
-    
-    // Consultar saldo da conta do guia
+
     const balance = await stripe.balance.retrieve({
-      stripeAccount: guide.stripeConnectedAccountId,
+      stripeAccount: entity.stripeConnectedAccountId,
     });
-    
-    // Formatar resposta
-    const available = balance.available.map(b => ({
-      amount: b.amount / 100,
-      currency: b.currency.toUpperCase(),
-    }));
-    
-    const pending = balance.pending.map(b => ({
-      amount: b.amount / 100,
-      currency: b.currency.toUpperCase(),
-    }));
-    
+
+    const totalAvailable = balance.available.reduce((sum, b) => sum + b.amount, 0);
+    const totalPending = balance.pending.reduce((sum, b) => sum + b.amount, 0);
+
     return NextResponse.json({
       success: true,
-      accountId: guide.stripeConnectedAccountId,
-      available,
-      pending,
-      totalAvailable: available.reduce((sum, b) => sum + b.amount, 0),
+      accountId: entity.stripeConnectedAccountId,
+      totalAvailable,
+      totalPending,
+      available: balance.available,
+      pending: balance.pending,
     });
-    
   } catch (error: any) {
     console.error('Erro ao consultar saldo:', error);
     return NextResponse.json(

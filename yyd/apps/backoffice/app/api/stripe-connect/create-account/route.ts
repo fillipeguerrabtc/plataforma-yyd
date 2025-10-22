@@ -7,65 +7,82 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-06-20',
 });
 
+type EntityType = 'guide' | 'staff' | 'vendor';
+
+async function getEntity(entityType: EntityType, entityId: string) {
+  switch (entityType) {
+    case 'guide':
+      return await prisma.guide.findUnique({ where: { id: entityId } });
+    case 'staff':
+      return await prisma.staff.findUnique({ where: { id: entityId } });
+    case 'vendor':
+      return await prisma.vendor.findUnique({ where: { id: entityId } });
+  }
+}
+
+async function updateEntity(entityType: EntityType, entityId: string, data: any) {
+  switch (entityType) {
+    case 'guide':
+      return await prisma.guide.update({ where: { id: entityId }, data });
+    case 'staff':
+      return await prisma.staff.update({ where: { id: entityId }, data });
+    case 'vendor':
+      return await prisma.vendor.update({ where: { id: entityId }, data });
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
-    requireResourceAccess(request, 'guides');
-    
-    const { guideId } = await request.json();
-    
-    if (!guideId) {
-      return NextResponse.json({ error: 'guideId é obrigatório' }, { status: 400 });
+    const { entityType, entityId } = await request.json();
+
+    if (!entityType || !entityId) {
+      return NextResponse.json({ error: 'entityType e entityId são obrigatórios' }, { status: 400 });
     }
-    
-    const guide = await prisma.guide.findUnique({
-      where: { id: guideId },
-    });
-    
-    if (!guide) {
-      return NextResponse.json({ error: 'Guia não encontrado' }, { status: 404 });
+
+    const entity = await getEntity(entityType, entityId);
+
+    if (!entity) {
+      return NextResponse.json({ error: 'Entidade não encontrada' }, { status: 404 });
     }
-    
-    if (guide.stripeConnectedAccountId) {
+
+    if (entity.stripeConnectedAccountId) {
       return NextResponse.json(
-        { error: 'Guia já possui conta Stripe Connect' },
+        { error: 'Já possui conta Stripe Connect' },
         { status: 400 }
       );
     }
-    
-    // Criar conta Stripe Connect
+
     const account = await stripe.accounts.create({
-      type: 'express', // Tipo mais simples para começar
+      type: 'express',
       country: 'PT',
-      email: guide.email,
+      email: entity.email,
       capabilities: {
         card_payments: { requested: true },
         transfers: { requested: true },
       },
-      business_type: 'individual',
+      business_type: entityType === 'vendor' ? 'company' : 'individual',
       metadata: {
-        guide_id: guide.id,
-        guide_name: guide.name,
+        entity_type: entityType,
+        entity_id: entity.id,
+        entity_name: entity.name,
       },
     });
-    
-    // Atualizar guia com ID da conta
-    await prisma.guide.update({
-      where: { id: guideId },
-      data: {
-        stripeConnectedAccountId: account.id,
-        stripeAccountStatus: account.charges_enabled ? 'active' : 'pending',
-        stripeAccountType: account.type,
-        stripeOnboardingCompleted: account.details_submitted || false,
-      },
+
+    await updateEntity(entityType, entityId, {
+      stripeConnectedAccountId: account.id,
+      stripeAccountStatus: account.charges_enabled ? 'active' : 'pending',
+      stripeAccountType: account.type,
+      stripeOnboardingCompleted: account.details_submitted || false,
     });
-    
+
+    console.log(`✅ Stripe Connect account created for ${entityType} ${entity.name}`);
+
     return NextResponse.json({
       success: true,
       accountId: account.id,
       status: account.charges_enabled ? 'active' : 'pending',
       message: 'Conta Stripe Connect criada com sucesso',
     });
-    
   } catch (error: any) {
     console.error('Erro ao criar conta Stripe Connect:', error);
     return NextResponse.json(
