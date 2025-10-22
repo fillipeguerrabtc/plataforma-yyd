@@ -425,26 +425,6 @@ export default function StaffPage() {
           </div>
 
           <div style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>Módulos com Acesso (LEGADO)</label>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', opacity: 0.5 }}>
-              {allModules.map((module) => (
-                <label key={module} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'not-allowed' }}>
-                  <input
-                    type="checkbox"
-                    checked={formData.canAccessModules.includes(module)}
-                    onChange={() => toggleModule(module)}
-                    disabled
-                  />
-                  <span style={{ fontSize: '0.875rem' }}>{module}</span>
-                </label>
-              ))}
-            </div>
-            <small style={{ display: 'block', marginTop: '0.5rem', color: '#6b7280', fontSize: '0.875rem' }}>
-              ⚠️ Sistema antigo - Use "Permissões Granulares" abaixo para gerenciar acesso
-            </small>
-          </div>
-
-          <div style={{ marginBottom: '1rem' }}>
             <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '500' }}>Notas</label>
             <textarea
               value={formData.notes}

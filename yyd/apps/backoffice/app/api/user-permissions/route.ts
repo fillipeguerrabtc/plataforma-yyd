@@ -25,7 +25,17 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    return NextResponse.json({ userPermissions });
+    // Transform to match frontend expectations
+    const permissions = userPermissions.map(up => ({
+      id: up.id,
+      permissionId: up.permissionId,
+      userId: up.userId,
+      canRead: up.canRead,
+      canWrite: up.canWrite,
+      permission: up.permission,
+    }));
+
+    return NextResponse.json({ permissions });
   } catch (error: any) {
     console.error('❌ Error fetching user permissions:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -35,49 +45,46 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { userId, permissionId, canRead, canWrite } = body;
+    const { userId, permissions } = body;
 
-    if (!userId || !permissionId) {
+    if (!userId || !permissions || !Array.isArray(permissions)) {
       return NextResponse.json(
-        { error: 'userId e permissionId são obrigatórios' },
+        { error: 'userId e permissions (array) são obrigatórios' },
         { status: 400 }
       );
     }
 
-    const userPermission = await prisma.userPermission.upsert({
-      where: {
-        userId_permissionId: {
-          userId,
-          permissionId,
-        },
-      },
-      create: {
-        userId,
-        permissionId,
-        canRead: canRead !== undefined ? canRead : true,
-        canWrite: canWrite !== undefined ? canWrite : false,
-      },
-      update: {
-        canRead: canRead !== undefined ? canRead : true,
-        canWrite: canWrite !== undefined ? canWrite : false,
-      },
-      include: {
-        permission: true,
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-      },
+    // Delete all existing user permissions first
+    await prisma.userPermission.deleteMany({
+      where: { userId },
     });
 
-    console.log(`✅ User permission set: ${userId} -> ${permissionId}`);
+    // Create new permissions
+    const created = await Promise.all(
+      permissions.map((perm: any) =>
+        prisma.userPermission.create({
+          data: {
+            userId,
+            permissionId: perm.permissionId,
+            canRead: perm.canRead || false,
+            canWrite: perm.canWrite || false,
+          },
+          include: {
+            permission: true,
+          },
+        })
+      )
+    );
 
-    return NextResponse.json({ userPermission });
+    console.log(`✅ ${created.length} user permissions set for user ${userId}`);
+
+    return NextResponse.json({ 
+      success: true,
+      count: created.length,
+      permissions: created,
+    });
   } catch (error: any) {
-    console.error('❌ Error setting user permission:', error);
+    console.error('❌ Error setting user permissions:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
