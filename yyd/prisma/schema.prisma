@@ -746,31 +746,6 @@ model AuroraHandoff {
   @@map("aurora_handoffs")
 }
 
-model Fleet {
-  id                String    @id @default(cuid())
-  vehicleType       String
-  licensePlate      String    @unique
-  model             String
-  year              Int
-  color             String?
-  capacity          Int       @default(6)
-  batteryCapacity   Int?
-  batteryHealth     Int?
-  lastMaintenanceAt DateTime?
-  nextMaintenanceAt DateTime?
-  mileage           Int       @default(0)
-  insuranceExpiry   DateTime?
-  status            String    @default("active")
-  notes             String?
-  imageUrl          String?
-  active            Boolean   @default(true)
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-
-  @@index([status])
-  @@index([vehicleType])
-  @@map("fleet")
-}
 
 model MonumentTicket {
   id                       String    @id @default(cuid())
@@ -1072,6 +1047,34 @@ model Department {
 
   @@index([name])
   @@map("departments")
+}
+
+model Vehicle {
+  id               String   @id @default(cuid())
+  name             String
+  vehicleType      String?
+  brand            String?
+  model            String?
+  year             Int?
+  licensePlate     String?
+  color            String?
+  seats            Int?
+  value            Decimal? @db.Decimal(10, 2)
+  ownershipType    String   @default("owned")
+  partnerName      String?
+  partnerContact   String?
+  status           String   @default("active")
+  notes            String?
+  photoUrl         String?
+  additionalPhotos String[]
+  lastMaintenance  DateTime?
+  nextMaintenance  DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([status])
+  @@index([ownershipType])
+  @@map("vehicles")
 }
 
 model InternalMessage {

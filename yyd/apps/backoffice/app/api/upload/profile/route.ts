@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { writeFile } from 'fs/promises';
 import { join } from 'path';
 import { randomUUID } from 'crypto';
+import { requireAuth } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
+    requireAuth(request);
+    
     const formData = await request.formData();
     const file = formData.get('file') as File;
 

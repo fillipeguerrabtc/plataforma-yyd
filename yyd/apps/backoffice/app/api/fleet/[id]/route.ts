@@ -8,10 +8,9 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Require access to fleet resource
     requireResourceAccess(request, 'fleet');
 
-    const vehicle = await prisma.fleet.findUnique({
+    const vehicle = await prisma.vehicle.findUnique({
       where: { id: params.id },
     });
 
@@ -30,36 +29,36 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Require permission to update fleet
     const user = requirePermission(request, 'fleet', 'update');
     const body = await request.json();
 
-    // Get before state for audit log
-    const before = await prisma.fleet.findUnique({ where: { id: params.id } });
+    const before = await prisma.vehicle.findUnique({ where: { id: params.id } });
 
-    const vehicle = await prisma.fleet.update({
+    const updateData: any = {};
+    if (body.name !== undefined) updateData.name = body.name;
+    if (body.vehicleType !== undefined) updateData.vehicleType = body.vehicleType || null;
+    if (body.brand !== undefined) updateData.brand = body.brand || null;
+    if (body.model !== undefined) updateData.model = body.model || null;
+    if (body.year !== undefined) updateData.year = body.year ? parseInt(body.year) : null;
+    if (body.licensePlate !== undefined) updateData.licensePlate = body.licensePlate || null;
+    if (body.color !== undefined) updateData.color = body.color || null;
+    if (body.seats !== undefined) updateData.seats = body.seats ? parseInt(body.seats) : null;
+    if (body.value !== undefined) updateData.value = body.value ? parseFloat(body.value) : null;
+    if (body.ownershipType !== undefined) updateData.ownershipType = body.ownershipType || 'owned';
+    if (body.partnerName !== undefined) updateData.partnerName = body.partnerName || null;
+    if (body.partnerContact !== undefined) updateData.partnerContact = body.partnerContact || null;
+    if (body.status !== undefined) updateData.status = body.status || 'active';
+    if (body.notes !== undefined) updateData.notes = body.notes || null;
+    if (body.photoUrl !== undefined) updateData.photoUrl = body.photoUrl || null;
+    if (body.additionalPhotos !== undefined) updateData.additionalPhotos = body.additionalPhotos || [];
+    if (body.lastMaintenance !== undefined) updateData.lastMaintenance = body.lastMaintenance ? new Date(body.lastMaintenance) : null;
+    if (body.nextMaintenance !== undefined) updateData.nextMaintenance = body.nextMaintenance ? new Date(body.nextMaintenance) : null;
+
+    const vehicle = await prisma.vehicle.update({
       where: { id: params.id },
-      data: {
-        vehicleType: body.vehicleType,
-        licensePlate: body.licensePlate,
-        model: body.model,
-        year: body.year,
-        color: body.color,
-        capacity: body.capacity,
-        batteryCapacity: body.batteryCapacity,
-        batteryHealth: body.batteryHealth,
-        lastMaintenanceAt: body.lastMaintenanceAt ? new Date(body.lastMaintenanceAt) : null,
-        nextMaintenanceAt: body.nextMaintenanceAt ? new Date(body.nextMaintenanceAt) : null,
-        mileage: body.mileage,
-        insuranceExpiry: body.insuranceExpiry ? new Date(body.insuranceExpiry) : null,
-        status: body.status,
-        notes: body.notes,
-        imageUrl: body.imageUrl,
-        active: body.active,
-      },
+      data: updateData,
     });
 
-    // Log update in audit log
     await logCRUD(
       user.userId,
       user.email,
@@ -82,17 +81,14 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Require permission to delete fleet
     const user = requirePermission(request, 'fleet', 'delete');
 
-    // Get before state for audit log
-    const before = await prisma.fleet.findUnique({ where: { id: params.id } });
+    const before = await prisma.vehicle.findUnique({ where: { id: params.id } });
 
-    await prisma.fleet.delete({
+    await prisma.vehicle.delete({
       where: { id: params.id },
     });
 
-    // Log deletion in audit log
     await logCRUD(
       user.userId,
       user.email,

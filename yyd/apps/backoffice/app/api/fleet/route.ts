@@ -5,14 +5,13 @@ import { logCRUD } from '@/lib/audit';
 
 export async function GET(request: NextRequest) {
   try {
-    // Require permission to read fleet
     requirePermission(request, 'fleet', 'read');
 
-    const fleet = await prisma.fleet.findMany({
-      orderBy: { licensePlate: 'asc' },
+    const vehicles = await prisma.vehicle.findMany({
+      orderBy: { createdAt: 'desc' },
     });
 
-    return NextResponse.json(fleet);
+    return NextResponse.json(vehicles);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
@@ -20,32 +19,36 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    // Require permission to create fleet vehicles
     const user = requirePermission(request, 'fleet', 'create');
     const body = await request.json();
 
-    const vehicle = await prisma.fleet.create({
+    if (!body.name || body.name.trim() === '') {
+      return NextResponse.json({ error: 'Nome do veículo é obrigatório' }, { status: 400 });
+    }
+
+    const vehicle = await prisma.vehicle.create({
       data: {
-        vehicleType: body.vehicleType,
-        licensePlate: body.licensePlate,
-        model: body.model,
-        year: body.year,
+        name: body.name,
+        vehicleType: body.vehicleType || null,
+        brand: body.brand || null,
+        model: body.model || null,
+        year: body.year ? parseInt(body.year) : null,
+        licensePlate: body.licensePlate || null,
         color: body.color || null,
-        capacity: body.capacity || 6,
-        batteryCapacity: body.batteryCapacity || null,
-        batteryHealth: body.batteryHealth || null,
-        lastMaintenanceAt: body.lastMaintenanceAt ? new Date(body.lastMaintenanceAt) : null,
-        nextMaintenanceAt: body.nextMaintenanceAt ? new Date(body.nextMaintenanceAt) : null,
-        mileage: body.mileage || 0,
-        insuranceExpiry: body.insuranceExpiry ? new Date(body.insuranceExpiry) : null,
+        seats: body.seats ? parseInt(body.seats) : null,
+        value: body.value ? parseFloat(body.value) : null,
+        ownershipType: body.ownershipType || 'owned',
+        partnerName: body.partnerName || null,
+        partnerContact: body.partnerContact || null,
         status: body.status || 'active',
         notes: body.notes || null,
-        imageUrl: body.imageUrl || null,
-        active: body.active !== undefined ? body.active : true,
+        photoUrl: body.photoUrl || null,
+        additionalPhotos: body.additionalPhotos || [],
+        lastMaintenance: body.lastMaintenance ? new Date(body.lastMaintenance) : null,
+        nextMaintenance: body.nextMaintenance ? new Date(body.nextMaintenance) : null,
       },
     });
 
-    // Log creation in audit log
     await logCRUD(
       user.userId,
       user.email,
