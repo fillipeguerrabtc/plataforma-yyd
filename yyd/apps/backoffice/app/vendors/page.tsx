@@ -80,6 +80,7 @@ export default function VendorsPage() {
       photoUrl: vendor.photoUrl || '',
       status: vendor.status,
       currency: vendor.currency,
+      stripeConnectedAccountId: (vendor as any).stripeConnectedAccountId || '',
     });
   };
 
@@ -270,6 +271,20 @@ export default function VendorsPage() {
                 onChange={(e) => setFormData({ ...formData, bankAccount: e.target.value })}
                 style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
               />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '500' }}>Stripe Account ID</label>
+              <input
+                type="text"
+                value={formData.stripeConnectedAccountId}
+                onChange={(e) => setFormData({ ...formData, stripeConnectedAccountId: e.target.value })}
+                placeholder="acct_1234567890ABC"
+                style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
+              />
+              <small style={{ display: 'block', marginTop: '0.25rem', color: '#6b7280', fontSize: '0.875rem' }}>
+                💳 Copie do Stripe Connect Dashboard
+              </small>
             </div>
 
             <div>
