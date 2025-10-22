@@ -181,6 +181,33 @@ export default function PayrollPage() {
     }
   };
 
+  const handlePayViaStripe = async (payrollId: string) => {
+    if (!confirm('Processar pagamento via Stripe Connect? O valor será transferido para a conta do guia.')) return;
+
+    try {
+      const res = await fetch('/api/stripe-connect/transfer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ payrollId }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert(`✓ Pagamento processado com sucesso!\n\nValor: ${data.currency} ${data.amount}\nID: ${data.transferId}`);
+        fetchPayrolls();
+      } else {
+        alert(`✗ Erro ao processar pagamento:\n\n${data.error}`);
+        if (data.accountStatus) {
+          console.log('Account Status:', data.accountStatus);
+        }
+      }
+    } catch (error: any) {
+      console.error('Failed to process payment:', error);
+      alert(`Erro: ${error.message}`);
+    }
+  };
+
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this payroll entry?')) return;
 
@@ -548,6 +575,23 @@ export default function PayrollPage() {
                       >
                         Edit
                       </button>
+                      {payroll.status !== 'paid' && payroll.payrollType === 'guide' && payroll.guideId && (
+                        <button
+                          onClick={() => handlePayViaStripe(payroll.id)}
+                          style={{
+                            padding: '0.25rem 0.75rem',
+                            background: '#1fb7c4',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '0.25rem',
+                            cursor: 'pointer',
+                            fontSize: '0.875rem',
+                            fontWeight: '600',
+                          }}
+                        >
+                          💳 Pagar via Stripe
+                        </button>
+                      )}
                       {payroll.status !== 'paid' && (
                         <button
                           onClick={() => handleMarkAsPaid(payroll.id)}
