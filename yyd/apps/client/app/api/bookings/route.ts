@@ -191,7 +191,7 @@ export async function POST(request: NextRequest) {
 
     console.log('✅ Booking created successfully:', booking.id);
     
-    // Re-fetch booking with full relations for email
+    // Re-fetch booking with full relations
     const bookingWithRelations = await prisma.booking.findUnique({
       where: { id: booking.id },
       include: {
@@ -205,21 +205,8 @@ export async function POST(request: NextRequest) {
       },
     });
     
-    // Send confirmation email asynchronously
-    if (bookingWithRelations) {
-      try {
-        await emailService.sendBookingConfirmation(
-          bookingWithRelations,
-          bookingWithRelations.customer,
-          bookingWithRelations.product,
-          bookingWithRelations.locale || 'en'
-        );
-        console.log('📧 Confirmation email sent to', bookingWithRelations.customer.email);
-      } catch (emailError: any) {
-        console.error('❌ Failed to send confirmation email:', emailError.message);
-        // Don't fail the booking if email fails
-      }
-    }
+    // NOTE: Confirmation email is sent by webhook AFTER payment succeeds
+    // Do not send email here to avoid duplicate emails for pending bookings
     
     return NextResponse.json({ booking: bookingWithRelations || booking });
   } catch (error: any) {
