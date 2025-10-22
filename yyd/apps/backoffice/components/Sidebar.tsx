@@ -31,6 +31,7 @@ const routePermissionMap: Record<string, string> = {
   '/staff': 'staff.view',
   '/vendors': 'vendors.view',
   '/departments': 'departments.view',
+  '/fleet': 'fleet.read',
   '/financial': 'finance.view_dashboard',
   '/finance/payments': 'payments.view',
   '/finance/stripe-connect': 'finance.manage_stripe_connect',
@@ -39,7 +40,7 @@ const routePermissionMap: Record<string, string> = {
   '/financial/payroll': 'payroll.view',
   '/financial/ar': 'ar.view',
   '/financial/ap': 'ap.view',
-  '/customers': 'crm.view_customers',
+  '/customers': 'customers.read',
   '/crm/segments': 'crm.view_segments',
   '/crm/automations': 'crm.view_automations',
   '/bookings': 'bookings.view',
@@ -131,6 +132,12 @@ export default function Sidebar() {
         { href: '/staff', label: 'Funcionários', icon: '👤' },
         { href: '/vendors', label: 'Fornecedores', icon: '🏢' },
         { href: '/departments', label: 'Departamentos', icon: '🏛️' },
+      ],
+    },
+    {
+      title: 'OPERAÇÕES',
+      items: [
+        { href: '/fleet', label: 'Frota', icon: '🚙' },
       ],
     },
     {
