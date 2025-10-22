@@ -63,6 +63,7 @@ export default function StaffPage() {
     notes: '',
     password: '',
     confirmPassword: '',
+    stripeConnectedAccountId: '',
   });
 
   useEffect(() => {
@@ -120,6 +121,7 @@ export default function StaffPage() {
       notes: member.notes || '',
       password: '',
       confirmPassword: '',
+      stripeConnectedAccountId: (member as any).stripeConnectedAccountId || '',
     });
   };
 

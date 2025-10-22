@@ -12,6 +12,7 @@ export default function NewGuidePage() {
     email: '',
     phone: '',
     password: '',
+    stripeConnectedAccountId: '',
     languages: '',
     certifications: '',
     photoUrl: '',
@@ -171,34 +172,66 @@ export default function NewGuidePage() {
               </div>
             </div>
 
-            <div>
-              <label
-                htmlFor="password"
-                style={{
-                  display: 'block',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  marginBottom: '0.5rem',
-                  color: 'var(--gray-700)',
-                }}
-              >
-                Senha (Opcional)
-              </label>
-              <input
-                type="password"
-                id="password"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                placeholder="Deixe em branco se não quiser definir senha agora"
-                disabled={submitting}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  border: '1px solid var(--gray-300)',
-                  borderRadius: '8px',
-                  fontSize: '0.9375rem',
-                }}
-              />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div>
+                <label
+                  htmlFor="password"
+                  style={{
+                    display: 'block',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    marginBottom: '0.5rem',
+                    color: 'var(--gray-700)',
+                  }}
+                >
+                  Senha (Opcional)
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  placeholder="Deixe em branco se não quiser definir senha agora"
+                  disabled={submitting}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid var(--gray-300)',
+                    borderRadius: '8px',
+                    fontSize: '0.9375rem',
+                  }}
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="stripeAccountId"
+                  style={{
+                    display: 'block',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    marginBottom: '0.5rem',
+                    color: 'var(--gray-700)',
+                  }}
+                >
+                  Stripe Account ID
+                </label>
+                <input
+                  type="text"
+                  id="stripeAccountId"
+                  value={formData.stripeConnectedAccountId}
+                  onChange={(e) => setFormData({ ...formData, stripeConnectedAccountId: e.target.value })}
+                  placeholder="acct_1234567890ABC"
+                  disabled={submitting}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid var(--gray-300)',
+                    borderRadius: '8px',
+                    fontSize: '0.9375rem',
+                  }}
+                />
+              </div>
             </div>
 
             <div>

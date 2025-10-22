@@ -41,6 +41,7 @@ export default function VendorsPage() {
     photoUrl: '',
     status: 'active',
     currency: 'EUR',
+    stripeConnectedAccountId: '',
   });
 
   useEffect(() => {

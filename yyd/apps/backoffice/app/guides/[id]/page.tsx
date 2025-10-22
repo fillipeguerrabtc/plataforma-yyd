@@ -27,6 +27,7 @@ export default function EditGuidePage({ params }: { params: { id: string } }) {
     email: '',
     phone: '',
     password: '',
+    stripeConnectedAccountId: '',
     languages: '',
     certifications: '',
     photoUrl: '',
@@ -48,6 +49,8 @@ export default function EditGuidePage({ params }: { params: { id: string } }) {
           name: data.name,
           email: data.email,
           phone: data.phone,
+          password: '',
+          stripeConnectedAccountId: data.stripeConnectedAccountId || '',
           languages: data.languages.join(', '),
           certifications: data.certifications?.join(', ') || '',
           photoUrl: data.photoUrl || '',
@@ -215,34 +218,66 @@ export default function EditGuidePage({ params }: { params: { id: string } }) {
               </div>
             </div>
 
-            <div>
-              <label
-                htmlFor="password"
-                style={{
-                  display: 'block',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  marginBottom: '0.5rem',
-                  color: 'var(--gray-700)',
-                }}
-              >
-                Senha (deixe em branco para não alterar)
-              </label>
-              <input
-                type="password"
-                id="password"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                placeholder="Digite uma nova senha ou deixe em branco"
-                disabled={submitting}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  border: '1px solid var(--gray-300)',
-                  borderRadius: '8px',
-                  fontSize: '0.9375rem',
-                }}
-              />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div>
+                <label
+                  htmlFor="password"
+                  style={{
+                    display: 'block',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    marginBottom: '0.5rem',
+                    color: 'var(--gray-700)',
+                  }}
+                >
+                  Senha (deixe em branco para não alterar)
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  placeholder="Digite uma nova senha ou deixe em branco"
+                  disabled={submitting}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid var(--gray-300)',
+                    borderRadius: '8px',
+                    fontSize: '0.9375rem',
+                  }}
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="stripeAccountId"
+                  style={{
+                    display: 'block',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    marginBottom: '0.5rem',
+                    color: 'var(--gray-700)',
+                  }}
+                >
+                  Stripe Account ID
+                </label>
+                <input
+                  type="text"
+                  id="stripeAccountId"
+                  value={formData.stripeConnectedAccountId}
+                  onChange={(e) => setFormData({ ...formData, stripeConnectedAccountId: e.target.value })}
+                  placeholder="acct_1234567890ABC"
+                  disabled={submitting}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: '1px solid var(--gray-300)',
+                    borderRadius: '8px',
+                    fontSize: '0.9375rem',
+                  }}
+                />
+              </div>
             </div>
 
             <div>
