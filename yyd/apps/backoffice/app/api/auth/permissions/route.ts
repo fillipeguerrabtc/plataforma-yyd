@@ -7,7 +7,6 @@ interface MenuItem {
   label: string;
   icon: string;
   path: string;
-  resource: string;
   requiredPermission: string; // format: "resource.action"
 }
 
@@ -57,7 +56,7 @@ export async function GET(req: NextRequest) {
     const staff = await prisma.staff.findUnique({
       where: { email: user.email },
       include: {
-        department: {
+        departmentRel: {
           include: {
             departmentPermissions: {
               include: {
@@ -69,8 +68,8 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    if (staff?.department) {
-      departmentPermissions = staff.department.departmentPermissions;
+    if (staff?.departmentRel) {
+      departmentPermissions = staff.departmentRel.departmentPermissions;
     }
 
     // Combine permissions (user permissions override department permissions)
