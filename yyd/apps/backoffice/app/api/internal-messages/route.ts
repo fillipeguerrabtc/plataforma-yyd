@@ -51,6 +51,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Message content is required' }, { status: 400 });
     }
 
+    if (body.recipientType === 'department' && body.departmentTarget) {
+      const userDepts = await getUserDepartments(user.userId, user.role);
+      if (!userDepts.includes(body.departmentTarget)) {
+        return NextResponse.json(
+          { error: 'Forbidden: You can only send department broadcasts to your own department' },
+          { status: 403 }
+        );
+      }
+    }
+
     const senderName = await getSenderName(user.userId, user.role);
 
     const message = await prisma.internalMessage.create({
