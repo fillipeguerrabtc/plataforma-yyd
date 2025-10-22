@@ -50,6 +50,37 @@ The client-facing platform aims for an identical visual identity to the original
 
 ## Recent Changes (October 2025)
 
+### Guide Login & Tour Management System
+- **Guide Authentication**: 
+  - Added `passwordHash` field to Guide model for secure login
+  - Login endpoint (`/api/auth/login`) supports both Staff (Users table) and Guides
+  - JWT tokens include `userType` field to differentiate guide vs staff sessions
+  
+- **Guide Tour Management Interface** (`/my-tours`):
+  - Guides can view all their assigned upcoming tours
+  - Approve/reject tour assignments within 1-hour window
+  - Auto-approval after 1 hour via `/api/guide/auto-approve-tours` endpoint
+  - Transfer tours to other guides with observations
+  - Add notes/observations to tours
+  
+- **Guide-Specific APIs**:
+  - `/api/guide/my-tours` - List guide's assigned tours
+  - `/api/guide/approve-tour` - Approve/reject tour assignments
+  - `/api/guide/transfer-tour` - Transfer tour to another guide
+  - `/api/guide/list-guides` - Minimal guide list for transfers (no RBAC required)
+  - `/api/guide/auto-approve-tours` - Auto-approve tours after 1 hour timeout
+  
+- **Guide Access Controls**:
+  - Guides have access to: My Tours, Calendar (filtered), and Internal Chat
+  - Sidebar shows limited menu based on `userType='guide'`
+  - Guides cannot access full booking management, only their assigned tours
+  - All guide APIs verify `userType` and restrict access to guide's own tours
+
+### Financial System Bug Fixes
+- **Stripe Webhook Ledger Entries**: Fixed critical bug where ledger entry creation failed with "Argument transactionId is missing" error
+  - Now creates Transaction record first before LedgerEntry records
+  - Proper double-entry accounting maintained (Debit Stripe, Credit Tour Sales)
+
 ### Security & RBAC Updates
 - **Server Actions Security**: Implemented environment-driven allowlist for Next.js Server Actions to prevent CSRF vulnerabilities. Configuration now uses:
   - `REPLIT_DEV_DOMAIN` for development (automatic)
@@ -64,8 +95,10 @@ The client-facing platform aims for an identical visual identity to the original
   - Users must logout/login after RBAC changes to refresh permissions
 
 ### UX Improvements
+- **Profile Photo Size**: Reduced all profile photo display sizes from 32px to 16px (50% reduction) for better proportions
 - **Email Pre-fill**: Staff creation form now pre-fills email with `@yyd.tours` to guide users toward correct format
 - **WhatsApp Multilingual**: Confirmed automatic language detection (EN/PT/ES) via browser settings
+- **Password Fields**: Added password fields to guide creation/edit forms (optional on create, optional on update)
 
 ### Service Management
 - **Aurora IA**: Service runs on port 8008, proxied through Client app at `/api/aurora/chat`
