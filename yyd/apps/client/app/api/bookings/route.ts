@@ -260,11 +260,13 @@ export async function GET(request: NextRequest) {
 
       // Allow access if:
       // 1. User is authenticated and owns the booking
-      // 2. Booking is pending and was created in last 15 minutes (checkout flow)
-      const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
-      const isRecentPending = booking.status === 'pending' && booking.createdAt > fifteenMinutesAgo;
+      // 2. Booking was created/updated in last 30 minutes (checkout flow + confirmation)
+      //    - This covers: pending → payment → confirmed flow
+      const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+      const isRecent = booking.createdAt > thirtyMinutesAgo || 
+                      (booking.updatedAt && booking.updatedAt > thirtyMinutesAgo);
       
-      if (!auth && !isRecentPending) {
+      if (!auth && !isRecent) {
         return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
       }
 
