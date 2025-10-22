@@ -1,38 +1,54 @@
-import { prisma } from '@/lib/prisma';
-import { redirect } from 'next/navigation';
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-
-async function createGuide(formData: FormData) {
-  'use server';
-
-  const name = formData.get('name') as string;
-  const email = formData.get('email') as string;
-  const phone = formData.get('phone') as string;
-  const languages = (formData.get('languages') as string).split(',').map((l) => l.trim());
-  const bio = formData.get('bio') as string;
-  const photoUrl = formData.get('photoUrl') as string;
-  const certifications = (formData.get('certifications') as string)
-    .split(',')
-    .map((c) => c.trim())
-    .filter((c) => c);
-
-  await prisma.guide.create({
-    data: {
-      name,
-      email,
-      phone,
-      languages,
-      bio: bio || null,
-      photoUrl: photoUrl || null,
-      certifications,
-      active: true,
-    },
-  });
-
-  redirect('/guides');
-}
+import ProfilePhotoUpload from '@/components/ProfilePhotoUpload';
 
 export default function NewGuidePage() {
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    languages: '',
+    certifications: '',
+    photoUrl: '',
+    bio: '',
+  });
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+
+    try {
+      const res = await fetch('/api/guides', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          languages: formData.languages.split(',').map((l) => l.trim()),
+          certifications: formData.certifications
+            .split(',')
+            .map((c) => c.trim())
+            .filter((c) => c),
+        }),
+      });
+
+      if (res.ok) {
+        router.push('/guides');
+      } else {
+        alert('Erro ao criar guia');
+      }
+    } catch (error) {
+      console.error('Error creating guide:', error);
+      alert('Erro ao criar guia');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
@@ -53,7 +69,7 @@ export default function NewGuidePage() {
       </div>
 
       <div style={{ background: 'white', borderRadius: '12px', padding: '2rem', maxWidth: '800px' }}>
-        <form action={createGuide}>
+        <form onSubmit={handleSubmit}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div>
               <label
@@ -71,8 +87,10 @@ export default function NewGuidePage() {
               <input
                 type="text"
                 id="name"
-                name="name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
+                disabled={submitting}
                 style={{
                   width: '100%',
                   padding: '0.75rem',
@@ -100,8 +118,10 @@ export default function NewGuidePage() {
                 <input
                   type="email"
                   id="email"
-                  name="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   required
+                  disabled={submitting}
                   style={{
                     width: '100%',
                     padding: '0.75rem',
@@ -128,8 +148,10 @@ export default function NewGuidePage() {
                 <input
                   type="tel"
                   id="phone"
-                  name="phone"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   required
+                  disabled={submitting}
                   style={{
                     width: '100%',
                     padding: '0.75rem',
@@ -157,9 +179,11 @@ export default function NewGuidePage() {
               <input
                 type="text"
                 id="languages"
-                name="languages"
+                value={formData.languages}
+                onChange={(e) => setFormData({ ...formData, languages: e.target.value })}
                 placeholder="ex: Português, Inglês, Espanhol"
                 required
+                disabled={submitting}
                 style={{
                   width: '100%',
                   padding: '0.75rem',
@@ -186,8 +210,10 @@ export default function NewGuidePage() {
               <input
                 type="text"
                 id="certifications"
-                name="certifications"
+                value={formData.certifications}
+                onChange={(e) => setFormData({ ...formData, certifications: e.target.value })}
                 placeholder="ex: Guia Turístico Certificado, Primeiros Socorros"
+                disabled={submitting}
                 style={{
                   width: '100%',
                   padding: '0.75rem',
@@ -198,33 +224,11 @@ export default function NewGuidePage() {
               />
             </div>
 
-            <div>
-              <label
-                htmlFor="photoUrl"
-                style={{
-                  display: 'block',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  marginBottom: '0.5rem',
-                  color: 'var(--gray-700)',
-                }}
-              >
-                URL da Foto
-              </label>
-              <input
-                type="url"
-                id="photoUrl"
-                name="photoUrl"
-                placeholder="https://..."
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  border: '1px solid var(--gray-300)',
-                  borderRadius: '8px',
-                  fontSize: '0.9375rem',
-                }}
-              />
-            </div>
+            <ProfilePhotoUpload
+              currentPhoto={formData.photoUrl}
+              onPhotoChange={(photoUrl) => setFormData({ ...formData, photoUrl })}
+              disabled={submitting}
+            />
 
             <div>
               <label
@@ -241,9 +245,11 @@ export default function NewGuidePage() {
               </label>
               <textarea
                 id="bio"
-                name="bio"
+                value={formData.bio}
+                onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                 rows={4}
                 placeholder="Conte um pouco sobre a experiência do guia..."
+                disabled={submitting}
                 style={{
                   width: '100%',
                   padding: '0.75rem',
@@ -259,19 +265,20 @@ export default function NewGuidePage() {
             <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
               <button
                 type="submit"
+                disabled={submitting}
                 style={{
                   flex: 1,
                   padding: '0.875rem',
-                  background: 'var(--brand-turquoise)',
+                  background: submitting ? 'var(--gray-400)' : 'var(--brand-turquoise)',
                   color: 'white',
                   border: 'none',
                   borderRadius: '8px',
                   fontSize: '0.9375rem',
                   fontWeight: '600',
-                  cursor: 'pointer',
+                  cursor: submitting ? 'not-allowed' : 'pointer',
                 }}
               >
-                Adicionar Guia
+                {submitting ? 'Adicionando...' : 'Adicionar Guia'}
               </button>
               <Link
                 href="/guides"

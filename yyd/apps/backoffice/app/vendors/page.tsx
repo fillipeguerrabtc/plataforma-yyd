@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import ProfilePhotoUpload from '@/components/ProfilePhotoUpload';
 
 type Vendor = {
   id: string;
@@ -14,6 +15,7 @@ type Vendor = {
   bankAccount?: string;
   paymentTerms?: string;
   notes?: string;
+  photoUrl?: string;
   status: string;
   totalPaid: number;
   currency: string;
@@ -36,6 +38,7 @@ export default function VendorsPage() {
     bankAccount: '',
     paymentTerms: '',
     notes: '',
+    photoUrl: '',
     status: 'active',
     currency: 'EUR',
   });
@@ -73,6 +76,7 @@ export default function VendorsPage() {
       bankAccount: vendor.bankAccount || '',
       paymentTerms: vendor.paymentTerms || '',
       notes: vendor.notes || '',
+      photoUrl: vendor.photoUrl || '',
       status: vendor.status,
       currency: vendor.currency,
     });
@@ -133,6 +137,7 @@ export default function VendorsPage() {
       bankAccount: '',
       paymentTerms: '',
       notes: '',
+      photoUrl: '',
       status: 'active',
       currency: 'EUR',
     });
@@ -288,6 +293,13 @@ export default function VendorsPage() {
                 <option value="active">Ativo</option>
                 <option value="inactive">Inativo</option>
               </select>
+            </div>
+
+            <div style={{ gridColumn: '1 / -1' }}>
+              <ProfilePhotoUpload
+                currentPhoto={formData.photoUrl}
+                onPhotoChange={(photoUrl) => setFormData({ ...formData, photoUrl })}
+              />
             </div>
 
             <div style={{ gridColumn: '1 / -1' }}>

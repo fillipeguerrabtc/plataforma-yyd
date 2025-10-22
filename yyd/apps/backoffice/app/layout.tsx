@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: 'YYD Backoffice - Tour Management',
   description: 'Manage tours, bookings, guides, and customers for Yes, You Deserve!',
   icons: {
-    icon: '/favicon.ico',
+    icon: '/favicon.png',
   },
 };
 

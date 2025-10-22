@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import PermissionsManager from '@/components/PermissionsManager';
+import ProfilePhotoUpload from '@/components/ProfilePhotoUpload';
 
 type Staff = {
   id: string;
@@ -456,6 +457,23 @@ export default function StaffPage() {
                 </label>
               ))}
             </div>
+          </div>
+
+          <div style={{ marginBottom: '1rem' }}>
+            <ProfilePhotoUpload
+              currentPhoto={formData.photoUrl}
+              onPhotoChange={(photoUrl) => setFormData({ ...formData, photoUrl })}
+            />
+          </div>
+
+          <div style={{ marginBottom: '1rem' }}>
+            <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '500' }}>Biografia</label>
+            <textarea
+              value={formData.bio}
+              onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+              style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem', minHeight: '80px' }}
+              placeholder="Breve descrição sobre o funcionário..."
+            />
           </div>
 
           <div style={{ marginBottom: '1rem' }}>

@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   },
   description: 'Experience unforgettable electric tuk-tuk tours in Sintra and Cascais, Portugal. Featured on ABC Good Morning America with 200+ 5-star TripAdvisor reviews. Book your premium eco-friendly tour today!',
   icons: {
-    icon: '/favicon.ico',
+    icon: '/favicon.png',
   },
   keywords: [
     'Sintra tours',
