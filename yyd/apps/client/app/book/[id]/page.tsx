@@ -369,8 +369,8 @@ export default function BookTourPage() {
                 </div>
               </div>
 
-              {/* Add-ons */}
-              {addons.length > 0 && (
+              {/* Add-ons - Only show for Half Day and Full Day tours, NOT for All Inclusive */}
+              {addons.length > 0 && tour && !tour.slug?.includes('all-inclusive') && (
                 <div className="bg-white border border-gray-200 rounded-lg p-6">
                   <h2 className="text-xl font-bold text-black mb-4">Customize Your Experience</h2>
                   <div className="space-y-4">

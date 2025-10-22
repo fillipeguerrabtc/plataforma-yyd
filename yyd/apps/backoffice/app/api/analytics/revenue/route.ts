@@ -45,55 +45,69 @@ export async function GET(request: NextRequest) {
       revenueByDay[day] += amount;
     });
 
-    // Revenue by product
-    const bookingsWithPayments = await prisma.booking.findMany({
+    // Revenue by product (using actual payments filtered by paidAt, not booking createdAt)
+    const paymentsWithBookings = await prisma.payment.findMany({
       where: {
-        createdAt: {
+        status: 'succeeded',
+        paidAt: {
           gte: startDate,
           lte: endDate,
         },
-        status: 'confirmed',
       },
       include: {
-        product: {
-          select: {
-            titlePt: true,
-            slug: true,
+        booking: {
+          include: {
+            product: {
+              select: {
+                titlePt: true,
+                slug: true,
+              },
+            },
           },
         },
       },
     });
 
     const revenueByProduct: Record<string, { total: number; count: number; name: string }> = {};
+    const bookingCountByProduct: Record<string, Set<string>> = {};
     
-    bookingsWithPayments.forEach((booking) => {
-      const slug = booking.product.slug;
-      const amount = parseFloat(booking.priceEur.toString());
+    paymentsWithBookings.forEach((payment) => {
+      if (!payment.booking) return;
+      
+      const slug = payment.booking.product.slug;
+      const amount = parseFloat(payment.amount.toString());
       
       if (!revenueByProduct[slug]) {
         revenueByProduct[slug] = {
-          name: booking.product.titlePt,
+          name: payment.booking.product.titlePt,
           total: 0,
           count: 0,
         };
+        bookingCountByProduct[slug] = new Set();
       }
       
       revenueByProduct[slug].total += amount;
-      revenueByProduct[slug].count += 1;
+      bookingCountByProduct[slug].add(payment.bookingId);
+    });
+    
+    // Update counts with unique bookings
+    Object.keys(revenueByProduct).forEach((slug) => {
+      revenueByProduct[slug].count = bookingCountByProduct[slug].size;
     });
 
-    // Total stats
+    // Total stats - based on actual payments
     const totalRevenue = Object.values(revenueByDay).reduce((sum, val) => sum + val, 0);
-    const totalBookings = bookingsWithPayments.length;
+    const uniqueBookingIds = new Set(paymentsWithBookings.map(p => p.bookingId));
+    const totalBookings = uniqueBookingIds.size;
     const averageBookingValue = totalBookings > 0 ? totalRevenue / totalBookings : 0;
 
-    // Format for charts
+    // Format for charts - group payments by date
     const dailyData = Object.entries(revenueByDay).map(([date, revenue]) => ({
       date,
       revenue,
-      bookings: bookingsWithPayments.filter(
-        (b) => b.createdAt.toISOString().split('T')[0] === date
-      ).length,
+      bookings: paymentsWithBookings.filter(
+        (p) => p.paidAt && p.paidAt.toISOString().split('T')[0] === date
+      ).map(p => p.bookingId).filter((v, i, a) => a.indexOf(v) === i).length,
     }));
 
     const productData = Object.values(revenueByProduct).map((p) => ({

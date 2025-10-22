@@ -8,41 +8,38 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
 
 export async function GET() {
   try {
-    const bookings = await prisma.booking.findMany({
-      where: {
-        status: 'confirmed',
-      },
+    // Fetch ACTUAL payments from the payments table, not booking estimates
+    const payments = await prisma.payment.findMany({
       include: {
-        product: true,
-        customer: true,
+        booking: {
+          include: {
+            product: true,
+            customer: true,
+          },
+        },
       },
       orderBy: {
         createdAt: 'desc',
       },
     });
 
-    const payments = await Promise.all(
-      bookings.map(async (booking) => {
-        const totalAmount = parseFloat(booking.priceEur.toString()) + parseFloat(booking.addonsTotal.toString());
-        
-        return {
-          id: booking.id,
-          bookingId: booking.id,
-          stripePaymentIntentId: 'pi_' + booking.id.slice(0, 24),
-          amount: totalAmount,
-          currency: 'eur',
-          status: booking.status === 'confirmed' ? 'succeeded' : 'pending',
-          customerEmail: booking.customer?.email || 'N/A',
-          customerName: booking.customer?.name || 'N/A',
-          productName: booking.product?.titleEn || 'Unknown',
-          paymentMethod: 'card',
-          createdAt: booking.createdAt.toISOString(),
-          paidAt: booking.confirmedAt?.toISOString() || null,
-        };
-      })
-    );
+    // Format payment data for frontend
+    const formattedPayments = payments.map((payment) => ({
+      id: payment.id,
+      bookingId: payment.bookingId,
+      stripePaymentIntentId: payment.stripePaymentIntent || 'N/A',
+      amount: parseFloat(payment.amount.toString()),
+      currency: payment.currency,
+      status: payment.status,
+      customerEmail: payment.booking?.customer?.email || 'N/A',
+      customerName: payment.booking?.customer?.name || 'N/A',
+      productName: payment.booking?.product?.titleEn || 'Unknown',
+      paymentMethod: payment.paymentMethod,
+      createdAt: payment.createdAt.toISOString(),
+      paidAt: payment.paidAt?.toISOString() || null,
+    }));
 
-    return NextResponse.json(payments);
+    return NextResponse.json(formattedPayments);
   } catch (error: any) {
     console.error('Error fetching payments:', error);
     return NextResponse.json(
