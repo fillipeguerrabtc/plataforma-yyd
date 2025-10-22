@@ -20,6 +20,7 @@ type Staff = {
   photoUrl?: string;
   bio?: string;
   role: string;
+  userTypes?: string[];
   canAccessModules: string[];
   accessLevel: string;
   notes?: string;
@@ -55,6 +56,7 @@ export default function StaffPage() {
     photoUrl: '',
     bio: '',
     role: 'support',
+    userTypes: ['staff'] as string[],
     canAccessModules: [] as string[],
     accessLevel: 'read',
     notes: '',
@@ -111,6 +113,7 @@ export default function StaffPage() {
       photoUrl: member.photoUrl || '',
       bio: member.bio || '',
       role: member.role,
+      userTypes: member.userTypes || ['staff'],
       canAccessModules: member.canAccessModules,
       accessLevel: member.accessLevel,
       notes: member.notes || '',
@@ -426,6 +429,30 @@ export default function StaffPage() {
                 <option value="read">Somente Leitura</option>
                 <option value="write">Leitura e Escrita</option>
               </select>
+            </div>
+          </div>
+
+          <div style={{ marginBottom: '1rem' }}>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
+              Tipos de Usuário * (modificável apenas por administradores)
+            </label>
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              {['staff', 'guide', 'vendor', 'client'].map((type) => (
+                <label key={type} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <input
+                    type="checkbox"
+                    checked={formData.userTypes.includes(type)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setFormData({ ...formData, userTypes: [...formData.userTypes, type] });
+                      } else {
+                        setFormData({ ...formData, userTypes: formData.userTypes.filter(t => t !== type) });
+                      }
+                    }}
+                  />
+                  <span style={{ textTransform: 'capitalize' }}>{type === 'staff' ? 'Funcionário' : type === 'guide' ? 'Guia' : type === 'vendor' ? 'Fornecedor' : 'Cliente'}</span>
+                </label>
+              ))}
             </div>
           </div>
 

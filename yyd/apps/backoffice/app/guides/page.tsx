@@ -1,33 +1,73 @@
-import { prisma } from '@/lib/prisma';
+'use client';
+
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
-async function getGuides() {
-  const guides = await prisma.guide.findMany({
-    orderBy: { name: 'asc' },
-    include: {
-      bookings: {
-        where: {
-          date: { gte: new Date() },
-          status: 'confirmed',
-        },
-        include: {
-          product: true,
-        },
-      },
-      _count: {
-        select: { bookings: true },
-      },
-    },
-  });
-
-  return guides;
+interface Guide {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  languages: string[];
+  photoUrl: string | null;
+  bio: string | null;
+  certifications: string[];
+  active: boolean;
+  bookings: any[];
+  _count: { bookings: number };
 }
 
-export default async function GuidesPage() {
-  const guides = await getGuides();
+export default function GuidesPage() {
+  const [guides, setGuides] = useState<Guide[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchGuides();
+  }, []);
+
+  const fetchGuides = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/guides');
+      if (res.ok) {
+        const data = await res.json();
+        setGuides(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch guides:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string, name: string) => {
+    if (!confirm(`Tem certeza que deseja remover o guia "${name}"? Esta ação marcará o guia como inativo.`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/guides/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (res.ok) {
+        alert('Guia removido com sucesso!');
+        fetchGuides();
+      } else {
+        alert('Erro ao remover guia');
+      }
+    } catch (error) {
+      console.error('Error deleting guide:', error);
+      alert('Erro ao remover guia');
+    }
+  };
 
   const activeGuides = guides.filter((g) => g.active);
   const inactiveGuides = guides.filter((g) => !g.active);
+
+  if (loading) {
+    return <div>Carregando...</div>;
+  }
 
   return (
     <div>
@@ -139,10 +179,28 @@ export default async function GuidesPage() {
                       borderRadius: '6px',
                       fontSize: '0.875rem',
                       fontWeight: '600',
+                      textDecoration: 'none',
                     }}
                   >
                     Editar
                   </Link>
+                  {guide.active && (
+                    <button
+                      onClick={() => handleDelete(guide.id, guide.name)}
+                      style={{
+                        padding: '0.5rem 1rem',
+                        background: '#DC2626',
+                        color: 'white',
+                        borderRadius: '6px',
+                        fontSize: '0.875rem',
+                        fontWeight: '600',
+                        border: 'none',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Remover
+                    </button>
+                  )}
                 </div>
               </div>
 

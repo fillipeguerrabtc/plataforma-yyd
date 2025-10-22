@@ -1,0 +1,33 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { requirePermission } from '@/lib/auth';
+
+export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    requirePermission(req, 'products', 'update');
+    
+    const body = await req.json();
+
+    const activity = await prisma.productActivity.create({
+      data: {
+        productId: params.id,
+        nameEn: body.nameEn,
+        namePt: body.namePt,
+        nameEs: body.nameEs,
+        descriptionEn: body.descriptionEn,
+        descriptionPt: body.descriptionPt,
+        descriptionEs: body.descriptionEs,
+        type: body.type || 'activity',
+        priceEur: body.priceEur ? parseFloat(body.priceEur) : null,
+        includedInAllInclusive: body.includedInAllInclusive || false,
+        sortOrder: body.sortOrder || 0,
+        active: body.active !== undefined ? body.active : true,
+      },
+    });
+
+    return NextResponse.json(activity);
+  } catch (error: any) {
+    console.error('Error creating activity:', error);
+    return NextResponse.json({ error: error.message || 'Failed to create activity' }, { status: 500 });
+  }
+}

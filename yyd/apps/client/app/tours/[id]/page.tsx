@@ -176,22 +176,24 @@ export default function TourDetailPage() {
   };
 
   const canSelectActivities = () => {
-    if (isAllInclusive()) return false;
+    if (isAllInclusive()) return true;
     if (isFullDayTour()) return true;
     if (isHalfDayTour()) return !!selectedOption;
     return false;
   };
 
   const getMaxActivities = () => {
+    if (isAllInclusive()) return 10;
+    
     if (isHalfDayTour()) {
       const option1 = tour?.options.find((_, idx) => idx === 0);
       const option2 = tour?.options.find((_, idx) => idx === 1);
       
       if (selectedOption === option1?.id) return 1;
-      if (selectedOption === option2?.id) return 3;
+      if (selectedOption === option2?.id) return 6;
     }
     
-    if (isFullDayTour()) return 3;
+    if (isFullDayTour()) return 6;
     
     return 0;
   };
@@ -234,12 +236,12 @@ export default function TourDetailPage() {
         return 'Select 1 activity to complement your monument visit';
       }
       if (selectedOption === tour?.options[1]?.id) {
-        return 'Select up to 3 activities for your scenic route';
+        return 'Select up to 6 activities for your scenic route';
       }
       return '';
     }
     if (isFullDayTour()) {
-      return 'Select up to 3 activities for your full-day experience';
+      return 'Select up to 6 activities for your full-day experience';
     }
     return '';
   };
@@ -414,9 +416,11 @@ export default function TourDetailPage() {
               )}
 
               {/* Activities */}
-              {tour.activities && tour.activities.length > 0 && !isAllInclusive() && (
+              {tour.activities && tour.activities.length > 0 && (
                 <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
-                  <h2 className="text-2xl font-bold text-black mb-4 font-montserrat">Available Activities</h2>
+                  <h2 className="text-2xl font-bold text-black mb-4 font-montserrat">
+                    {isAllInclusive() ? 'Choose Your Experiences (up to 10)' : 'Available Activities'}
+                  </h2>
                   {activitiesHelperText() && (
                     <p className="text-gray-600 mb-6 text-sm">
                       {activitiesHelperText()}
@@ -425,6 +429,14 @@ export default function TourDetailPage() {
                           ({selectedActivities.length}/{maxActivities} selected)
                         </span>
                       )}
+                    </p>
+                  )}
+                  {isAllInclusive() && (
+                    <p className="text-gray-600 mb-6 text-sm">
+                      Select up to 10 experiences for your all-inclusive tour. All activities and extras are included!
+                      <span className="font-semibold ml-1">
+                        ({selectedActivities.length}/10 selected)
+                      </span>
                     </p>
                   )}
                   {isHalfDayTour() && !selectedOption && (
@@ -521,21 +533,22 @@ export default function TourDetailPage() {
                         type="number"
                         min="1"
                         max={tour.maxGroupSize}
-                        value={numberOfPeople}
+                        value={numberOfPeople === 0 ? '' : numberOfPeople}
                         onChange={(e) => {
                           const val = e.target.value;
                           if (val === '') {
                             setNumberOfPeople(0);
                           } else {
                             const num = parseInt(val);
-                            setNumberOfPeople(isNaN(num) ? 0 : num);
+                            setNumberOfPeople(isNaN(num) ? 0 : Math.max(1, num));
                           }
                         }}
-                        onBlur={(e) => {
-                          if (numberOfPeople < 1) {
+                        onFocus={(e) => {
+                          if (numberOfPeople === 0) {
                             setNumberOfPeople(1);
                           }
                         }}
+                        placeholder="2"
                         className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-[#1FB7C4] focus:outline-none transition-colors"
                       />
                     </div>

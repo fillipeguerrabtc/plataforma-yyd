@@ -10,6 +10,20 @@ export async function GET(request: NextRequest) {
 
     const guides = await prisma.guide.findMany({
       orderBy: { name: 'asc' },
+      include: {
+        bookings: {
+          where: {
+            date: { gte: new Date() },
+            status: 'confirmed',
+          },
+          include: {
+            product: true,
+          },
+        },
+        _count: {
+          select: { bookings: true },
+        },
+      },
     });
 
     return NextResponse.json(guides);

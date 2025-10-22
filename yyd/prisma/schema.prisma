@@ -13,6 +13,7 @@ model User {
   name            String           @db.VarChar(255)
   passwordHash    String           @db.VarChar(255)
   role            UserRole         @default(guide)
+  userTypes       String[]         @default(["staff"])
   active          Boolean          @default(true)
   lastLoginAt     DateTime?
   createdAt       DateTime         @default(now())
@@ -935,6 +936,13 @@ enum UserRole {
   staff
 }
 
+enum UserType {
+  staff
+  guide
+  vendor
+  client
+}
+
 enum ActivityType {
   activity
   extra
@@ -998,6 +1006,7 @@ model Staff {
   bio                       String?
   permissions               Json?
   role                      UserRole    @default(support)
+  userTypes                 String[]    @default(["staff"])
   canAccessModules          String[]
   accessLevel               String      @default("read")
   notes                     String?
