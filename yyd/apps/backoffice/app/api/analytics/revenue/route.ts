@@ -87,11 +87,30 @@ export async function GET(request: NextRequest) {
     const totalBookings = bookingsWithPayments.length;
     const averageBookingValue = totalBookings > 0 ? totalRevenue / totalBookings : 0;
 
+    // Format for charts
+    const dailyData = Object.entries(revenueByDay).map(([date, revenue]) => ({
+      date,
+      revenue,
+      bookings: bookingsWithPayments.filter(
+        (b) => b.createdAt.toISOString().split('T')[0] === date
+      ).length,
+    }));
+
+    const productData = Object.values(revenueByProduct).map((p) => ({
+      productName: p.name,
+      revenue: p.total,
+      count: p.count,
+    }));
+
     return NextResponse.json({
       period: days,
-      totalRevenue,
-      totalBookings,
-      averageBookingValue,
+      totals: {
+        total: totalRevenue,
+        average: averageBookingValue,
+        count: totalBookings,
+      },
+      daily: dailyData,
+      byProduct: productData,
       revenueByDay,
       revenueByProduct,
     });
