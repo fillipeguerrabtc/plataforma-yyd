@@ -75,9 +75,7 @@ export default function ChatPage() {
     if (!currentUser) return;
 
     try {
-      const res = await fetch(
-        `/api/internal-messages?userId=${currentUser.id}&userRole=${currentUser.role}`
-      );
+      const res = await fetch('/api/internal-messages');
       if (res.ok) {
         const data = await res.json();
         setMessages(data);
@@ -146,9 +144,6 @@ export default function ChatPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          senderId: currentUser.id,
-          senderName: currentUser.name,
-          senderRole: currentUser.role,
           recipientType: formData.recipientType,
           recipientIds: formData.recipientIds,
           departmentTarget: formData.departmentTarget || null,
@@ -178,7 +173,7 @@ export default function ChatPage() {
       await fetch(`/api/internal-messages/${messageId}/read`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: currentUser.id }),
+        body: JSON.stringify({}),
       });
       fetchMessages();
     } catch (error) {

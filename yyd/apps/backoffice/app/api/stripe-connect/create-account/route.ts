@@ -33,6 +33,8 @@ async function updateEntity(entityType: EntityType, entityId: string, data: any)
 
 export async function POST(request: NextRequest) {
   try {
+    requireResourceAccess(request, 'finance');
+    
     const { entityType, entityId } = await request.json();
 
     if (!entityType || !entityId) {

@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getUserFromRequest } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
-    const userId = searchParams.get('userId');
-    const userRole = searchParams.get('userRole');
-
-    if (!userId || !userRole) {
-      return NextResponse.json({ error: 'userId and userRole are required' }, { status: 400 });
+    const user = getUserFromRequest(req);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const userId = user.userId;
+    const userRole = user.role;
 
     const userDepts = await getUserDepartments(userId, userRole);
 
@@ -34,8 +35,7 @@ export async function GET(req: NextRequest) {
           },
           {
             NOT: {
-              senderId: userId,
-            },
+              senderId: userId },
           },
         ],
       },
@@ -58,11 +58,15 @@ async function getUserDepartments(userId: string, userRole: string): Promise<str
       return guide?.departmentId ? [guide.departmentId] : [];
     }
 
-    const staff = await prisma.staff.findUnique({
-      where: { id: userId },
-      select: { departmentId: true },
-    });
-    return staff?.departmentId ? [staff.departmentId] : [];
+    if (userRole === 'staff' || userRole === 'manager' || userRole === 'admin') {
+      const staff = await prisma.staff.findUnique({
+        where: { id: userId },
+        select: { departmentId: true },
+      });
+      return staff?.departmentId ? [staff.departmentId] : [];
+    }
+
+    return [];
   } catch (error) {
     return [];
   }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { prisma } from '@/lib/prisma';
+import { requireResourceAccess } from '@/lib/auth';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-06-20',
@@ -21,6 +22,8 @@ async function getEntity(entityType: EntityType, entityId: string) {
 
 export async function GET(request: NextRequest) {
   try {
+    requireResourceAccess(request, 'finance');
+    
     const { searchParams } = new URL(request.url);
     const entityType = searchParams.get('entityType') as EntityType;
     const entityId = searchParams.get('entityId');

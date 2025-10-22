@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireResourceAccess, requirePermission } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
   try {
+    requireResourceAccess(req, 'staff');
+    
     const departments = await prisma.department.findMany({
       include: {
         _count: {
@@ -24,6 +27,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    requirePermission(req, 'staff', 'create');
+    
     const body = await req.json();
 
     if (!body.name) {

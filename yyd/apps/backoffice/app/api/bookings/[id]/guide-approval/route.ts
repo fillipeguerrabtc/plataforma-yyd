@@ -1,17 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getUserFromRequest } from '@/lib/auth';
 
 export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const body = await req.json();
-    const { guideId, status, observations } = body;
-
-    if (!guideId) {
-      return NextResponse.json({ error: 'guideId is required' }, { status: 400 });
+    const user = getUserFromRequest(req);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    if (user.role !== 'guide') {
+      return NextResponse.json({ error: 'Forbidden: Only guides can approve bookings' }, { status: 403 });
+    }
+
+    const guideId = user.userId;
+
+    const body = await req.json();
+    const { status, observations } = body;
 
     if (!['approved', 'rejected'].includes(status)) {
       return NextResponse.json({ error: 'status must be "approved" or "rejected"' }, { status: 400 });

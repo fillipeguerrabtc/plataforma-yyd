@@ -1,15 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getUserFromRequest } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
-    const userId = searchParams.get('userId');
-    const userRole = searchParams.get('userRole');
-
-    if (!userId || !userRole) {
-      return NextResponse.json({ error: 'userId and userRole are required' }, { status: 400 });
+    const user = getUserFromRequest(req);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const userId = user.userId;
+    const userRole = user.role;
+
+    const userDepts = await getUserDepartments(userId, userRole);
 
     const messages = await prisma.internalMessage.findMany({
       where: {
@@ -19,11 +22,7 @@ export async function GET(req: NextRequest) {
           {
             AND: [
               { recipientType: 'department' },
-              {
-                departmentTarget: {
-                  in: await getUserDepartments(userId, userRole),
-                },
-              },
+              { departmentTarget: { in: userDepts } },
             ],
           },
         ],
@@ -41,21 +40,24 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-
-    if (!body.senderId || !body.senderName || !body.senderRole) {
-      return NextResponse.json({ error: 'Sender information is required' }, { status: 400 });
+    const user = getUserFromRequest(req);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const body = await req.json();
 
     if (!body.content || !body.content.trim()) {
       return NextResponse.json({ error: 'Message content is required' }, { status: 400 });
     }
 
+    const senderName = await getSenderName(user.userId, user.role);
+
     const message = await prisma.internalMessage.create({
       data: {
-        senderId: body.senderId,
-        senderName: body.senderName,
-        senderRole: body.senderRole,
+        senderId: user.userId,
+        senderName,
+        senderRole: user.role,
         recipientType: body.recipientType || 'individual',
         recipientIds: body.recipientIds || [],
         departmentTarget: body.departmentTarget || null,
@@ -65,7 +67,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    console.log(`✅ Message sent from ${body.senderName} to ${body.recipientType}`);
+    console.log(`✅ Message sent from ${senderName} (${user.role}) to ${body.recipientType}`);
 
     return NextResponse.json(message);
   } catch (error: any) {
@@ -84,12 +86,36 @@ async function getUserDepartments(userId: string, userRole: string): Promise<str
       return guide?.departmentId ? [guide.departmentId] : [];
     }
 
-    const staff = await prisma.staff.findUnique({
-      where: { id: userId },
-      select: { departmentId: true },
-    });
-    return staff?.departmentId ? [staff.departmentId] : [];
+    if (userRole === 'staff' || userRole === 'manager' || userRole === 'admin') {
+      const staff = await prisma.staff.findUnique({
+        where: { id: userId },
+        select: { departmentId: true },
+      });
+      return staff?.departmentId ? [staff.departmentId] : [];
+    }
+
+    return [];
   } catch (error) {
     return [];
+  }
+}
+
+async function getSenderName(userId: string, userRole: string): Promise<string> {
+  try {
+    if (userRole === 'guide') {
+      const guide = await prisma.guide.findUnique({
+        where: { id: userId },
+        select: { name: true },
+      });
+      return guide?.name || 'Unknown Guide';
+    }
+
+    const staff = await prisma.staff.findUnique({
+      where: { id: userId },
+      select: { name: true },
+    });
+    return staff?.name || 'Unknown Staff';
+  } catch (error) {
+    return 'Unknown User';
   }
 }

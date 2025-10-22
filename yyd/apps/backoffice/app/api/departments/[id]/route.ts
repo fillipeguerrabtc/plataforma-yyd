@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireResourceAccess, requirePermission } from '@/lib/auth';
 
 export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
+    requireResourceAccess(req, 'staff');
+    
     const department = await prisma.department.findUnique({
       where: { id: params.id },
       include: {
@@ -48,6 +51,8 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
+    requirePermission(req, 'staff', 'update');
+    
     const body = await req.json();
 
     const department = await prisma.department.update({
@@ -74,6 +79,8 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    requirePermission(req, 'staff', 'delete');
+    
     await prisma.department.update({
       where: { id: params.id },
       data: { active: false },

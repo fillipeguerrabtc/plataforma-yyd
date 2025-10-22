@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
+import { requirePermission } from '@/lib/auth';
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   try {
+    requirePermission(req, 'staff', 'update');
+    
     const body = await req.json();
     
     const updateData: any = {
@@ -31,13 +34,11 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       updateData.passwordHash = hashedPassword;
     }
     
-    // Update staff member
     const staff = await prisma.staff.update({
       where: { id: params.id },
       data: updateData,
     });
 
-    // Also update User for authentication
     const userUpdateData: any = {
       name: body.name,
       role: body.role,
@@ -71,7 +72,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   try {
-    // Get staff email before deletion
+    requirePermission(req, 'staff', 'delete');
+    
     const staff = await prisma.staff.findUnique({
       where: { id: params.id },
       select: { email: true },
@@ -81,7 +83,6 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
       return NextResponse.json({ error: 'Staff member not found' }, { status: 404 });
     }
 
-    // Delete staff and deactivate corresponding user
     await prisma.$transaction([
       prisma.staff.delete({
         where: { id: params.id },

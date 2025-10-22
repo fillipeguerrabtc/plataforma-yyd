@@ -98,7 +98,6 @@ export default function MyToursPage() {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          guideId: currentUser.id,
           status,
           observations: observations || null,
         }),
@@ -127,7 +126,6 @@ export default function MyToursPage() {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          guideId: currentUser.id,
           observations: observations || null,
         }),
       });
