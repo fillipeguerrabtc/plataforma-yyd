@@ -116,24 +116,28 @@ export default function Sidebar() {
           color: '#ffffff',
         }}
       >
-      <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
-        <Image 
-          src="/logo.png" 
-          alt="Yes, You Deserve!" 
-          width={70} 
-          height={70}
-          priority
-          style={{ objectFit: 'contain' }}
-        />
-        <div style={{ textAlign: 'center' }}>
-          <h1 className="font-pacifico" style={{ fontSize: '1.125rem', color: 'var(--brand-turquoise)' }}>
-            Yes, You Deserve!
-          </h1>
-          <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.6)', marginTop: '0.25rem' }}>
-            Backoffice
-          </p>
+      <Link href="/" style={{ textDecoration: 'none' }}>
+        <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', transition: 'opacity 0.2s' }} 
+             onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
+             onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}>
+          <Image 
+            src="/logo.png" 
+            alt="Yes, You Deserve!" 
+            width={70} 
+            height={70}
+            priority
+            style={{ objectFit: 'contain' }}
+          />
+          <div style={{ textAlign: 'center' }}>
+            <h1 className="font-pacifico" style={{ fontSize: '1.125rem', color: 'var(--brand-turquoise)' }}>
+              Yes, You Deserve!
+            </h1>
+            <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.6)', marginTop: '0.25rem' }}>
+              Backoffice
+            </p>
+          </div>
         </div>
-      </div>
+      </Link>
 
       <nav style={{ flex: 1, padding: '1rem 0', overflowY: 'auto' }}>
         {navSections.map((section) => (
@@ -181,10 +185,34 @@ export default function Sidebar() {
       </nav>
 
       <div style={{ padding: '1rem 1.5rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-        <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>
+        <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', marginBottom: '0.75rem' }}>
           <p>Daniel Ponce</p>
           <p style={{ marginTop: '0.25rem' }}>daniel@yyd.tours</p>
         </div>
+        <button
+          onClick={() => {
+            document.cookie = 'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+            window.location.href = '/login';
+          }}
+          style={{
+            width: '100%',
+            padding: '0.75rem',
+            background: '#7e3231',
+            color: 'white',
+            border: 'none',
+            borderRadius: '0.375rem',
+            cursor: 'pointer',
+            fontSize: '0.875rem',
+            fontWeight: '600',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.5rem',
+          }}
+        >
+          <span>🚪</span>
+          <span>Sair</span>
+        </button>
       </div>
       </aside>
     </>

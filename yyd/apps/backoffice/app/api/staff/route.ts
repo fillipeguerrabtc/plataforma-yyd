@@ -25,6 +25,7 @@ export async function POST(req: NextRequest) {
 
     const hashedPassword = await bcrypt.hash(body.password, 10);
     
+    // Create staff member
     const staff = await prisma.staff.create({
       data: {
         name: body.name,
@@ -46,6 +47,26 @@ export async function POST(req: NextRequest) {
         passwordHash: hashedPassword,
       },
     });
+
+    // Also create User for authentication
+    await prisma.user.upsert({
+      where: { email: body.email },
+      create: {
+        email: body.email,
+        name: body.name,
+        passwordHash: hashedPassword,
+        role: body.role || 'support',
+        active: body.status === 'active',
+      },
+      update: {
+        name: body.name,
+        passwordHash: hashedPassword,
+        role: body.role || 'support',
+        active: body.status === 'active',
+      },
+    });
+
+    console.log(`✅ Created staff and user for: ${body.email}`);
 
     return NextResponse.json(staff);
   } catch (error: any) {

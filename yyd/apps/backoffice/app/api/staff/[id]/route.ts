@@ -25,14 +25,42 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       notes: body.notes || null,
     };
 
+    let hashedPassword = null;
     if (body.password) {
-      updateData.passwordHash = await bcrypt.hash(body.password, 10);
+      hashedPassword = await bcrypt.hash(body.password, 10);
+      updateData.passwordHash = hashedPassword;
     }
     
+    // Update staff member
     const staff = await prisma.staff.update({
       where: { id: params.id },
       data: updateData,
     });
+
+    // Also update User for authentication
+    const userUpdateData: any = {
+      name: body.name,
+      role: body.role,
+      active: body.status === 'active',
+    };
+
+    if (hashedPassword) {
+      userUpdateData.passwordHash = hashedPassword;
+    }
+
+    await prisma.user.upsert({
+      where: { email: staff.email },
+      create: {
+        email: staff.email,
+        name: body.name,
+        passwordHash: hashedPassword || staff.passwordHash || '',
+        role: body.role || 'support',
+        active: body.status === 'active',
+      },
+      update: userUpdateData,
+    });
+
+    console.log(`✅ Updated staff and user for: ${staff.email}`);
 
     return NextResponse.json(staff);
   } catch (error: any) {
