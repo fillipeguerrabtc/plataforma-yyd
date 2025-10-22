@@ -128,11 +128,7 @@ async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
     },
   });
 
-  // Create or update payment record (use upsert to handle edge cases)
-  const existingPayment = await prisma.payment.findFirst({
-    where: { stripePaymentIntent: paymentIntent.id },
-  });
-
+  // Create or update payment record (use existing check from above)
   if (existingPayment) {
     // Update existing payment
     await prisma.payment.update({
