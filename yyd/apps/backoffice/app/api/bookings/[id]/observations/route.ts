@@ -18,6 +18,15 @@ export async function PATCH(
 
     const guideId = user.userId;
 
+    const guide = await prisma.guide.findUnique({
+      where: { id: guideId },
+      select: { active: true },
+    });
+
+    if (!guide || !guide.active) {
+      return NextResponse.json({ error: 'Forbidden: Guide account is not active' }, { status: 403 });
+    }
+
     const body = await req.json();
     const { observations } = body;
 

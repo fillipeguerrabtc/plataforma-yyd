@@ -18,6 +18,15 @@ export async function PATCH(
 
     const guideId = user.userId;
 
+    const guide = await prisma.guide.findUnique({
+      where: { id: guideId },
+      select: { active: true },
+    });
+
+    if (!guide || !guide.active) {
+      return NextResponse.json({ error: 'Forbidden: Guide account is not active' }, { status: 403 });
+    }
+
     const body = await req.json();
     const { status, observations } = body;
 
@@ -35,6 +44,13 @@ export async function PATCH(
 
     if (booking.guideId !== guideId) {
       return NextResponse.json({ error: 'This booking is not assigned to you' }, { status: 403 });
+    }
+
+    if (booking.guideApprovalStatus === 'approved' || booking.guideApprovalStatus === 'rejected') {
+      return NextResponse.json(
+        { error: 'This booking has already been processed' },
+        { status: 400 }
+      );
     }
 
     const updatedBooking = await prisma.booking.update({
