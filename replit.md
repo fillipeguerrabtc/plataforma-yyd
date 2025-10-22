@@ -47,3 +47,26 @@ The client-facing platform aims for an identical visual identity to the original
 - **AI**: OpenAI (optional fallback for Aurora IA)
 - **Email**: Replit Mail
 - **Job Queues**: Bull
+
+## Recent Changes (October 2025)
+
+### Security & RBAC Updates
+- **Server Actions Security**: Implemented environment-driven allowlist for Next.js Server Actions to prevent CSRF vulnerabilities. Configuration now uses:
+  - `REPLIT_DEV_DOMAIN` for development (automatic)
+  - `BACKOFFICE_ALLOWED_ORIGINS` for production (comma-separated list of allowed origins)
+  - Never use wildcard (`*`) in production
+  
+- **Departments RBAC**: Added `departments` resource to permission matrix:
+  - Admin: Full manage permissions
+  - Director: Create, read, update, manage
+  - Manager/Finance/Support/Staff: Read-only access
+  - Guide: No access
+  - Users must logout/login after RBAC changes to refresh permissions
+
+### UX Improvements
+- **Email Pre-fill**: Staff creation form now pre-fills email with `@yyd.tours` to guide users toward correct format
+- **WhatsApp Multilingual**: Confirmed automatic language detection (EN/PT/ES) via browser settings
+
+### Service Management
+- **Aurora IA**: Service runs on port 8008, proxied through Client app at `/api/aurora/chat`
+- **Workflow Configuration**: Aurora, Backoffice (port 3001), and Client workflows properly configured
