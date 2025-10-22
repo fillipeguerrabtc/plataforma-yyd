@@ -2,10 +2,7 @@
 const nextConfig = {
   experimental: {
     serverActions: {
-      allowedOrigins: [
-        process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}:3001` : 'http://localhost:3001',
-        process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : 'http://localhost',
-      ],
+      allowedOrigins: ['*'],
       bodySizeLimit: '2mb',
     }
   },

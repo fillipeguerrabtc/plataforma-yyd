@@ -4,7 +4,7 @@ import { requirePermission } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
   try {
-    requirePermission(req, 'departments', 'view');
+    requirePermission(req, 'departments', 'read');
     
     const departments = await prisma.department.findMany({
       include: {

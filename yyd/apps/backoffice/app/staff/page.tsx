@@ -44,7 +44,7 @@ export default function StaffPage() {
 
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
+    email: '@yyd.tours',
     phone: '',
     position: '',
     departmentId: '',
@@ -191,7 +191,7 @@ export default function StaffPage() {
   const resetForm = () => {
     setFormData({
       name: '',
-      email: '',
+      email: '@yyd.tours',
       phone: '',
       position: '',
       departmentId: '',

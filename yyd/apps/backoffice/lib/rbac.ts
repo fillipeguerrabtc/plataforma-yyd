@@ -20,6 +20,7 @@ export type Resource =
   | 'integrations'  // Integrations config
   | 'aurora'        // Aurora IA config
   | 'analytics'     // Analytics/Reports
+  | 'departments'   // Departments management
   | 'settings';     // System settings
 
 export type Action = 'create' | 'read' | 'update' | 'delete' | 'manage';
@@ -42,6 +43,7 @@ const PERMISSIONS: Record<UserRole, Record<Resource, Action[]>> = {
     integrations: ['create', 'read', 'update', 'delete', 'manage'],
     aurora: ['create', 'read', 'update', 'delete', 'manage'],
     analytics: ['read', 'manage'],
+    departments: ['create', 'read', 'update', 'delete', 'manage'],
     settings: ['create', 'read', 'update', 'delete', 'manage'],
   },
   director: {
@@ -57,6 +59,7 @@ const PERMISSIONS: Record<UserRole, Record<Resource, Action[]>> = {
     integrations: ['read'],
     aurora: ['read', 'update', 'manage'],
     analytics: ['read', 'manage'],
+    departments: ['create', 'read', 'update', 'manage'],
     settings: ['read', 'update'],
   },
   manager: {
@@ -72,6 +75,7 @@ const PERMISSIONS: Record<UserRole, Record<Resource, Action[]>> = {
     integrations: [],
     aurora: [],
     analytics: ['read'],
+    departments: ['read'],
     settings: ['read'],
   },
   finance: {
@@ -87,6 +91,7 @@ const PERMISSIONS: Record<UserRole, Record<Resource, Action[]>> = {
     integrations: ['read'],
     aurora: ['read'],
     analytics: ['read', 'manage'],
+    departments: ['read'],
     settings: ['read'],
   },
   guide: {
@@ -102,6 +107,7 @@ const PERMISSIONS: Record<UserRole, Record<Resource, Action[]>> = {
     integrations: [],
     aurora: [],
     analytics: [],
+    departments: [],
     settings: [],
   },
   support: {
@@ -117,6 +123,7 @@ const PERMISSIONS: Record<UserRole, Record<Resource, Action[]>> = {
     integrations: [],
     aurora: [],
     analytics: ['read'],
+    departments: ['read'],
     settings: [],
   },
   staff: {
@@ -132,6 +139,7 @@ const PERMISSIONS: Record<UserRole, Record<Resource, Action[]>> = {
     integrations: [],
     aurora: [],
     analytics: [],
+    departments: ['read'],
     settings: [],
   },
 };
