@@ -233,15 +233,18 @@ export default function TourDetailPage() {
   const activitiesHelperText = () => {
     if (isHalfDayTour()) {
       if (selectedOption === tour?.options[0]?.id) {
-        return 'Select 1 activity to complement your monument visit';
+        return 'Select 1 free activity to complement your monument visit';
       }
       if (selectedOption === tour?.options[1]?.id) {
-        return 'Select up to 6 activities for your scenic route';
+        return 'Select up to 6 free activities for your scenic route';
       }
       return '';
     }
     if (isFullDayTour()) {
-      return 'Select up to 6 activities for your full-day experience';
+      return 'Select up to 6 free activities for your full-day experience';
+    }
+    if (isAllInclusive()) {
+      return 'Choose up to 6 experiences (all included in your tour)';
     }
     return '';
   };
@@ -507,7 +510,7 @@ export default function TourDetailPage() {
 
                   {/* Booking Form */}
                   <div className="space-y-4">
-                    <div>
+                    <div onClick={() => document.getElementById('tour-date-input')?.showPicker?.()} className="cursor-pointer">
                       <label 
                         htmlFor="tour-date-input"
                         className="block text-sm font-semibold text-black mb-2 cursor-pointer"
