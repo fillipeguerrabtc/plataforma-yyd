@@ -225,10 +225,23 @@ async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
       update: {},
     });
 
+    // Create a Transaction first (required for ledger entries)
+    const transaction = await prisma.transaction.create({
+      data: {
+        date: transactionDate,
+        description: `Payment received for booking ${booking.bookingNumber} - ${booking.customer.name}`,
+        type: 'payment_received',
+        reference: paymentIntent.id,
+        totalAmount: totalAmount,
+        status: 'posted',
+      },
+    });
+
     // Create ledger entries (Double-Entry: Debit Cash, Credit Revenue)
     // Debit: Stripe Account (increases asset)
     await prisma.ledgerEntry.create({
       data: {
+        transactionId: transaction.id,
         accountId: stripeAccount.id,
         type: 'debit',
         amount: totalAmount,
@@ -242,6 +255,7 @@ async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
     // Credit: Tour Sales Revenue (increases revenue)
     await prisma.ledgerEntry.create({
       data: {
+        transactionId: transaction.id,
         accountId: salesAccount.id,
         type: 'credit',
         amount: totalAmount,
