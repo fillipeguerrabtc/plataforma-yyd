@@ -82,15 +82,16 @@ export default function CheckoutForm({ bookingId }: CheckoutFormProps) {
       <button
         type="submit"
         disabled={!stripe || isLoading}
-        className="w-full mt-6 bg-brand-black text-white px-8 py-4 rounded-lg font-semibold hover:bg-gray-800 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+        className="w-full mt-6 bg-gray-900 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-800 transition disabled:bg-gray-400 disabled:cursor-not-allowed shadow-lg"
+        style={{ backgroundColor: '#1a1a1a' }}
       >
         {isLoading ? (
-          <span className="flex items-center justify-center">
+          <span className="flex items-center justify-center font-bold">
             <span className="inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
             Processing...
           </span>
         ) : (
-          'Pay Now'
+          <span className="font-bold tracking-wide">Pay Now</span>
         )}
       </button>
 
