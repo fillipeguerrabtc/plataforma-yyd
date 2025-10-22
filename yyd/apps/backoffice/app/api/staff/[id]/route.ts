@@ -5,7 +5,7 @@ import { requirePermission } from '@/lib/auth';
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   try {
-    requirePermission(req, 'staff', 'view');
+    requirePermission(req, 'staff', 'read');
     
     const staff = await prisma.staff.findUnique({
       where: { id: params.id },

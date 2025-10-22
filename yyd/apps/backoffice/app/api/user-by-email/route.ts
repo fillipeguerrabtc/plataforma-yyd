@@ -4,7 +4,7 @@ import { requirePermission } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
   try {
-    requirePermission(req, 'staff', 'view');
+    requirePermission(req, 'staff', 'read');
     
     const searchParams = req.nextUrl.searchParams;
     const email = searchParams.get('email');
