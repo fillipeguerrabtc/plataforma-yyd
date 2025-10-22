@@ -100,3 +100,13 @@ Complete end-to-end payment confirmation system:
   3. Transfer funds (platform pays guide - validates account is active first)
   4. Guide logs in to dashboard (views balance)
   5. Guide makes payout to bank account
+
+### Security & RBAC Enhancement ✅
+**Granular permission system and security hardening** (Oct 22, 2025):
+- **RBAC Refactoring**: Migrated from generic `requireResourceAccess()` to granular `requirePermission(resource, action)` with specific actions (create/read/update/delete)
+- **New User Roles**: Added 'manager' and 'staff' roles to UserRole enum in Prisma schema
+- **New Resource Type**: Added 'staff' as separate resource type distinct from 'users' in RBAC permissions
+- **Chat System Logic**: Guides can send messages to ANY department (broadcast only), Staff can send to ANY department OR specific users (individual/group)
+- **Guide Active Status**: Booking approval endpoints now verify guide.active status before allowing approval/rejection
+- **Universal Permissions**: All 20+ API endpoints now use action-level authorization (create/read/update/delete) ensuring proper role-based access control
+- **Audit Logging**: All permission denials are logged with user ID, resource, action, and request details for security monitoring

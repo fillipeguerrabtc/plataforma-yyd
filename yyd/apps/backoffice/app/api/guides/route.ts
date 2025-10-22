@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireResourceAccess, requirePermission } from '@/lib/auth';
+import { requirePermission } from '@/lib/auth';
 import { logCRUD } from '@/lib/audit';
 
 export async function GET(request: NextRequest) {
   try {
-    // Require access to guides resource (any role that can view guides)
-    requireResourceAccess(request, 'guides');
+    // Require permission to read guides
+    requirePermission(request, 'guides', 'read');
 
     const guides = await prisma.guide.findMany({
       orderBy: { name: 'asc' },

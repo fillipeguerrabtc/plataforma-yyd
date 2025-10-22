@@ -919,9 +919,11 @@ model BookingAddon {
 enum UserRole {
   admin
   director
-  guide
+  manager
   finance
   support
+  guide
+  staff
 }
 
 model EmailTemplate {

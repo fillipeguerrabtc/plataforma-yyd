@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireResourceAccess, requirePermission } from '@/lib/auth';
+import { requirePermission } from '@/lib/auth';
 import { logCRUD } from '@/lib/audit';
 
 export async function GET(request: NextRequest) {
   try {
-    // Require access to products resource
-    requireResourceAccess(request, 'products');
+    // Require permission to read products
+    requirePermission(request, 'products', 'read');
     
     const products = await prisma.product.findMany({
       include: {

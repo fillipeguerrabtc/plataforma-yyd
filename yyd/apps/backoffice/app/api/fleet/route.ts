@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireResourceAccess, requirePermission } from '@/lib/auth';
+import { requirePermission } from '@/lib/auth';
 import { logCRUD } from '@/lib/audit';
 
 export async function GET(request: NextRequest) {
   try {
-    // Require access to fleet resource
-    requireResourceAccess(request, 'fleet');
+    // Require permission to read fleet
+    requirePermission(request, 'fleet', 'read');
 
     const fleet = await prisma.fleet.findMany({
       orderBy: { licensePlate: 'asc' },

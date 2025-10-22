@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireResourceAccess, requirePermission } from '@/lib/auth';
+import { requirePermission } from '@/lib/auth';
 import { logCRUD } from '@/lib/audit';
 
 export async function GET(request: NextRequest) {
   try {
-    // Require access to bookings resource
-    requireResourceAccess(request, 'bookings');
+    // Require permission to read bookings
+    requirePermission(request, 'bookings', 'read');
     
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
