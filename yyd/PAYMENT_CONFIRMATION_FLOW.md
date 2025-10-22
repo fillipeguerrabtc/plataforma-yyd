@@ -73,20 +73,16 @@ npx tsx scripts/test-webhook.ts <bookingId> <paymentIntentId>
 
 ## 📧 **Email Confirmation**
 
-### Development
-**Replit Mail only works in production (deployed).**
+### Development & Production
+**Replit Mail works in BOTH development and production!**
 
-When you run the test script in development:
-```bash
-✅ Booking confirmed!
-✅ Payment updated
-❌ Email send error: 403 FORBIDDEN (expected in dev)
-```
+The system uses automatic authentication via environment tokens:
+- **Development**: Uses `REPL_IDENTITY` token (automatic)
+- **Production**: Uses `WEB_REPL_RENEWAL` token (automatic)
 
-### Production
-Emails will be sent automatically via **Replit Mail** when deployed.
+**No configuration needed** - Replit handles authentication automatically!
 
-No configuration needed - Replit handles authentication automatically in production.
+**Important**: Test emails like `test@example.com` will be rejected. Use real email addresses only.
 
 ---
 
