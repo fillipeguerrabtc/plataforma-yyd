@@ -9,7 +9,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(request: NextRequest) {
   try {
-    requireResourceAccess(request, 'people');
+    requireResourceAccess(request, 'guides');
     
     const { guideId } = await request.json();
     

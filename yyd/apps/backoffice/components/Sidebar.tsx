@@ -3,11 +3,34 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+}
 
 export default function Sidebar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    async function fetchCurrentUser() {
+      try {
+        const response = await fetch('/api/auth/me');
+        if (response.ok) {
+          const data = await response.json();
+          setCurrentUser(data.user);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar usuário:', error);
+      }
+    }
+    fetchCurrentUser();
+  }, []);
 
   const navSections = [
     {
@@ -186,8 +209,8 @@ export default function Sidebar() {
 
       <div style={{ padding: '1rem 1.5rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
         <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', marginBottom: '0.75rem' }}>
-          <p>Daniel Ponce</p>
-          <p style={{ marginTop: '0.25rem' }}>daniel@yyd.tours</p>
+          <p>{currentUser?.name || 'Carregando...'}</p>
+          <p style={{ marginTop: '0.25rem' }}>{currentUser?.email || ''}</p>
         </div>
         <button
           onClick={() => {

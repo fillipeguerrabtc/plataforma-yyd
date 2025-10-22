@@ -9,7 +9,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function GET(request: NextRequest) {
   try {
-    requireResourceAccess(request, 'people');
+    requireResourceAccess(request, 'guides');
     
     const { searchParams } = new URL(request.url);
     const guideId = searchParams.get('guideId');
