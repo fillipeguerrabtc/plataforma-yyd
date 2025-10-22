@@ -208,6 +208,7 @@ export default function StaffPage() {
       notes: '',
       password: '',
       confirmPassword: '',
+      userTypes: ['staff'],
     });
     setEditingId(null);
     setShowAddForm(false);
@@ -441,12 +442,13 @@ export default function StaffPage() {
                 <label key={type} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <input
                     type="checkbox"
-                    checked={formData.userTypes.includes(type)}
+                    checked={formData.userTypes?.includes(type) || false}
                     onChange={(e) => {
+                      const currentTypes = formData.userTypes || [];
                       if (e.target.checked) {
-                        setFormData({ ...formData, userTypes: [...formData.userTypes, type] });
+                        setFormData({ ...formData, userTypes: [...currentTypes, type] });
                       } else {
-                        setFormData({ ...formData, userTypes: formData.userTypes.filter(t => t !== type) });
+                        setFormData({ ...formData, userTypes: currentTypes.filter(t => t !== type) });
                       }
                     }}
                   />
