@@ -115,11 +115,13 @@ export default function StaffPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Validate password match only if password is being changed
     if (formData.password && formData.password !== formData.confirmPassword) {
       alert('As senhas não coincidem');
       return;
     }
 
+    // Password required only for new staff members
     if (!editingId && !formData.password) {
       alert('Senha é obrigatória para novo funcionário');
       return;
@@ -287,7 +289,7 @@ export default function StaffPage() {
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
-                placeholder={editingId ? 'Deixe em branco para manter' : ''}
+                placeholder={editingId ? 'Deixe em branco para manter a senha atual' : ''}
                 required={!editingId}
               />
             </div>
@@ -301,9 +303,14 @@ export default function StaffPage() {
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                 style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
-                placeholder={editingId ? 'Deixe em branco para manter' : ''}
+                placeholder={editingId ? 'Deixe em branco para manter a senha atual' : ''}
                 required={!editingId}
               />
+              {editingId && (
+                <small style={{ display: 'block', marginTop: '0.25rem', color: '#6b7280', fontSize: '0.875rem' }}>
+                  💡 Deixe ambos os campos de senha em branco para não alterar a senha atual
+                </small>
+              )}
             </div>
 
             <div>
