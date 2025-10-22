@@ -94,10 +94,12 @@ const permissions = [
   { resource: 'vendors', action: 'update', labelEn: 'Edit Vendors', labelPt: 'Editar Fornecedores', labelEs: 'Editar Proveedores', category: 'finance', sortOrder: 102 },
   { resource: 'vendors', action: 'delete', labelEn: 'Delete Vendors', labelPt: 'Excluir Fornecedores', labelEs: 'Eliminar Proveedores', category: 'finance', sortOrder: 103 },
   
-  // Departments
+  // Departments (Granular CRUD)
   { resource: 'departments', action: 'view', labelEn: 'View Departments', labelPt: 'Ver Departamentos', labelEs: 'Ver Departamentos', category: 'admin', sortOrder: 110 },
-  { resource: 'departments', action: 'manage', labelEn: 'Manage Departments', labelPt: 'Gerenciar Departamentos', labelEs: 'Gestionar Departamentos', category: 'admin', sortOrder: 111 },
-  { resource: 'departments', action: 'manage_permissions', labelEn: 'Manage Department Permissions', labelPt: 'Gerenciar Permissões de Departamentos', labelEs: 'Gestionar Permisos de Departamentos', category: 'admin', sortOrder: 112 },
+  { resource: 'departments', action: 'create', labelEn: 'Create Departments', labelPt: 'Criar Departamentos', labelEs: 'Crear Departamentos', category: 'admin', sortOrder: 111 },
+  { resource: 'departments', action: 'update', labelEn: 'Edit Departments', labelPt: 'Editar Departamentos', labelEs: 'Editar Departamentos', category: 'admin', sortOrder: 112 },
+  { resource: 'departments', action: 'delete', labelEn: 'Delete Departments', labelPt: 'Excluir Departamentos', labelEs: 'Eliminar Departamentos', category: 'admin', sortOrder: 113 },
+  { resource: 'departments', action: 'manage_permissions', labelEn: 'Manage Department Permissions', labelPt: 'Gerenciar Permissões de Departamentos', labelEs: 'Gestionar Permisos de Departamentos', category: 'admin', sortOrder: 114 },
   
   // Integrations
   { resource: 'integrations', action: 'view', labelEn: 'View Integrations', labelPt: 'Ver Integrações', labelEs: 'Ver Integraciones', category: 'admin', sortOrder: 120 },
