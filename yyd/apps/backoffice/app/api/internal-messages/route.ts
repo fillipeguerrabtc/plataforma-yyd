@@ -51,14 +51,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Message content is required' }, { status: 400 });
     }
 
-    if (body.recipientType === 'department' && body.departmentTarget) {
-      const userDepts = await getUserDepartments(user.userId, user.role);
-      if (!userDepts.includes(body.departmentTarget)) {
-        return NextResponse.json(
-          { error: 'Forbidden: You can only send department broadcasts to your own department' },
-          { status: 403 }
-        );
-      }
+    if (user.role === 'guide' && body.recipientType !== 'department') {
+      return NextResponse.json(
+        { error: 'Forbidden: Guides can only send messages to departments' },
+        { status: 403 }
+      );
+    }
+
+    if (body.recipientType === 'individual' && (!body.recipientIds || body.recipientIds.length === 0)) {
+      return NextResponse.json(
+        { error: 'recipientIds is required for individual messages' },
+        { status: 400 }
+      );
+    }
+
+    if (body.recipientType === 'department' && !body.departmentTarget) {
+      return NextResponse.json(
+        { error: 'departmentTarget is required for department messages' },
+        { status: 400 }
+      );
     }
 
     const senderName = await getSenderName(user.userId, user.role);

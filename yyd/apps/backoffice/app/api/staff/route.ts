@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
-import { requireResourceAccess } from '@/lib/auth';
+import { requirePermission } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
   try {
-    requireResourceAccess(req, 'staff');
+    requirePermission(req, 'staff', 'read');
     
     const staff = await prisma.staff.findMany({
       orderBy: { createdAt: 'desc' },
@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    requireResourceAccess(req, 'staff');
+    requirePermission(req, 'staff', 'create');
     
     const body = await req.json();
 

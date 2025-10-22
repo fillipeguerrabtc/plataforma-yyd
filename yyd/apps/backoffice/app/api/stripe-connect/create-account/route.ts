@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { prisma } from '@/lib/prisma';
-import { requireResourceAccess } from '@/lib/auth';
+import { requirePermission } from '@/lib/auth';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-06-20',
@@ -33,7 +33,7 @@ async function updateEntity(entityType: EntityType, entityId: string, data: any)
 
 export async function POST(request: NextRequest) {
   try {
-    requireResourceAccess(request, 'finance');
+    requirePermission(request, 'finance', 'create');
     
     const { entityType, entityId } = await request.json();
 

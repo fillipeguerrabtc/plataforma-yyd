@@ -5,12 +5,13 @@
  * to avoid duplication across API routes and ensure consistency.
  */
 
-export type UserRole = 'admin' | 'director' | 'guide' | 'finance' | 'support';
+export type UserRole = 'admin' | 'director' | 'guide' | 'finance' | 'support' | 'manager' | 'staff';
 
 export type Resource = 
   | 'products'      // Tours/Products management
   | 'guides'        // Guides management
-  | 'users'         // Staff/Users management
+  | 'staff'         // Staff management (separate from users)
+  | 'users'         // Users management
   | 'bookings'      // Bookings/Reservations
   | 'customers'     // CRM - Customer data
   | 'finance'       // Financial/ERP
@@ -31,6 +32,7 @@ const PERMISSIONS: Record<UserRole, Record<Resource, Action[]>> = {
   admin: {
     products: ['create', 'read', 'update', 'delete', 'manage'],
     guides: ['create', 'read', 'update', 'delete', 'manage'],
+    staff: ['create', 'read', 'update', 'delete', 'manage'],
     users: ['create', 'read', 'update', 'delete', 'manage'],
     bookings: ['create', 'read', 'update', 'delete', 'manage'],
     customers: ['create', 'read', 'update', 'delete', 'manage'],
@@ -45,7 +47,8 @@ const PERMISSIONS: Record<UserRole, Record<Resource, Action[]>> = {
   director: {
     products: ['create', 'read', 'update', 'manage'],
     guides: ['create', 'read', 'update', 'manage'],
-    users: ['create', 'read', 'update', 'delete', 'manage'], // Full access like admin
+    staff: ['create', 'read', 'update', 'delete', 'manage'],
+    users: ['create', 'read', 'update', 'delete', 'manage'],
     bookings: ['create', 'read', 'update', 'delete', 'manage'],
     customers: ['create', 'read', 'update', 'manage'],
     finance: ['read', 'manage'],
@@ -56,9 +59,25 @@ const PERMISSIONS: Record<UserRole, Record<Resource, Action[]>> = {
     analytics: ['read', 'manage'],
     settings: ['read', 'update'],
   },
+  manager: {
+    products: ['read', 'update'],
+    guides: ['read', 'update'],
+    staff: ['read', 'update'],
+    users: ['read'],
+    bookings: ['create', 'read', 'update', 'manage'],
+    customers: ['create', 'read', 'update', 'manage'],
+    finance: ['read'],
+    reviews: ['read', 'update'],
+    fleet: ['read', 'update'],
+    integrations: [],
+    aurora: [],
+    analytics: ['read'],
+    settings: ['read'],
+  },
   finance: {
     products: ['read'],
     guides: ['read'],
+    staff: ['read'],
     users: ['read'],
     bookings: ['read', 'manage'],
     customers: ['read', 'manage'],
@@ -72,12 +91,13 @@ const PERMISSIONS: Record<UserRole, Record<Resource, Action[]>> = {
   },
   guide: {
     products: ['read'],
-    guides: ['read'], // Only their own profile
+    guides: ['read'],
+    staff: [],
     users: [],
-    bookings: ['read'], // Only their own bookings
-    customers: ['read'], // Only their customers
+    bookings: ['read'],
+    customers: ['read'],
     finance: [],
-    reviews: ['read'], // Only their reviews
+    reviews: ['read'],
     fleet: ['read'],
     integrations: [],
     aurora: [],
@@ -87,6 +107,7 @@ const PERMISSIONS: Record<UserRole, Record<Resource, Action[]>> = {
   support: {
     products: ['read'],
     guides: ['read'],
+    staff: ['read'],
     users: [],
     bookings: ['read', 'update'],
     customers: ['read', 'update', 'manage'],
@@ -96,6 +117,21 @@ const PERMISSIONS: Record<UserRole, Record<Resource, Action[]>> = {
     integrations: [],
     aurora: [],
     analytics: ['read'],
+    settings: [],
+  },
+  staff: {
+    products: ['read'],
+    guides: ['read'],
+    staff: ['read'],
+    users: [],
+    bookings: ['read'],
+    customers: ['read'],
+    finance: [],
+    reviews: ['read'],
+    fleet: ['read'],
+    integrations: [],
+    aurora: [],
+    analytics: [],
     settings: [],
   },
 };
@@ -165,9 +201,7 @@ export function canAccessOwnResource(
   userId: string,
   resourceOwnerId: string
 ): boolean {
-  // Admins and directors can access all resources
   if (isDirectorOrAbove(role)) return true;
   
-  // Others can only access their own resources
   return userId === resourceOwnerId;
 }

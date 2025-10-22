@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireResourceAccess, requirePermission } from '@/lib/auth';
+import { requirePermission } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
   try {
-    requireResourceAccess(req, 'staff');
+    requirePermission(req, 'staff', 'read');
     
     const departments = await prisma.department.findMany({
       include: {
