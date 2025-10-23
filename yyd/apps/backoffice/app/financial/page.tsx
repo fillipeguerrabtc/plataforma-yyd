@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 
 type Tab = 'overview' | 'payables' | 'receivables' | 'reconciliation';
+type TransactionFilter = 'all' | 'income' | 'expense';
 
 export default function FinancialPage() {
   const [activeTab, setActiveTab] = useState<Tab>('overview');
@@ -12,10 +12,22 @@ export default function FinancialPage() {
   const [payables, setPayables] = useState<any[]>([]);
   const [receivables, setReceivables] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Transaction history states
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [transactionSummary, setTransactionSummary] = useState<any>(null);
+  const [transactionFilter, setTransactionFilter] = useState<TransactionFilter>('all');
+  const [transactionsLoading, setTransactionsLoading] = useState(false);
 
   useEffect(() => {
     loadData();
   }, [activeTab]);
+
+  useEffect(() => {
+    if (activeTab === 'overview') {
+      loadTransactions();
+    }
+  }, [activeTab, transactionFilter]);
 
   async function loadData() {
     setLoading(true);
@@ -41,6 +53,21 @@ export default function FinancialPage() {
       console.error('Load error:', error);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function loadTransactions() {
+    setTransactionsLoading(true);
+    try {
+      const url = `/api/financial/transactions?type=${transactionFilter}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      setTransactions(data.transactions || []);
+      setTransactionSummary(data.summary || {});
+    } catch (error) {
+      console.error('Load transactions error:', error);
+    } finally {
+      setTransactionsLoading(false);
     }
   }
 
@@ -79,7 +106,16 @@ export default function FinancialPage() {
         <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--gray-500)' }}>Carregando...</div>
       ) : (
         <>
-          {activeTab === 'overview' && overview && <OverviewView data={overview} />}
+          {activeTab === 'overview' && overview && (
+            <OverviewView 
+              data={overview} 
+              transactions={transactions}
+              transactionSummary={transactionSummary}
+              transactionFilter={transactionFilter}
+              setTransactionFilter={setTransactionFilter}
+              transactionsLoading={transactionsLoading}
+            />
+          )}
           {activeTab === 'reconciliation' && reconciliation && <ReconciliationView data={reconciliation} />}
           {activeTab === 'payables' && <PayablesView payables={payables} onMarkPaid={(id) => markPaid('ap', id)} />}
           {activeTab === 'receivables' && <ReceivablesView receivables={receivables} onMarkPaid={(id) => markPaid('ar', id)} />}
@@ -110,35 +146,178 @@ function TabButton({ label, active, onClick }: { label: string; active: boolean;
   );
 }
 
-function OverviewView({ data }: { data: any }) {
+function OverviewView({ data, transactions, transactionSummary, transactionFilter, setTransactionFilter, transactionsLoading }: { 
+  data: any; 
+  transactions: any[];
+  transactionSummary: any;
+  transactionFilter: TransactionFilter;
+  setTransactionFilter: (filter: TransactionFilter) => void;
+  transactionsLoading: boolean;
+}) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
-      <ClickableStatCard
-        title="Receita Total"
-        value={`R$${Number(data.summary.totalRevenue).toFixed(2)}`}
-        color="var(--brand-turquoise)"
-        icon="💰"
-        href="/financial/transactions?type=income"
-      />
-      <ClickableStatCard
-        title="Despesas Totais"
-        value={`R$${Number(data.summary.totalExpenses).toFixed(2)}`}
-        color="var(--brand-bordeaux)"
-        icon="💸"
-        href="/financial/transactions?type=expense"
-      />
-      <StatCard
-        title="Posição Líquida"
-        value={`R$${Number(data.summary.netPosition).toFixed(2)}`}
-        color={data.summary.netPosition >= 0 ? 'var(--brand-turquoise)' : 'var(--brand-bordeaux)'}
-        icon="📊"
-      />
-      <StatCard
-        title="Saldo Pendente"
-        value={`R$${Number(data.summary.pendingBalance).toFixed(2)}`}
-        color="var(--brand-gold)"
-        icon="⏳"
-      />
+    <div>
+      {/* Summary Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
+        <StatCard
+          title="Receita Total"
+          value={`R$${Number(data.summary.totalRevenue).toFixed(2)}`}
+          color="var(--brand-turquoise)"
+          icon="💰"
+        />
+        <StatCard
+          title="Despesas Totais"
+          value={`R$${Number(data.summary.totalExpenses).toFixed(2)}`}
+          color="var(--brand-bordeaux)"
+          icon="💸"
+        />
+        <StatCard
+          title="Posição Líquida"
+          value={`R$${Number(data.summary.netPosition).toFixed(2)}`}
+          color={data.summary.netPosition >= 0 ? 'var(--brand-turquoise)' : 'var(--brand-bordeaux)'}
+          icon="📊"
+        />
+        <StatCard
+          title="Saldo Pendente"
+          value={`R$${Number(data.summary.pendingBalance).toFixed(2)}`}
+          color="var(--brand-gold)"
+          icon="⏳"
+        />
+      </div>
+
+      {/* Transaction History Section */}
+      <div style={{ marginTop: '3rem' }}>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--brand-black)', marginBottom: '1.5rem' }}>
+          📊 Histórico de Transações
+        </h2>
+
+        {/* Transaction Filter Tabs */}
+        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', borderBottom: '2px solid var(--gray-200)' }}>
+          <TransactionTabButton
+            label="Todas"
+            active={transactionFilter === 'all'}
+            onClick={() => setTransactionFilter('all')}
+            icon="📊"
+          />
+          <TransactionTabButton
+            label="Receitas"
+            active={transactionFilter === 'income'}
+            onClick={() => setTransactionFilter('income')}
+            icon="💰"
+          />
+          <TransactionTabButton
+            label="Despesas"
+            active={transactionFilter === 'expense'}
+            onClick={() => setTransactionFilter('expense')}
+            icon="💸"
+          />
+        </div>
+
+        {/* Transaction Summary Cards */}
+        {transactionSummary && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+            <SmallStatCard
+              title="Total de Receitas"
+              value={`R$${transactionSummary.totalIncome.toFixed(2)}`}
+              color="var(--brand-turquoise)"
+              icon="💰"
+            />
+            <SmallStatCard
+              title="Total de Despesas"
+              value={`R$${transactionSummary.totalExpenses.toFixed(2)}`}
+              color="var(--brand-bordeaux)"
+              icon="💸"
+            />
+            <SmallStatCard
+              title="Posição Líquida"
+              value={`R$${transactionSummary.netPosition.toFixed(2)}`}
+              color={transactionSummary.netPosition >= 0 ? 'var(--brand-turquoise)' : 'var(--brand-bordeaux)'}
+              icon="📊"
+            />
+            <SmallStatCard
+              title="Total de Transações"
+              value={transactionSummary.count}
+              color="var(--brand-gold)"
+              icon="📋"
+            />
+          </div>
+        )}
+
+        {/* Transactions Table */}
+        {transactionsLoading ? (
+          <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--gray-500)' }}>
+            Carregando transações...
+          </div>
+        ) : transactions.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--gray-500)', background: 'white', borderRadius: '12px' }}>
+            Nenhuma transação encontrada.
+          </div>
+        ) : (
+          <div style={{ background: 'white', borderRadius: '12px', overflow: 'hidden' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ background: 'var(--gray-100)' }}>
+                  <th style={thStyle}>Data</th>
+                  <th style={thStyle}>Tipo</th>
+                  <th style={thStyle}>Categoria</th>
+                  <th style={thStyle}>Descrição</th>
+                  <th style={thStyle}>Origem/Destino</th>
+                  <th style={thStyle}>Valor</th>
+                </tr>
+              </thead>
+              <tbody>
+                {transactions.map((transaction) => (
+                  <tr key={transaction.id} style={{ borderBottom: '1px solid var(--gray-200)' }}>
+                    <td style={tdStyle}>
+                      {new Date(transaction.date).toLocaleDateString('pt-BR', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </td>
+                    <td style={tdStyle}>
+                      <TransactionTypeBadge type={transaction.type} />
+                    </td>
+                    <td style={tdStyle}>
+                      <CategoryBadge category={transaction.category} label={transaction.categoryLabel} />
+                    </td>
+                    <td style={tdStyle}>
+                      <div style={{ fontWeight: '500' }}>{transaction.description}</div>
+                      {transaction.metadata?.tourName && (
+                        <div style={{ fontSize: '0.75rem', color: 'var(--gray-500)', marginTop: '0.25rem' }}>
+                          {transaction.metadata.tourName}
+                        </div>
+                      )}
+                    </td>
+                    <td style={tdStyle}>
+                      <div style={{ fontWeight: '500' }}>
+                        {transaction.type === 'income' ? transaction.source : transaction.beneficiary}
+                      </div>
+                      {(transaction.sourceEmail || transaction.beneficiaryEmail) && (
+                        <div style={{ fontSize: '0.75rem', color: 'var(--gray-500)' }}>
+                          {transaction.sourceEmail || transaction.beneficiaryEmail}
+                        </div>
+                      )}
+                    </td>
+                    <td style={tdStyle}>
+                      <span
+                        style={{
+                          fontWeight: '700',
+                          fontSize: '1rem',
+                          color: transaction.type === 'income' ? 'var(--brand-turquoise)' : 'var(--brand-bordeaux)',
+                        }}
+                      >
+                        {transaction.type === 'income' ? '+' : '-'} R${transaction.amount.toFixed(2)}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -279,42 +458,95 @@ function StatCard({ title, value, color, icon }: { title: string; value: string;
   );
 }
 
-function ClickableStatCard({ title, value, color, icon, href }: { title: string; value: string; color: string; icon: string; href: string }) {
+function SmallStatCard({ title, value, color, icon }: { title: string; value: string | number; color: string; icon: string }) {
   return (
-    <Link href={href} style={{ textDecoration: 'none' }}>
-      <div
-        style={{
-          background: 'white',
-          padding: '1.5rem',
-          borderRadius: '12px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-          cursor: 'pointer',
-          transition: 'all 0.2s',
-          border: '2px solid transparent',
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.borderColor = color;
-          e.currentTarget.style.transform = 'translateY(-2px)';
-          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.borderColor = 'transparent';
-          e.currentTarget.style.transform = 'translateY(0)';
-          e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <div>
-            <p style={{ fontSize: '0.875rem', color: 'var(--gray-600)', marginBottom: '0.5rem' }}>{title}</p>
-            <p style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--brand-black)' }}>{value}</p>
-            <p style={{ fontSize: '0.75rem', color, marginTop: '0.5rem', fontWeight: '600' }}>Ver histórico →</p>
-          </div>
-          <div style={{ width: '48px', height: '48px', background: `${color}15`, borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>
-            {icon}
-          </div>
+    <div style={{ background: 'white', padding: '1rem', borderRadius: '8px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <p style={{ fontSize: '0.75rem', color: 'var(--gray-600)', marginBottom: '0.25rem' }}>{title}</p>
+          <p style={{ fontSize: '1.25rem', fontWeight: 'bold', color }}>{value}</p>
         </div>
+        <div style={{ fontSize: '1.25rem' }}>{icon}</div>
       </div>
-    </Link>
+    </div>
+  );
+}
+
+function TransactionTabButton({ label, active, onClick, icon }: { label: string; active: boolean; onClick: () => void; icon: string }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        padding: '0.75rem 1.5rem',
+        background: 'transparent',
+        color: active ? 'var(--brand-turquoise)' : 'var(--gray-600)',
+        border: 'none',
+        borderBottom: active ? '3px solid var(--brand-turquoise)' : '3px solid transparent',
+        fontWeight: active ? '600' : 'normal',
+        fontSize: '0.9rem',
+        cursor: 'pointer',
+        transition: 'all 0.2s',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.5rem',
+      }}
+    >
+      <span>{icon}</span>
+      {label}
+    </button>
+  );
+}
+
+function TransactionTypeBadge({ type }: { type: 'income' | 'expense' }) {
+  const config = {
+    income: { label: 'Receita', bg: 'var(--brand-turquoise)15', color: 'var(--brand-turquoise)', icon: '↑' },
+    expense: { label: 'Despesa', bg: 'var(--brand-bordeaux)15', color: 'var(--brand-bordeaux)', icon: '↓' },
+  };
+  const c = config[type];
+  return (
+    <span
+      style={{
+        padding: '0.25rem 0.75rem',
+        background: c.bg,
+        color: c.color,
+        borderRadius: '999px',
+        fontSize: '0.75rem',
+        fontWeight: '600',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '0.25rem',
+      }}
+    >
+      <span style={{ fontSize: '0.9rem' }}>{c.icon}</span>
+      {c.label}
+    </span>
+  );
+}
+
+function CategoryBadge({ category, label }: { category: string; label: string }) {
+  const icons: { [key: string]: string } = {
+    tour_sale: '🎫',
+    receivable: '💵',
+    salary: '👤',
+    vendor: '🏢',
+  };
+  return (
+    <span
+      style={{
+        padding: '0.25rem 0.75rem',
+        background: 'var(--gray-100)',
+        color: 'var(--gray-700)',
+        borderRadius: '6px',
+        fontSize: '0.75rem',
+        fontWeight: '500',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '0.25rem',
+      }}
+    >
+      <span>{icons[category] || '📋'}</span>
+      {label}
+    </span>
   );
 }
 

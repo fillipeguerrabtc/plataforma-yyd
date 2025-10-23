@@ -43,3 +43,34 @@ The client-facing platform aims for an identical visual identity to the original
 - **AI**: OpenAI (optional fallback for Aurora IA)
 - **Email**: Replit Mail
 - **Job Queues**: Bull
+
+## Recent Changes
+
+### Dashboard Security Fix (October 23, 2025)
+- **Critical Bug Fixed**: Unauthenticated access to admin dashboard
+  - **Problem**: Direct URL access bypassed login requirement
+  - **Solution**: `checkAuthAndGetRole()` function redirects to `/login` before loading any data
+  - **Verification**: Auth check executes FIRST, data loads ONLY if authenticated
+  - **File**: `yyd/apps/backoffice/app/page.tsx`
+
+### Unified Financial Management Page (October 23, 2025)
+- **Complete Financial Overview Integration**:
+  - `/financial` Overview tab now shows EVERYTHING in one view
+  - Summary cards: Receita Total, Despesas Totais, Posição Líquida, Saldo Pendente
+  - **Transaction history integrated directly** - no separate page needed
+  - Filter tabs: Todas | Receitas | Despesas
+  - Transaction summary mini-cards show real-time totals
+  - Complete transaction table with all details:
+    * Date, Type, Category, Description, Source/Beneficiary, Amount
+    * Visual badges: 🎫 Tour, 👤 Salário, 🏢 Fornecedor, 💵 Recebível
+    * Color-coded: +R$ (green) income, -R$ (red) expenses
+    * Real-time filtering without page reload
+  
+- **API Improvements**:
+  - `/api/financial/transactions` unifies ALL financial data sources:
+    * Stripe Payments (tour sales)
+    * Transaction records (salary payments)
+    * AccountsPayable (vendor payments)
+    * AccountsReceivable (other income)
+  - `/api/financial/reconciliation` correctly includes Transaction.type='payment_out' in expenses
+  - All financial data now consistent across all views
