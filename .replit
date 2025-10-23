@@ -23,6 +23,10 @@ args = "Client"
 task = "workflow.run"
 args = "Aurora"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Backoffice"
+
 [[workflows.workflow]]
 name = "Client"
 author = "agent"
@@ -47,6 +51,18 @@ task = "shell.exec"
 args = "cd yyd/aurora && python main.py"
 waitForPort = 8008
 
+[[workflows.workflow]]
+name = "Backoffice"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd yyd/apps/backoffice && npm run dev"
+waitForPort = 3001
+
+[workflows.workflow.metadata]
+outputType = "console"
+
 [[ports]]
 localPort = 3000
 externalPort = 3000
@@ -54,10 +70,6 @@ externalPort = 3000
 [[ports]]
 localPort = 3001
 externalPort = 3001
-
-[[ports]]
-localPort = 5000
-externalPort = 80
 
 [[ports]]
 localPort = 8000
