@@ -27,6 +27,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get entity and stripe account ID
+    console.log(`🔍 Buscando ${entityType} com ID: ${entityId}`);
     let entity: any;
     let stripeAccountId = '';
     let beneficiaryName = '';
@@ -34,6 +35,7 @@ export async function POST(request: NextRequest) {
     
     if (entityType === 'guide') {
       entity = await prisma.guide.findUnique({ where: { id: entityId } });
+      console.log('📊 Guide found:', entity ? 'SIM' : 'NÃO');
       if (entity) {
         stripeAccountId = entity.stripeConnectedAccountId || '';
         beneficiaryName = entity.name;
@@ -41,6 +43,8 @@ export async function POST(request: NextRequest) {
       }
     } else if (entityType === 'staff') {
       entity = await prisma.user.findUnique({ where: { id: entityId } });
+      console.log('📊 Staff (User) found:', entity ? 'SIM' : 'NÃO');
+      console.log('📊 Entity details:', entity ? { id: entity.id, name: entity.name, stripeId: entity.stripeConnectedAccountId } : 'NULL');
       if (entity) {
         stripeAccountId = entity.stripeConnectedAccountId || '';
         beneficiaryName = entity.name;
@@ -48,16 +52,21 @@ export async function POST(request: NextRequest) {
       }
     } else if (entityType === 'vendor') {
       entity = await prisma.vendor.findUnique({ where: { id: entityId } });
+      console.log('📊 Vendor found:', entity ? 'SIM' : 'NÃO');
       if (entity) {
         stripeAccountId = entity.stripeConnectedAccountId || '';
         beneficiaryName = entity.name;
         beneficiaryEmail = entity.email;
       }
     } else {
+      console.log('❌ entityType inválido:', entityType);
       return NextResponse.json({ error: 'entityType inválido. Use: guide, staff ou vendor' }, { status: 400 });
     }
 
+    console.log(`🔍 Resultado da busca: entity=${entity ? 'encontrado' : 'NÃO encontrado'}, stripeAccountId=${stripeAccountId}`);
+    
     if (!entity) {
+      console.log(`❌ ${entityType} não encontrado no banco`);
       return NextResponse.json({ error: `${entityType} não encontrado` }, { status: 404 });
     }
 
