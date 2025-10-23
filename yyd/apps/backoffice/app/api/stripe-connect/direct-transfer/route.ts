@@ -64,8 +64,8 @@ export async function POST(request: NextRequest) {
         beneficiaryEmail = entity.email;
       }
     } else if (entityType === 'staff') {
-      entity = await prisma.user.findUnique({ where: { id: entityId } });
-      console.log('📊 Staff (User) found:', entity ? 'SIM' : 'NÃO');
+      entity = await prisma.staff.findUnique({ where: { id: entityId } });
+      console.log('📊 Staff found:', entity ? 'SIM' : 'NÃO');
       console.log('📊 Entity details:', entity ? { id: entity.id, name: entity.name, stripeId: entity.stripeConnectedAccountId } : 'NULL');
       if (entity) {
         stripeAccountId = entity.stripeConnectedAccountId || '';
