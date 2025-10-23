@@ -12,7 +12,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { amount, currency = 'eur', metadata = {} } = body;
+    const { amount, currency = 'brl', metadata = {} } = body;
 
     if (!amount || amount <= 0) {
       return NextResponse.json(

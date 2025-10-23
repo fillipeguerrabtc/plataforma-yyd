@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
     
     const transfer = await stripe.transfers.create({
       amount: Math.round(amountEur * 100),
-      currency: 'eur',
+      currency: 'brl',
       destination: stripeAccountId,
       description: `Pagamento ${beneficiaryName} - ${payroll.period}`,
       metadata: {

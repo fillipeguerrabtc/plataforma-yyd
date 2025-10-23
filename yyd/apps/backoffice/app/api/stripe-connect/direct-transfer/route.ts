@@ -141,7 +141,7 @@ export async function POST(request: NextRequest) {
       // This creates a valid charge that can be used as source_transaction
       const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(amountNum * 100),
-        currency: 'eur',
+        currency: 'brl',
         payment_method_types: ['card'],
         confirm: true,
         payment_method: 'pm_card_visa', // Test mode payment method that auto-succeeds
@@ -158,7 +158,7 @@ export async function POST(request: NextRequest) {
       // Now create the transfer with source_transaction using the charge ID
       transfer = await stripe.transfers.create({
         amount: Math.round(amountNum * 100),
-        currency: 'eur',
+        currency: 'brl',
         destination: stripeAccountId,
         source_transaction: paymentIntent.latest_charge as string, // Required for Brazil
         description: description || `Pagamento para ${beneficiaryName}`,
@@ -179,7 +179,7 @@ export async function POST(request: NextRequest) {
       // For non-Brazil accounts, direct transfer works
       transfer = await stripe.transfers.create({
         amount: Math.round(amountNum * 100),
-        currency: 'eur',
+        currency: 'brl',
         destination: stripeAccountId,
         description: description || `Pagamento para ${beneficiaryName}`,
         metadata: {

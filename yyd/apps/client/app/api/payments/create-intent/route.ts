@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountCents,
-      currency: 'eur',
+      currency: 'brl',
       automatic_payment_methods: {
         enabled: true,
       },
@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
         bookingId: booking.id,
         stripePaymentIntent: paymentIntent.id,
         amount: totalAmount,
-        currency: 'EUR',
+        currency: 'BRL',
         status: 'pending',
       },
     });

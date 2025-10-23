@@ -89,7 +89,7 @@ export const MESSAGE_CHANNEL = {
 } as const;
 
 export const MAX_GROUP_SIZE = 36;
-export const DEFAULT_CURRENCY = 'EUR';
+export const DEFAULT_CURRENCY = 'BRL'; // Changed from EUR to match Brazilian Stripe test accounts
 
 /**
  * Seasonal periods

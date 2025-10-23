@@ -67,7 +67,7 @@ export async function POST(request: Request) {
       line_items: [
         {
           price_data: {
-            currency: 'eur',
+            currency: 'brl',
             product_data: {
               name: tour.titleEn,
               description: `${tour.categoryEn} - ${date}`,
