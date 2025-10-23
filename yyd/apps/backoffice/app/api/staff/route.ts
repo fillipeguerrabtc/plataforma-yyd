@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
         email: body.email,
         phone: body.phone || null,
         position: body.position,
-        department: body.department,
+        departmentId: body.departmentId || null,
         hireDate: new Date(body.hireDate),
         salary: body.salary ? parseFloat(body.salary) : null,
         salaryCurrency: body.salaryCurrency || 'EUR',
@@ -50,6 +50,7 @@ export async function POST(req: NextRequest) {
         accessLevel: body.accessLevel || 'read',
         notes: body.notes || null,
         passwordHash: hashedPassword,
+        stripeConnectedAccountId: body.stripeConnectedAccountId || null,
       },
     });
 
@@ -62,12 +63,14 @@ export async function POST(req: NextRequest) {
         passwordHash: hashedPassword,
         role: body.role || 'support',
         active: body.status === 'active',
+        stripeConnectedAccountId: body.stripeConnectedAccountId || null,
       },
       update: {
         name: body.name,
         passwordHash: hashedPassword,
         role: body.role || 'support',
         active: body.status === 'active',
+        stripeConnectedAccountId: body.stripeConnectedAccountId || null,
       },
     });
 

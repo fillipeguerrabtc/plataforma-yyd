@@ -36,7 +36,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       email: body.email,
       phone: body.phone || null,
       position: body.position,
-      department: body.department,
+      departmentId: body.departmentId || null,
       hireDate: body.hireDate ? new Date(body.hireDate) : undefined,
       salary: body.salary ? parseFloat(body.salary) : null,
       salaryCurrency: body.salaryCurrency,
