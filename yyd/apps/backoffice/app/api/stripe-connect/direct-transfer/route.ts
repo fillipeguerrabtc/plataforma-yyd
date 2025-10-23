@@ -196,79 +196,111 @@ export async function POST(request: NextRequest) {
       console.log(`✅ [STRIPE] Transfer successful: ${transfer.id}`);
     }
     
-    // 📊 Create accounting records (Transaction + Ledger Entries)
-    console.log(`📊 [ACCOUNTING] Creating transaction and ledger entries for R$${amountNum}`);
+    // 📊 Create accounting records (Ledger Entries with double-entry bookkeeping)
+    // CRITICAL: Accounting is MANDATORY - if it fails, the whole transfer must fail
+    console.log(`📊 [ACCOUNTING] Creating ledger entries for R$${amountNum}`);
     
     try {
-      // Get required accounts
+      // Get required accounts - MUST exist for finance operations
       const [stripeAccount, salaryExpenseAccount] = await Promise.all([
         prisma.account.findUnique({ where: { code: 'STRIPE-CASH' } }),
         prisma.account.findUnique({ where: { code: 'SALARY-EXP' } }),
       ]);
       
-      if (!stripeAccount || !salaryExpenseAccount) {
-        console.log(`⚠️  [ACCOUNTING] Missing accounts - skipping ledger entries`);
-      } else {
-        // Create transaction record
-        const transaction = await prisma.transaction.create({
+      if (!stripeAccount) {
+        throw new Error('Conta contábil STRIPE-CASH não encontrada. Configure a conta no Finance > Accounts.');
+      }
+      
+      if (!salaryExpenseAccount) {
+        throw new Error('Conta contábil SALARY-EXP não encontrada. Configure a conta no Finance > Accounts.');
+      }
+      
+      // Convert to string for Decimal compatibility
+      const amountStr = amountNum.toFixed(2);
+      
+      // CRITICAL: Wrap all accounting operations in atomic transaction
+      // This ensures all-or-nothing persistence (no orphaned records)
+      await prisma.$transaction(async (tx) => {
+        // 1. Create Transaction record
+        const transaction = await tx.transaction.create({
           data: {
             type: 'payment_out',
             description: description || `Pagamento de salário para ${beneficiaryName}`,
-            amount: amountNum,
+            amount: amountStr,
             currency: 'BRL',
             status: 'completed',
+            reference: transfer.id, // Link to Stripe transfer
             metadata: {
               stripeTransferId: transfer.id,
               entityType,
               entityId,
               beneficiaryName,
               beneficiaryEmail,
-              source: 'stripe_connect_transfer',
+              source: 'stripe_connect_direct_transfer',
             },
           },
         });
         
         console.log(`✅ [ACCOUNTING] Transaction created: ${transaction.id}`);
         
-        // Create double-entry ledger entries
-        await prisma.ledgerEntry.createMany({
+        // 2. Create double-entry ledger entries
+        await tx.ledgerEntry.createMany({
           data: [
             {
+              accountId: salaryExpenseAccount.id,
               transactionId: transaction.id,
-              accountId: salaryExpenseAccount.id, // Debit: Salary Expense
-              type: 'debit',
-              amount: amountNum,
+              transactionType: 'salary_payment',
               description: `Pagamento de salário: ${beneficiaryName}`,
+              debit: amountStr,
+              credit: '0.00',
               currency: 'BRL',
+              metadata: {
+                entityType,
+                entityId,
+                beneficiaryName,
+                beneficiaryEmail,
+              },
             },
             {
+              accountId: stripeAccount.id,
               transactionId: transaction.id,
-              accountId: stripeAccount.id, // Credit: Stripe Cash
-              type: 'credit',
-              amount: amountNum,
+              transactionType: 'salary_payment',
               description: `Transferência Stripe: ${beneficiaryName}`,
+              debit: '0.00',
+              credit: amountStr,
               currency: 'BRL',
+              metadata: {
+                stripeTransferId: transfer.id,
+                destination: stripeAccountId,
+              },
             },
           ],
         });
         
-        // Update account balances
+        // 3. Update account balances atomically
         await Promise.all([
-          prisma.account.update({
+          tx.account.update({
             where: { id: salaryExpenseAccount.id },
-            data: { balance: { increment: amountNum } }, // Expense increases with debit
+            data: { balance: { increment: amountStr } }, // Expense increases with debit
           }),
-          prisma.account.update({
+          tx.account.update({
             where: { id: stripeAccount.id },
-            data: { balance: { decrement: amountNum } }, // Asset decreases with credit
+            data: { balance: { decrement: amountStr } }, // Asset decreases with credit
           }),
         ]);
         
-        console.log(`✅ [ACCOUNTING] Ledger entries created and balances updated`);
-      }
+        console.log(`✅ [ACCOUNTING] All accounting records committed atomically`);
+      });
+      
     } catch (accountingError: any) {
-      console.error(`❌ [ACCOUNTING] Failed to create ledger entries:`, accountingError);
-      // Don't fail the whole transfer if accounting fails
+      console.error(`❌ [ACCOUNTING] Failed to create ledger entries:`, {
+        message: accountingError.message,
+        code: accountingError.code,
+        stack: accountingError.stack
+      });
+      
+      // CRITICAL: Accounting is mandatory - throw error to fail the whole operation
+      throw new Error(`Falha na criação dos lançamentos contábeis: ${accountingError.message}`);
     }
     
     // Log to audit trail

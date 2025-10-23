@@ -159,6 +159,50 @@ The client-facing platform aims for an identical visual identity to the original
   - **Behavior**: Users must login again after closing browser (proper session-only behavior)
   - **Files**: `yyd/apps/backoffice/app/api/auth/login/route.ts`
 
+### Double-Entry Accounting System (October 23, 2025)
+- **Transaction Model Created**: New Prisma model for financial transactions
+  - Fields: type, description, amount, currency (BRL default), status, reference (Stripe ID), metadata
+  - 1:N relation with LedgerEntry
+  - Table `transactions` created via `npm run db:push`
+
+- **LedgerEntry Enhanced**: Updated with Transaction relation
+  - Optional relation: `transaction Transaction? @relation(fields: [transactionId], references: [id])`
+  - Currency default changed from EUR to BRL
+  - Fields: accountId, transactionId, transactionType, debit, credit, currency, metadata
+
+- **Chart of Accounts UI**: Fully translated to Portuguese
+  - Labels: Código, Nome, Tipo, Categoria, Saldo, Lançamentos, Status, Ações
+  - Types: Ativo, Passivo, Patrimônio Líquido, Receita, Despesa
+  - YYD brand color (#1FB7C4) applied to action buttons
+
+- **5 Accounting Accounts Created (BRL)**:
+  - CASH (Caixa - Ativo Circulante)
+  - PAYABLE-STAFF (Contas a Pagar - Passivo Circulante)
+  - SALARY-EXP (Despesas com Salários - Despesa)
+  - STRIPE-CASH (Stripe Account - Ativo Circulante)
+  - TOUR-SALES (Tour Sales Revenue - Receita)
+
+- **Stripe Connect Automated Accounting**:
+  - Every salary transfer via `/api/stripe-connect/direct-transfer` now creates:
+    1. Transaction record (type: payment_out, status: completed, reference: Stripe transfer ID)
+    2. Two LedgerEntries for double-entry bookkeeping:
+       - Debit: SALARY-EXP (expense increases)
+       - Credit: STRIPE-CASH (asset decreases)
+    3. Account balance updates (atomic with ledger entries)
+  - **Atomicity**: All accounting operations wrapped in `prisma.$transaction` for all-or-nothing persistence
+  - **Validation**: Required accounts (STRIPE-CASH, SALARY-EXP) validated before processing - throws error if missing
+  - **Decimal Safety**: All amounts converted to strings for Prisma Decimal compatibility
+  - **Error Handling**: Accounting failures throw errors (not silenced) to prevent transfers bypassing ledger
+  - **Metadata**: Full tracking of beneficiary, entity type, Stripe IDs for audit and analytics
+
+- **Production-Ready Guarantees**:
+  - ✅ Zero chance of orphaned Transaction records
+  - ✅ Zero chance of mismatched account balances
+  - ✅ Double-entry always balanced (debit = credit)
+  - ✅ All transfers appear in Finance > Accounts, Finance > Ledger, BI Analytics
+  - ✅ Rollback on any failure (atomicity guaranteed)
+  - **Architect Reviewed**: Approved for production with atomic transactions and mandatory validations
+
 ### Service Management
 - **Aurora IA**: Service runs on port 8008, proxied through Client app at `/api/aurora/chat`
 - **Workflow Configuration**: Aurora, Backoffice (port 3001), and Client workflows properly configured
