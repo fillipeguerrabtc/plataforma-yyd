@@ -127,7 +127,7 @@ export default async function Dashboard() {
         {canViewFinance && (
           <StatCard
             title="Receita Total"
-            value={`€${parseFloat(stats.totalRevenue.toString()).toFixed(0)}`}
+            value={`R$${parseFloat(stats.totalRevenue.toString()).toFixed(0)}`}
             icon="💰"
             color="var(--brand-turquoise)"
           />

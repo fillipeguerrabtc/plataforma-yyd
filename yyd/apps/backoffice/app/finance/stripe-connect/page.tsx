@@ -251,7 +251,7 @@ export default function StripePaymentsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-sm text-gray-600 mb-1">Total Pago</div>
-                <div className="text-3xl font-bold text-gray-900">€{getTotalTransferred(allTransfers).toFixed(2)}</div>
+                <div className="text-3xl font-bold text-gray-900">R${getTotalTransferred(allTransfers).toFixed(2)}</div>
                 <div className="text-xs text-gray-500 mt-1">{allTransfers.length} transferências</div>
               </div>
               <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-lg flex items-center justify-center">
@@ -364,10 +364,10 @@ export default function StripePaymentsPage() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Valor (€) *
+                        Valor (R$) *
                       </label>
                       <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg text-gray-500">€</span>
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg text-gray-500">R$</span>
                         <input
                           type="number"
                           step="0.01"
@@ -431,7 +431,7 @@ export default function StripePaymentsPage() {
                       </div>
                       <div className="flex justify-between pt-2 border-t border-gray-300">
                         <span className="text-gray-600 font-semibold">Total pago:</span>
-                        <span className="font-bold text-lg text-emerald-600">€{getTotalTransferred(filteredTransfers).toFixed(2)}</span>
+                        <span className="font-bold text-lg text-emerald-600">R${getTotalTransferred(filteredTransfers).toFixed(2)}</span>
                       </div>
                     </div>
                   </div>
@@ -476,7 +476,7 @@ export default function StripePaymentsPage() {
                               </div>
                               <div className="text-right">
                                 <div className="font-bold text-emerald-600 text-lg">
-                                  €{transfer.amount.toFixed(2)}
+                                  R${transfer.amount.toFixed(2)}
                                 </div>
                               </div>
                             </div>
@@ -499,7 +499,7 @@ export default function StripePaymentsPage() {
                     Histórico Completo de Transferências
                   </h3>
                   <div className="text-sm text-gray-600">
-                    Total: <span className="font-bold text-emerald-600">€{getTotalTransferred(allTransfers).toFixed(2)}</span>
+                    Total: <span className="font-bold text-emerald-600">R${getTotalTransferred(allTransfers).toFixed(2)}</span>
                     {' · '}
                     {allTransfers.length} transferências
                   </div>
@@ -559,7 +559,7 @@ export default function StripePaymentsPage() {
                               </td>
                               <td className="py-3 px-4 text-right">
                                 <span className="font-bold text-emerald-600 text-base">
-                                  €{transfer.amount.toFixed(2)}
+                                  R${transfer.amount.toFixed(2)}
                                 </span>
                               </td>
                             </tr>

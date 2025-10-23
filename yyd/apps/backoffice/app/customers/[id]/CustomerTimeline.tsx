@@ -138,7 +138,7 @@ export default function CustomerTimeline({
 
           <div style={{ textAlign: 'right' }}>
             <div style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--brand-turquoise)' }}>
-              €{Number(customer.totalSpent).toFixed(2)}
+              R${Number(customer.totalSpent).toFixed(2)}
             </div>
             <p style={{ color: 'var(--gray-600)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
               {customer.totalBookings} reservas
@@ -279,7 +279,7 @@ export default function CustomerTimeline({
                       {event.data.numberOfPeople} pessoas • {new Date(event.data.date).toLocaleDateString('pt-PT')}
                     </p>
                     <p style={{ fontSize: '0.875rem', fontWeight: '600' }}>
-                      Status: <span style={{ color: event.data.status === 'confirmed' ? '#10b981' : '#f59e0b' }}>{event.data.status}</span> • €{Number(event.data.priceEur).toFixed(2)}
+                      Status: <span style={{ color: event.data.status === 'confirmed' ? '#10b981' : '#f59e0b' }}>{event.data.status}</span> • R${Number(event.data.priceEur).toFixed(2)}
                     </p>
                   </div>
                 )}
@@ -319,7 +319,7 @@ export default function CustomerTimeline({
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontSize: '1.5rem', fontWeight: '700', color: 'var(--brand-turquoise)' }}>
-                    €{Number(booking.priceEur).toFixed(2)}
+                    R${Number(booking.priceEur).toFixed(2)}
                   </div>
                   <span
                     style={{

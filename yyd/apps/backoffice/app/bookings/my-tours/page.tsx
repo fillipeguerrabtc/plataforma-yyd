@@ -228,7 +228,7 @@ export default function MyToursPage() {
               <p><strong>Cliente:</strong> {selectedBooking.customer.name}</p>
               <p><strong>Data:</strong> {new Date(selectedBooking.date).toLocaleDateString('pt-BR')} às {selectedBooking.startTime}</p>
               <p><strong>Pessoas:</strong> {selectedBooking.numberOfPeople}</p>
-              <p><strong>Valor:</strong> €{parseFloat(selectedBooking.priceEur.toString()).toFixed(2)}</p>
+              <p><strong>Valor:</strong> R${parseFloat(selectedBooking.priceEur.toString()).toFixed(2)}</p>
             </div>
 
             <div className="mb-6">
@@ -335,7 +335,7 @@ export default function MyToursPage() {
                     <strong>Pessoas:</strong> {booking.numberOfPeople}
                   </p>
                   <p>
-                    <strong>Valor:</strong> €{parseFloat(booking.priceEur.toString()).toFixed(2)}
+                    <strong>Valor:</strong> R${parseFloat(booking.priceEur.toString()).toFixed(2)}
                   </p>
                 </div>
 

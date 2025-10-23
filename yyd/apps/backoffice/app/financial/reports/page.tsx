@@ -107,7 +107,7 @@ export default function ReportsPage() {
                 RECEITA TOTAL
               </div>
               <div style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--brand-turquoise)' }}>
-                €{Number(reportData.revenue || 0).toFixed(2)}
+                R${Number(reportData.revenue || 0).toFixed(2)}
               </div>
             </div>
             <div style={cardStyle}>
@@ -115,7 +115,7 @@ export default function ReportsPage() {
                 DESPESAS TOTAIS
               </div>
               <div style={{ fontSize: '2rem', fontWeight: '700', color: 'var(--brand-bordeaux)' }}>
-                €{Number(reportData.expenses || 0).toFixed(2)}
+                R${Number(reportData.expenses || 0).toFixed(2)}
               </div>
             </div>
             <div style={cardStyle}>
@@ -129,7 +129,7 @@ export default function ReportsPage() {
                   color: (reportData.revenue || 0) - (reportData.expenses || 0) >= 0 ? '#10b981' : '#ef4444',
                 }}
               >
-                €{((reportData.revenue || 0) - (reportData.expenses || 0)).toFixed(2)}
+                R${((reportData.revenue || 0) - (reportData.expenses || 0)).toFixed(2)}
               </div>
             </div>
           </div>
@@ -144,7 +144,7 @@ export default function ReportsPage() {
                   BASE TRIBUTÁVEL
                 </div>
                 <div style={{ fontSize: '1.25rem', fontWeight: '700' }}>
-                  €{((reportData.revenue || 0) / (1 + IVA_RATE)).toFixed(2)}
+                  R${((reportData.revenue || 0) / (1 + IVA_RATE)).toFixed(2)}
                 </div>
               </div>
               <div>
@@ -152,7 +152,7 @@ export default function ReportsPage() {
                   IVA COBRADO
                 </div>
                 <div style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--brand-turquoise)' }}>
-                  €{((reportData.revenue || 0) - (reportData.revenue || 0) / (1 + IVA_RATE)).toFixed(2)}
+                  R${((reportData.revenue || 0) - (reportData.revenue || 0) / (1 + IVA_RATE)).toFixed(2)}
                 </div>
               </div>
               <div>
@@ -160,7 +160,7 @@ export default function ReportsPage() {
                   IVA DEDUTÍVEL
                 </div>
                 <div style={{ fontSize: '1.25rem', fontWeight: '700', color: '#f59e0b' }}>
-                  €{((reportData.expenses || 0) - (reportData.expenses || 0) / (1 + IVA_RATE)).toFixed(2)}
+                  R${((reportData.expenses || 0) - (reportData.expenses || 0) / (1 + IVA_RATE)).toFixed(2)}
                 </div>
               </div>
               <div>
@@ -168,7 +168,7 @@ export default function ReportsPage() {
                   IVA A PAGAR
                 </div>
                 <div style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--brand-bordeaux)' }}>
-                  €
+                  R$
                   {(
                     (reportData.revenue || 0) / (1 + IVA_RATE) * IVA_RATE -
                     (reportData.expenses || 0) / (1 + IVA_RATE) * IVA_RATE
@@ -190,13 +190,13 @@ export default function ReportsPage() {
                 <tr style={{ borderBottom: '1px solid var(--gray-200)' }}>
                   <td style={{ padding: '1rem 0', fontWeight: '600' }}>Receita Líquida (ex-IVA)</td>
                   <td style={{ padding: '1rem 0', textAlign: 'right', fontWeight: '700', color: 'var(--brand-turquoise)' }}>
-                    €{((reportData.revenue || 0) / (1 + IVA_RATE)).toFixed(2)}
+                    R${((reportData.revenue || 0) / (1 + IVA_RATE)).toFixed(2)}
                   </td>
                 </tr>
                 <tr style={{ borderBottom: '2px solid var(--gray-300)' }}>
                   <td style={{ padding: '1rem 0', paddingLeft: '2rem', color: 'var(--gray-600)' }}>(-) Custos Operacionais (ex-IVA)</td>
                   <td style={{ padding: '1rem 0', textAlign: 'right', color: 'var(--brand-bordeaux)' }}>
-                    €{((reportData.expenses || 0) / (1 + IVA_RATE)).toFixed(2)}
+                    R${((reportData.expenses || 0) / (1 + IVA_RATE)).toFixed(2)}
                   </td>
                 </tr>
                 <tr>
@@ -210,7 +210,7 @@ export default function ReportsPage() {
                       color: ((reportData.revenue || 0) / (1 + IVA_RATE) - (reportData.expenses || 0) / (1 + IVA_RATE)) >= 0 ? '#10b981' : '#ef4444',
                     }}
                   >
-                    €{(((reportData.revenue || 0) / (1 + IVA_RATE)) - ((reportData.expenses || 0) / (1 + IVA_RATE))).toFixed(2)}
+                    R${(((reportData.revenue || 0) / (1 + IVA_RATE)) - ((reportData.expenses || 0) / (1 + IVA_RATE))).toFixed(2)}
                   </td>
                 </tr>
               </tbody>
@@ -226,13 +226,13 @@ export default function ReportsPage() {
                 <tr style={{ borderBottom: '1px solid var(--gray-200)' }}>
                   <td style={{ padding: '1rem 0', fontWeight: '600' }}>Entradas de Caixa</td>
                   <td style={{ padding: '1rem 0', textAlign: 'right', fontWeight: '700', color: '#10b981' }}>
-                    €{Number(reportData.cashIn || reportData.revenue || 0).toFixed(2)}
+                    R${Number(reportData.cashIn || reportData.revenue || 0).toFixed(2)}
                   </td>
                 </tr>
                 <tr style={{ borderBottom: '1px solid var(--gray-200)' }}>
                   <td style={{ padding: '1rem 0', fontWeight: '600' }}>Saídas de Caixa</td>
                   <td style={{ padding: '1rem 0', textAlign: 'right', fontWeight: '700', color: '#ef4444' }}>
-                    €{Number(reportData.cashOut || reportData.expenses || 0).toFixed(2)}
+                    R${Number(reportData.cashOut || reportData.expenses || 0).toFixed(2)}
                   </td>
                 </tr>
                 <tr style={{ borderTop: '2px solid var(--gray-300)' }}>
@@ -249,7 +249,7 @@ export default function ReportsPage() {
                           : '#ef4444',
                     }}
                   >
-                    €{((reportData.cashIn || reportData.revenue || 0) - (reportData.cashOut || reportData.expenses || 0)).toFixed(2)}
+                    R${((reportData.cashIn || reportData.revenue || 0) - (reportData.cashOut || reportData.expenses || 0)).toFixed(2)}
                   </td>
                 </tr>
               </tbody>

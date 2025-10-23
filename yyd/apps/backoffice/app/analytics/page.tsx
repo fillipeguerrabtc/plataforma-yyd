@@ -70,13 +70,13 @@ export default function AnalyticsPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
         <StatCard
           title="Receita Total"
-          value={`€${revenueData.totals?.total?.toFixed(2) || 0}`}
+          value={`R$${revenueData.totals?.total?.toFixed(2) || 0}`}
           color="var(--brand-turquoise)"
           icon="💰"
         />
         <StatCard
           title="Média por Reserva"
-          value={`€${revenueData.totals?.average?.toFixed(2) || 0}`}
+          value={`R$${revenueData.totals?.average?.toFixed(2) || 0}`}
           color="var(--brand-gold)"
           icon="📊"
         />
@@ -115,7 +115,7 @@ export default function AnalyticsPage() {
                 dataKey="revenue"
                 stroke="#37C8C4"
                 strokeWidth={2}
-                name="Receita (€)"
+                name="Receita (R$)"
               />
               <Line
                 type="monotone"
@@ -141,7 +141,7 @@ export default function AnalyticsPage() {
                 cx="50%"
                 cy="50%"
                 outerRadius={80}
-                label={(entry) => `€${entry.revenue.toFixed(0)}`}
+                label={(entry) => `R$${entry.revenue.toFixed(0)}`}
               >
                 {(revenueData.byProduct || []).map((_: any, index: number) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -181,7 +181,7 @@ export default function AnalyticsPage() {
               }}
             />
             <Legend />
-            <Bar dataKey="revenue" fill="#37C8C4" name="Receita (€)" />
+            <Bar dataKey="revenue" fill="#37C8C4" name="Receita (R$)" />
             <Bar dataKey="count" fill="#E9C46A" name="Bookings" />
           </BarChart>
         </ResponsiveContainer>

@@ -381,7 +381,7 @@ export default function CustomersPage() {
                 <td style={tdStyle}>{customer.totalBookings}</td>
                 <td style={tdStyle}>
                   <span style={{ fontWeight: '600', color: 'var(--brand-turquoise)' }}>
-                    €{parseFloat(customer.totalSpent.toString())}
+                    R${parseFloat(customer.totalSpent.toString())}
                   </span>
                 </td>
                 <td style={tdStyle}>

@@ -127,7 +127,7 @@ export default function PricingManager({
               <th style={{ padding: '0.75rem', textAlign: 'left' }}>Faixa</th>
               <th style={{ padding: '0.75rem', textAlign: 'left' }}>Min Pessoas</th>
               <th style={{ padding: '0.75rem', textAlign: 'left' }}>Max Pessoas</th>
-              <th style={{ padding: '0.75rem', textAlign: 'left' }}>Preço (€)</th>
+              <th style={{ padding: '0.75rem', textAlign: 'left' }}>Preço (R$)</th>
               <th style={{ padding: '0.75rem', textAlign: 'left' }}>Por Pessoa?</th>
               <th style={{ padding: '0.75rem', textAlign: 'left' }}>Ações</th>
             </tr>

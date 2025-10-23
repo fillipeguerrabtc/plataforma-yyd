@@ -87,7 +87,7 @@ export default function PaymentsPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
         <div style={{ background: 'white', padding: '1.5rem', borderRadius: '0.5rem', border: '1px solid #e5e7eb' }}>
           <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>Total Recebido</div>
-          <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#10b981' }}>€{totalRevenue.toFixed(2)}</div>
+          <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#10b981' }}>R${totalRevenue.toFixed(2)}</div>
         </div>
         <div style={{ background: 'white', padding: '1.5rem', borderRadius: '0.5rem', border: '1px solid #e5e7eb' }}>
           <div style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>Pagamentos Bem-Sucedidos</div>
@@ -208,7 +208,7 @@ export default function PaymentsPage() {
                   </td>
                   <td style={{ padding: '0.75rem', fontSize: '0.875rem' }}>{payment.productName}</td>
                   <td style={{ padding: '0.75rem', fontWeight: '600', fontSize: '1rem' }}>
-                    €{payment.amount.toFixed(2)}
+                    R${payment.amount.toFixed(2)}
                   </td>
                   <td style={{ padding: '0.75rem', fontSize: '0.875rem' }}>{payment.paymentMethod || 'card'}</td>
                   <td style={{ padding: '0.75rem', fontSize: '0.875rem' }}>

@@ -97,7 +97,7 @@ export default async function BookingsPage({
                 <td style={tdStyle}>{booking.numberOfPeople}</td>
                 <td style={tdStyle}>
                   <span style={{ fontWeight: '600', color: 'var(--brand-turquoise)' }}>
-                    €{parseFloat(booking.priceEur.toString())}
+                    R${parseFloat(booking.priceEur.toString())}
                   </span>
                 </td>
                 <td style={tdStyle}>

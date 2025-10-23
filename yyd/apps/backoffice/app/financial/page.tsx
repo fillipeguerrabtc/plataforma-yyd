@@ -114,25 +114,25 @@ function OverviewView({ data }: { data: any }) {
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
       <StatCard
         title="Receita Total"
-        value={`€${Number(data.summary.totalRevenue).toFixed(2)}`}
+        value={`R$${Number(data.summary.totalRevenue).toFixed(2)}`}
         color="var(--brand-turquoise)"
         icon="💰"
       />
       <StatCard
         title="Despesas Totais"
-        value={`€${Number(data.summary.totalExpenses).toFixed(2)}`}
+        value={`R$${Number(data.summary.totalExpenses).toFixed(2)}`}
         color="var(--brand-bordeaux)"
         icon="💸"
       />
       <StatCard
         title="Posição Líquida"
-        value={`€${Number(data.summary.netPosition).toFixed(2)}`}
+        value={`R$${Number(data.summary.netPosition).toFixed(2)}`}
         color={data.summary.netPosition >= 0 ? 'var(--brand-turquoise)' : 'var(--brand-bordeaux)'}
         icon="📊"
       />
       <StatCard
         title="Saldo Pendente"
-        value={`€${Number(data.summary.pendingBalance).toFixed(2)}`}
+        value={`R$${Number(data.summary.pendingBalance).toFixed(2)}`}
         color="var(--brand-gold)"
         icon="⏳"
       />
@@ -144,26 +144,26 @@ function ReconciliationView({ data }: { data: any }) {
   return (
     <div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
-        <StatCard title="Receita Total" value={`€${Number(data.summary.totalRevenue).toFixed(2)}`} color="var(--brand-turquoise)" icon="💰" />
-        <StatCard title="Despesas Totais" value={`€${Number(data.summary.totalExpenses).toFixed(2)}`} color="var(--brand-bordeaux)" icon="💸" />
-        <StatCard title="Posição Líquida" value={`€${Number(data.summary.netPosition).toFixed(2)}`} color={data.summary.netPosition >= 0 ? 'var(--brand-turquoise)' : 'var(--brand-bordeaux)'} icon="📊" />
-        <StatCard title="Saldo Pendente" value={`€${Number(data.summary.pendingBalance).toFixed(2)}`} color="var(--brand-gold)" icon="⏳" />
+        <StatCard title="Receita Total" value={`R$${Number(data.summary.totalRevenue).toFixed(2)}`} color="var(--brand-turquoise)" icon="💰" />
+        <StatCard title="Despesas Totais" value={`R$${Number(data.summary.totalExpenses).toFixed(2)}`} color="var(--brand-bordeaux)" icon="💸" />
+        <StatCard title="Posição Líquida" value={`R$${Number(data.summary.netPosition).toFixed(2)}`} color={data.summary.netPosition >= 0 ? 'var(--brand-turquoise)' : 'var(--brand-bordeaux)'} icon="📊" />
+        <StatCard title="Saldo Pendente" value={`R$${Number(data.summary.pendingBalance).toFixed(2)}`} color="var(--brand-gold)" icon="⏳" />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
         <div style={{ background: 'white', borderRadius: '12px', padding: '1.5rem' }}>
           <h3 style={{ fontSize: '1.125rem', fontWeight: 'bold', marginBottom: '1rem' }}>💵 A Receber</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <InfoRow label="Pendente" value={`€${Number(data.receivables.pending.total).toFixed(2)} (${data.receivables.pending.count})`} />
-            <InfoRow label="Recebido" value={`€${Number(data.receivables.paid.total).toFixed(2)} (${data.receivables.paid.count})`} />
+            <InfoRow label="Pendente" value={`R$${Number(data.receivables.pending.total).toFixed(2)} (${data.receivables.pending.count})`} />
+            <InfoRow label="Recebido" value={`R$${Number(data.receivables.paid.total).toFixed(2)} (${data.receivables.paid.count})`} />
           </div>
         </div>
 
         <div style={{ background: 'white', borderRadius: '12px', padding: '1.5rem' }}>
           <h3 style={{ fontSize: '1.125rem', fontWeight: 'bold', marginBottom: '1rem' }}>💳 A Pagar</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <InfoRow label="Pendente" value={`€${Number(data.payables.pending.total).toFixed(2)} (${data.payables.pending.count})`} />
-            <InfoRow label="Pago" value={`€${Number(data.payables.paid.total).toFixed(2)} (${data.payables.paid.count})`} />
+            <InfoRow label="Pendente" value={`R$${Number(data.payables.pending.total).toFixed(2)} (${data.payables.pending.count})`} />
+            <InfoRow label="Pago" value={`R$${Number(data.payables.paid.total).toFixed(2)} (${data.payables.paid.count})`} />
           </div>
         </div>
       </div>
@@ -194,7 +194,7 @@ function PayablesView({ payables, onMarkPaid }: { payables: any[]; onMarkPaid: (
                 <td style={tdStyle}>{item.vendor}</td>
                 <td style={tdStyle}>{item.description || '-'}</td>
                 <td style={tdStyle}>
-                  <span style={{ fontWeight: '600', color: 'var(--brand-bordeaux)' }}>€{Number(item.amount).toFixed(2)}</span>
+                  <span style={{ fontWeight: '600', color: 'var(--brand-bordeaux)' }}>R${Number(item.amount).toFixed(2)}</span>
                 </td>
                 <td style={tdStyle}>{new Date(item.dueDate).toLocaleDateString('pt-BR')}</td>
                 <td style={tdStyle}><StatusBadge status={item.status} /></td>
@@ -240,7 +240,7 @@ function ReceivablesView({ receivables, onMarkPaid }: { receivables: any[]; onMa
                 </td>
                 <td style={tdStyle}>{item.description || '-'}</td>
                 <td style={tdStyle}>
-                  <span style={{ fontWeight: '600', color: 'var(--brand-turquoise)' }}>€{Number(item.amount).toFixed(2)}</span>
+                  <span style={{ fontWeight: '600', color: 'var(--brand-turquoise)' }}>R${Number(item.amount).toFixed(2)}</span>
                 </td>
                 <td style={tdStyle}>{new Date(item.dueDate).toLocaleDateString('pt-BR')}</td>
                 <td style={tdStyle}><StatusBadge status={item.status} /></td>

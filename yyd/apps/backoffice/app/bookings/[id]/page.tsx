@@ -97,7 +97,7 @@ export default async function BookingDetailPage({ params }: { params: { id: stri
                 label="Valor Total"
                 value={
                   <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--brand-turquoise)' }}>
-                    €{parseFloat(booking.priceEur.toString())}
+                    R${parseFloat(booking.priceEur.toString())}
                   </span>
                 }
               />
@@ -185,7 +185,7 @@ export default async function BookingDetailPage({ params }: { params: { id: stri
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                     <span style={{ fontWeight: '600' }}>
-                      €{parseFloat(payment.amount.toString())}
+                      R${parseFloat(payment.amount.toString())}
                     </span>
                     <span
                       style={{

@@ -415,7 +415,7 @@ export default function PayrollPage() {
             </div>
 
             <div>
-              <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '500' }}>Gross Amount (€) *</label>
+              <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '500' }}>Gross Amount (R$) *</label>
               <input
                 type="number"
                 step="0.01"
@@ -427,7 +427,7 @@ export default function PayrollPage() {
             </div>
 
             <div>
-              <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '500' }}>Deductions (€)</label>
+              <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '500' }}>Deductions (R$)</label>
               <input
                 type="number"
                 step="0.01"
@@ -544,9 +544,9 @@ export default function PayrollPage() {
                     {payroll.guide?.name || payroll.vendorName || payroll.employeeId || payroll.guideId || '-'}
                   </td>
                   <td style={{ padding: '0.75rem' }}>{payroll.period}</td>
-                  <td style={{ padding: '0.75rem', textAlign: 'right' }}>€{payroll.grossAmount.toFixed(2)}</td>
-                  <td style={{ padding: '0.75rem', textAlign: 'right' }}>€{payroll.deductions.toFixed(2)}</td>
-                  <td style={{ padding: '0.75rem', textAlign: 'right', fontWeight: '600' }}>€{payroll.netAmount.toFixed(2)}</td>
+                  <td style={{ padding: '0.75rem', textAlign: 'right' }}>R${payroll.grossAmount.toFixed(2)}</td>
+                  <td style={{ padding: '0.75rem', textAlign: 'right' }}>R${payroll.deductions.toFixed(2)}</td>
+                  <td style={{ padding: '0.75rem', textAlign: 'right', fontWeight: '600' }}>R${payroll.netAmount.toFixed(2)}</td>
                   <td style={{ padding: '0.75rem' }}>
                     <span style={{
                       padding: '0.25rem 0.75rem',
