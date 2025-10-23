@@ -376,7 +376,7 @@ export default function FleetPage() {
 
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>
-                    Valor (€)
+                    Valor (R$)
                   </label>
                   <input
                     type="number"

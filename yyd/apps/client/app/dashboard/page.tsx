@@ -175,7 +175,7 @@ export default function CustomerDashboard() {
             <div className="bg-white border border-gray-200 rounded-lg p-6">
               <p className="text-sm text-gray-600 mb-1">Total Investido</p>
               <p className="text-3xl font-bold text-black">
-                €{(upcoming.reduce((sum, b) => sum + b.priceEur + b.addonsTotal, 0) +
+                R${(upcoming.reduce((sum, b) => sum + b.priceEur + b.addonsTotal, 0) +
                     past.reduce((sum, b) => sum + b.priceEur + b.addonsTotal, 0)).toFixed(0)}
               </p>
             </div>
@@ -231,7 +231,7 @@ export default function CustomerDashboard() {
                       <div>
                         <p className="text-xs text-gray-600">Total</p>
                         <p className="font-semibold text-black">
-                          €{(booking.priceEur + booking.addonsTotal).toFixed(2)}
+                          R${(booking.priceEur + booking.addonsTotal).toFixed(2)}
                         </p>
                       </div>
                     </div>
@@ -287,7 +287,7 @@ export default function CustomerDashboard() {
                           {booking.product.namePt}
                         </h3>
                         <p className="text-sm text-gray-600">
-                          {formatDate(booking.date)} • {booking.numberOfPeople} pessoas • €{(booking.priceEur + booking.addonsTotal).toFixed(2)}
+                          {formatDate(booking.date)} • {booking.numberOfPeople} pessoas • R${(booking.priceEur + booking.addonsTotal).toFixed(2)}
                         </p>
                       </div>
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(booking.status)}`}>

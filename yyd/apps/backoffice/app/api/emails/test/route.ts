@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
       tourName: 'Sintra Palaces Tour',
       date: new Date().toLocaleDateString('pt-PT'),
       time: '09:00',
-      price: '€120.00',
+      price: 'R$120.00',
     };
 
     const templates: Record<string, { subject: string; body: string }> = {

@@ -128,6 +128,28 @@ The client-facing platform aims for an identical visual identity to the original
   - Transfer history with detailed transaction logs
   - Real-time balance updates in both YYD and beneficiary Stripe dashboards
 
+### Currency Migration (October 23, 2025)
+- **Complete EUR → BRL Migration**: Migrated entire platform from Euro (EUR/€) to Brazilian Real (BRL/R$)
+  - **Reason**: Aligning with Brazilian Stripe test accounts (YYD and employee accounts)
+  - **Scope**: Client + Backoffice + Aurora IA knowledge base
+  - **Changes**:
+    - Shared constants: `DEFAULT_CURRENCY = 'BRL'`
+    - All Stripe API calls: `currency: 'brl'`
+    - All Payment records: `currency: 'BRL'`
+    - All UI displays: R$ instead of €
+    - Financial APIs (accounts, ledger, vendors, payroll): BRL defaults
+    - Email notifications and PDFs: R$ formatting
+    - Aurora knowledge base: Tour prices in R$
+  - **Data Integrity**: No data loss - only display/API currency changed
+  - **Result**: Resolves "cross border and foreign exchange" errors with Brazilian Stripe accounts
+
+### Authentication Security (October 23, 2025)
+- **Session Cookie Fix**: Removed `maxAge` from authentication cookie
+  - **Before**: Cookie persisted for 7 days even after closing browser
+  - **After**: Session cookie expires when browser/tab closes
+  - **Behavior**: Users must login again after closing browser (proper session-only behavior)
+  - **Files**: `yyd/apps/backoffice/app/api/auth/login/route.ts`
+
 ### Service Management
 - **Aurora IA**: Service runs on port 8008, proxied through Client app at `/api/aurora/chat`
 - **Workflow Configuration**: Aurora, Backoffice (port 3001), and Client workflows properly configured

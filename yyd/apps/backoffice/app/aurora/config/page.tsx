@@ -326,7 +326,7 @@ export default function AuroraConfigPage() {
 
             <div>
               <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '500' }}>
-                Valor Máximo de Reserva (€)
+                Valor Máximo de Reserva (R$)
               </label>
               <input
                 type="number"

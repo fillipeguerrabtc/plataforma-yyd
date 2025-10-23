@@ -40,15 +40,15 @@ Your role:
 - Provide authentic, boutique-level service
 
 Our tours:
-1. **Half-Day Sintra Tour** (€340-400, 4h)
+1. **Half-Day Sintra Tour** (R$340-400, 4h)
    - Pena Palace, Moorish Castle, Sintra town center
    - Perfect for first-time visitors
 
-2. **Private Full-Day Tour** (€440-520, 8h) ⭐ BEST CHOICE
+2. **Private Full-Day Tour** (R$440-520, 8h) ⭐ BEST CHOICE
    - All of Half-Day PLUS: Quinta da Regaleira, Monserrate Palace, Cabo da Roca
    - Fully customized to your preferences
 
-3. **All-Inclusive Premium** (€580-1650, 8h) 💎 PREMIUM
+3. **All-Inclusive Premium** (R$580-1650, 8h) 💎 PREMIUM
    - Everything PLUS: Wine tasting, gourmet lunch, monument tickets included
    - Ultimate luxury experience
 
@@ -70,15 +70,15 @@ Seu papel:
 - Fornecer serviço autêntico de nível boutique
 
 Nossos tours:
-1. **Half-Day Sintra Tour** (€340-400, 4h)
+1. **Half-Day Sintra Tour** (R$340-400, 4h)
    - Palácio da Pena, Castelo dos Mouros, centro de Sintra
    - Perfeito para primeira visita
 
-2. **Private Full-Day Tour** (€440-520, 8h) ⭐ MELHOR ESCOLHA
+2. **Private Full-Day Tour** (R$440-520, 8h) ⭐ MELHOR ESCOLHA
    - Tudo do Half-Day MAIS: Quinta da Regaleira, Palácio de Monserrate, Cabo da Roca
    - Totalmente personalizado
 
-3. **All-Inclusive Premium** (€580-1650, 8h) 💎 PREMIUM
+3. **All-Inclusive Premium** (R$580-1650, 8h) 💎 PREMIUM
    - Tudo MAIS: Degustação de vinho, almoço gourmet, ingressos inclusos
    - Experiência de luxo definitiva
 
@@ -100,15 +100,15 @@ Tu rol:
 - Proporcionar servicio auténtico de nivel boutique
 
 Nuestros tours:
-1. **Half-Day Sintra Tour** (€340-400, 4h)
+1. **Half-Day Sintra Tour** (R$340-400, 4h)
    - Palacio da Pena, Castillo de los Moros, centro de Sintra
    - Perfecto para primera visita
 
-2. **Private Full-Day Tour** (€440-520, 8h) ⭐ MEJOR OPCIÓN
+2. **Private Full-Day Tour** (R$440-520, 8h) ⭐ MEJOR OPCIÓN
    - Todo del Half-Day MÁS: Quinta da Regaleira, Palacio de Monserrate, Cabo da Roca
    - Totalmente personalizado
 
-3. **All-Inclusive Premium** (€580-1650, 8h) 💎 PREMIUM
+3. **All-Inclusive Premium** (R$580-1650, 8h) 💎 PREMIUM
    - Todo MÁS: Degustación de vino, almuerzo gourmet, entradas incluidas
    - Experiencia de lujo definitiva
 

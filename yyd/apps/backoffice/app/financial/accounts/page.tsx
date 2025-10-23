@@ -27,7 +27,7 @@ export default function AccountsPage() {
     name: '',
     type: 'asset',
     category: '',
-    currency: 'EUR',
+    currency: 'BRL',
     active: true,
   });
 
@@ -123,7 +123,7 @@ export default function AccountsPage() {
       name: '',
       type: 'asset',
       category: '',
-      currency: 'EUR',
+      currency: 'BRL',
       active: true,
     });
   };
@@ -268,7 +268,7 @@ export default function AccountsPage() {
                     fontSize: '0.875rem',
                   }}
                 >
-                  <option value="EUR">EUR</option>
+                  <option value="BRL">BRL</option>
                   <option value="USD">USD</option>
                   <option value="GBP">GBP</option>
                 </select>

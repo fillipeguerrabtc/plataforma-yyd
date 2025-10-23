@@ -202,10 +202,10 @@ export default async function Home() {
                         <div className="mb-4">
                           <span className="text-sm text-gray-500 block mb-1">Starting at</span>
                           <span className="text-3xl font-bold text-black">
-                            €{priceRange.min}
+                            R${priceRange.min}
                           </span>
                           {priceRange.min !== priceRange.max && (
-                            <span className="text-gray-500 ml-2">- €{priceRange.max}</span>
+                            <span className="text-gray-500 ml-2">- R${priceRange.max}</span>
                           )}
                         </div>
                       )}

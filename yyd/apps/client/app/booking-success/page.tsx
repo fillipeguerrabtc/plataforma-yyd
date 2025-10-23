@@ -103,7 +103,7 @@ export default function BookingSuccessPage() {
               
               <div className="flex justify-between py-2">
                 <span className="text-gray-600">Total Paid:</span>
-                <span className="text-2xl font-bold text-gray-900">€{Number(booking.priceEur).toFixed(2)}</span>
+                <span className="text-2xl font-bold text-gray-900">R${Number(booking.priceEur).toFixed(2)}</span>
               </div>
             </div>
           </div>

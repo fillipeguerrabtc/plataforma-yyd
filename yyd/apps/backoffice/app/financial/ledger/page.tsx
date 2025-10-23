@@ -121,7 +121,7 @@ export default function LedgerPage() {
         >
           <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>Total Debit</p>
           <p style={{ fontSize: '2rem', fontWeight: '700', color: '#059669' }}>
-            EUR {totalDebit.toFixed(2)}
+            BRL {totalDebit.toFixed(2)}
           </p>
         </div>
         <div
@@ -134,7 +134,7 @@ export default function LedgerPage() {
         >
           <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '0.5rem' }}>Total Credit</p>
           <p style={{ fontSize: '2rem', fontWeight: '700', color: '#dc2626' }}>
-            EUR {totalCredit.toFixed(2)}
+            BRL {totalCredit.toFixed(2)}
           </p>
         </div>
       </div>
@@ -276,10 +276,10 @@ export default function LedgerPage() {
                     Totals:
                   </td>
                   <td style={{ padding: '0.75rem', textAlign: 'right', fontFamily: 'monospace', color: '#059669' }}>
-                    EUR {totalDebit.toFixed(2)}
+                    BRL {totalDebit.toFixed(2)}
                   </td>
                   <td style={{ padding: '0.75rem', textAlign: 'right', fontFamily: 'monospace', color: '#dc2626' }}>
-                    EUR {totalCredit.toFixed(2)}
+                    BRL {totalCredit.toFixed(2)}
                   </td>
                   <td></td>
                 </tr>

@@ -40,7 +40,7 @@ export default function VendorsPage() {
     notes: '',
     photoUrl: '',
     status: 'active',
-    currency: 'EUR',
+    currency: 'BRL',
     stripeConnectedAccountId: '',
   });
 
@@ -141,7 +141,7 @@ export default function VendorsPage() {
       notes: '',
       photoUrl: '',
       status: 'active',
-      currency: 'EUR',
+      currency: 'BRL',
     });
     setEditingId(null);
     setShowAddForm(false);
@@ -387,7 +387,7 @@ export default function VendorsPage() {
                   <td style={{ padding: '0.75rem' }}>{vendor.companyName || '-'}</td>
                   <td style={{ padding: '0.75rem' }}>{vendor.email}</td>
                   <td style={{ padding: '0.75rem' }}>{vendor.category}</td>
-                  <td style={{ padding: '0.75rem', textAlign: 'right' }}>€{vendor.totalPaid.toFixed(2)}</td>
+                  <td style={{ padding: '0.75rem', textAlign: 'right' }}>R${vendor.totalPaid.toFixed(2)}</td>
                   <td style={{ padding: '0.75rem' }}>
                     <span style={{
                       padding: '0.25rem 0.75rem',

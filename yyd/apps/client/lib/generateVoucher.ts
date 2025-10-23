@@ -99,7 +99,7 @@ export async function generateVoucherPDF(data: VoucherData): Promise<Buffer> {
         })}`)
         .text(`Time: ${data.startTime}`)
         .text(`Number of People: ${data.numberOfPeople}`)
-        .text(`Total Price: €${parseFloat(data.priceEur.toString())}`);
+        .text(`Total Price: R$${parseFloat(data.priceEur.toString())}`);
 
       if (data.specialRequests) {
         doc

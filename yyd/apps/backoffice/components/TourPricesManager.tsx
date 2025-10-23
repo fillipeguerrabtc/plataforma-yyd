@@ -219,7 +219,7 @@ export default function TourPricesManager({ tourId }: { tourId: string }) {
               />
             </div>
             <div>
-              <label style={labelStyle}>Preço (€)</label>
+              <label style={labelStyle}>Preço (R$)</label>
               <input
                 type="number"
                 value={formData.priceEur}
@@ -310,7 +310,7 @@ export default function TourPricesManager({ tourId }: { tourId: string }) {
                     {price.minPeople}{price.maxPeople ? `-${price.maxPeople}` : '+'} pessoas
                   </span>
                   <span style={{ fontWeight: '700', color: 'var(--brand-turquoise)', fontSize: '1rem' }}>
-                    €{Number(price.priceEur).toFixed(2)}{price.pricePerPerson ? '/p' : ''}
+                    R${Number(price.priceEur).toFixed(2)}{price.pricePerPerson ? '/p' : ''}
                   </span>
                 </div>
               </div>

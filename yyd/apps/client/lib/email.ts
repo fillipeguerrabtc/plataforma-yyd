@@ -228,7 +228,7 @@ export class EmailService {
             </div>
             <div class="detail-row">
               <span class="label">${t.price}:</span>
-              <span class="value" style="float: right;"><strong>€${booking.priceEur}</strong></span>
+              <span class="value" style="float: right;"><strong>R$${booking.priceEur}</strong></span>
             </div>
             ${booking.pickupLocation ? `
             <div class="detail-row">

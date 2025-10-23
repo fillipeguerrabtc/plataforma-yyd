@@ -162,7 +162,7 @@ export default function BookingConfirmationPage() {
                   <div className="flex justify-between border-b pb-3">
                     <span className="text-gray-600">Total Paid:</span>
                     <span className="font-semibold text-brand-turquoise text-xl">
-                      €{parseFloat(booking.totalPriceEur?.toString() || '0')}
+                      R${parseFloat(booking.totalPriceEur?.toString() || '0')}
                     </span>
                   </div>
                 </div>

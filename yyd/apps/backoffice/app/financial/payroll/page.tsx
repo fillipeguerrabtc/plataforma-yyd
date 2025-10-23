@@ -43,7 +43,7 @@ export default function PayrollPage() {
     periodEnd: '',
     grossAmount: 0,
     deductions: 0,
-    currency: 'EUR',
+    currency: 'BRL',
     paymentMethod: '',
     notes: '',
   });
@@ -123,7 +123,7 @@ export default function PayrollPage() {
       periodEnd: payroll.periodEnd.split('T')[0],
       grossAmount: payroll.grossAmount,
       deductions: payroll.deductions,
-      currency: payroll.currency || 'EUR',
+      currency: payroll.currency || 'BRL',
       paymentMethod: payroll.paymentMethod || '',
       notes: payroll.notes || '',
     });
@@ -235,7 +235,7 @@ export default function PayrollPage() {
       periodEnd: '',
       grossAmount: 0,
       deductions: 0,
-      currency: 'EUR',
+      currency: 'BRL',
       paymentMethod: '',
       notes: '',
     });
@@ -445,7 +445,7 @@ export default function PayrollPage() {
                 style={{ width: '100%', padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '0.375rem' }}
                 required
               >
-                <option value="EUR">EUR</option>
+                <option value="BRL">BRL</option>
                 <option value="USD">USD</option>
                 <option value="GBP">GBP</option>
               </select>

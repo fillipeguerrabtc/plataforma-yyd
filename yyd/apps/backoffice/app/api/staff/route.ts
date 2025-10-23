@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
         departmentId: body.departmentId || null,
         hireDate: new Date(body.hireDate),
         salary: body.salary ? parseFloat(body.salary) : null,
-        salaryCurrency: body.salaryCurrency || 'EUR',
+        salaryCurrency: body.salaryCurrency || 'BRL',
         contractType: body.contractType || 'full-time',
         status: body.status || 'active',
         photoUrl: body.photoUrl || null,

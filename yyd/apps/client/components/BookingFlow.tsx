@@ -220,7 +220,7 @@ export default function BookingFlow({ product }: BookingFlowProps) {
                   <div className="flex justify-between items-center">
                     <span className="font-semibold">Estimated Price:</span>
                     <span className="text-2xl font-bold text-brand-turquoise">
-                      €{calculateTotalPrice()}
+                      R${calculateTotalPrice()}
                     </span>
                   </div>
                 </div>
@@ -299,7 +299,7 @@ export default function BookingFlow({ product }: BookingFlowProps) {
                         </div>
                         {option.priceEur > 0 && (
                           <div className="font-semibold text-brand-turquoise">
-                            +€{parseFloat(option.priceEur.toString())}
+                            +R${parseFloat(option.priceEur.toString())}
                           </div>
                         )}
                       </label>
@@ -325,7 +325,7 @@ export default function BookingFlow({ product }: BookingFlowProps) {
                 <div className="flex justify-between items-center">
                   <span className="font-semibold">Total Price:</span>
                   <span className="text-2xl font-bold text-brand-turquoise">
-                    €{calculateTotalPrice()}
+                    R${calculateTotalPrice()}
                   </span>
                 </div>
               </div>
@@ -509,7 +509,7 @@ export default function BookingFlow({ product }: BookingFlowProps) {
                       return (
                         <li key={id} className="flex justify-between text-gray-600">
                           <span>{option?.nameEn}</span>
-                          <span className="font-semibold">+€{parseFloat(option?.priceEur.toString() || '0')}</span>
+                          <span className="font-semibold">+R${parseFloat(option?.priceEur.toString() || '0')}</span>
                         </li>
                       );
                     })}
@@ -529,7 +529,7 @@ export default function BookingFlow({ product }: BookingFlowProps) {
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-lg font-semibold">Total Amount</span>
                   <span className="text-3xl font-bold text-brand-turquoise">
-                    €{calculateTotalPrice()}
+                    R${calculateTotalPrice()}
                   </span>
                 </div>
                 <p className="text-sm text-gray-600">

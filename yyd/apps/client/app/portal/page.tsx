@@ -198,7 +198,7 @@ export default function CustomerPortal() {
                       </div>
                       <div className="flex items-center">
                         <span className="font-semibold mr-2">💰</span>
-                        €{booking.priceEur}
+                        R${booking.priceEur}
                       </div>
                       <div className="flex items-center">
                         <span className="font-semibold mr-2">🎫</span>

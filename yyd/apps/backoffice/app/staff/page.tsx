@@ -51,7 +51,7 @@ export default function StaffPage() {
     departmentId: '',
     hireDate: '',
     salary: 0,
-    salaryCurrency: 'EUR',
+    salaryCurrency: 'BRL',
     contractType: 'full-time',
     status: 'active',
     photoUrl: '',
@@ -200,7 +200,7 @@ export default function StaffPage() {
       departmentId: '',
       hireDate: '',
       salary: 0,
-      salaryCurrency: 'EUR',
+      salaryCurrency: 'BRL',
       contractType: 'full-time',
       status: 'active',
       photoUrl: '',
@@ -382,7 +382,7 @@ export default function StaffPage() {
             </div>
 
             <div>
-              <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '500' }}>Salário (€)</label>
+              <label style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '500' }}>Salário (R$)</label>
               <input
                 type="number"
                 step="0.01"

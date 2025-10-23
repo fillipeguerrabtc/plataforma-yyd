@@ -232,7 +232,7 @@ export default function SeasonalPricingForm({
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Preço (€)
+                  Preço (R$)
                 </label>
                 <input
                   type="number"

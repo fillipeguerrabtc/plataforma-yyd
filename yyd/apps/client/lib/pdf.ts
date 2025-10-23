@@ -80,7 +80,7 @@ export async function generateVoucherPDF(data: VoucherData): Promise<Buffer> {
         { label: 'Time:', value: data.time },
         { label: 'Number of People:', value: data.numberOfPeople.toString() },
         { label: 'Pickup Location:', value: data.pickupLocation },
-        { label: 'Total Price:', value: `€${data.priceEur}` },
+        { label: 'Total Price:', value: `R$${data.priceEur}` },
       ];
 
       details.forEach((detail) => {
