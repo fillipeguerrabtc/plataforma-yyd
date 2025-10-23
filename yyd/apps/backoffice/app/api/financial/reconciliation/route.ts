@@ -23,6 +23,7 @@ export async function GET(request: NextRequest) {
       paidReceivables,
       pendingPayables,
       paidPayables,
+      paymentOutTransactions,
       recentPayments,
     ] = await Promise.all([
       // Total revenue from succeeded payments
@@ -69,6 +70,16 @@ export async function GET(request: NextRequest) {
           ...(Object.keys(dateFilter).length > 0 ? { paidAt: dateFilter } : {}),
         },
       }),
+      // Payment-out transactions (salary payments via Stripe Connect, etc)
+      prisma.transaction.aggregate({
+        _sum: { amount: true },
+        _count: true,
+        where: {
+          type: 'payment_out',
+          status: 'completed',
+          ...(Object.keys(dateFilter).length > 0 ? { createdAt: dateFilter } : {}),
+        },
+      }),
       // Recent payments for cash flow
       prisma.payment.findMany({
         where: {
@@ -88,8 +99,9 @@ export async function GET(request: NextRequest) {
     const totalRevenueNum = Number(totalRevenue._sum.amount || 0);
     const paidReceivablesNum = Number(paidReceivables._sum.amount || 0);
     const paidPayablesNum = Number(paidPayables._sum.amount || 0);
+    const paymentOutNum = Number(paymentOutTransactions._sum.amount || 0);
     const totalIncome = totalRevenueNum + paidReceivablesNum;
-    const totalExpenses = paidPayablesNum;
+    const totalExpenses = paidPayablesNum + paymentOutNum; // Include both AP and Stripe payments
     const netPosition = totalIncome - totalExpenses;
 
     // Calculate pending balance (convert Decimal to number)
@@ -127,7 +139,7 @@ export async function GET(request: NextRequest) {
           total: paidPayables._sum.amount || 0,
         },
       },
-      cashFlow: recentPayments.map(p => ({
+      cashFlow: recentPayments.map((p: any) => ({
         amount: p.amount,
         date: p.paidAt,
       })),

@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { getUserFromRequest } from '@/lib/auth';
 import { hasPermission, canAccess, UserRole } from '@/lib/rbac';
 
@@ -51,7 +52,7 @@ async function getUserRoleFromCookies(): Promise<UserRole> {
   const token = cookieStore.get('auth-token');
   
   if (!token) {
-    return 'staff'; // Default role for unauthenticated users
+    redirect('/login'); // SECURITY: Redirect unauthenticated users immediately
   }
 
   try {
@@ -60,9 +61,14 @@ async function getUserRoleFromCookies(): Promise<UserRole> {
       headers: { cookie: `auth-token=${token.value}` },
     });
     const user = getUserFromRequest(request);
-    return user?.role || 'staff';
+    
+    if (!user) {
+      redirect('/login'); // SECURITY: Invalid token - redirect to login
+    }
+    
+    return user.role;
   } catch {
-    return 'staff';
+    redirect('/login'); // SECURITY: Error verifying token - redirect to login
   }
 }
 
