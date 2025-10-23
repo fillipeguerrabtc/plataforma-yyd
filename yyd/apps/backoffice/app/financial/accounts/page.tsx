@@ -97,7 +97,7 @@ export default function AccountsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure? This will fail if the account has ledger entries.')) return;
+    if (!confirm('Tem certeza? Isso falhará se a conta tiver lançamentos contábeis.')) return;
 
     try {
       const res = await fetch(`/api/financial/accounts/${id}`, {
@@ -138,16 +138,16 @@ export default function AccountsPage() {
     <div style={{ padding: '2rem' }}>
       <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: '1.875rem', fontWeight: '700' }}>Chart of Accounts</h1>
+          <h1 style={{ fontSize: '1.875rem', fontWeight: '700' }}>Plano de Contas</h1>
           <p style={{ color: '#6b7280', marginTop: '0.5rem' }}>
-            Manage your accounting accounts (asset, liability, equity, revenue, expense)
+            Gerencie suas contas contábeis (ativo, passivo, patrimônio líquido, receita, despesa)
           </p>
         </div>
         <button
           onClick={() => setShowForm(true)}
           style={{
             padding: '0.5rem 1rem',
-            background: '#3b82f6',
+            background: '#1FB7C4',
             color: 'white',
             border: 'none',
             borderRadius: '0.375rem',
@@ -155,7 +155,7 @@ export default function AccountsPage() {
             fontWeight: '500',
           }}
         >
-          + New Account
+          + Nova Conta
         </button>
       </div>
 
@@ -170,13 +170,13 @@ export default function AccountsPage() {
           }}
         >
           <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>
-            {editingId ? 'Edit Account' : 'New Account'}
+            {editingId ? 'Editar Conta' : 'Nova Conta'}
           </h2>
           <form onSubmit={handleSubmit}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
               <div>
                 <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.25rem' }}>
-                  Code *
+                  Código *
                 </label>
                 <input
                   type="text"
@@ -190,12 +190,12 @@ export default function AccountsPage() {
                     borderRadius: '0.375rem',
                     fontSize: '0.875rem',
                   }}
-                  placeholder="e.g., 1100"
+                  placeholder="ex: 1100"
                 />
               </div>
               <div>
                 <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.25rem' }}>
-                  Name *
+                  Nome *
                 </label>
                 <input
                   type="text"
@@ -209,12 +209,12 @@ export default function AccountsPage() {
                     borderRadius: '0.375rem',
                     fontSize: '0.875rem',
                   }}
-                  placeholder="e.g., Cash"
+                  placeholder="ex: Caixa"
                 />
               </div>
               <div>
                 <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.25rem' }}>
-                  Type *
+                  Tipo *
                 </label>
                 <select
                   value={formData.type}
@@ -228,16 +228,16 @@ export default function AccountsPage() {
                     fontSize: '0.875rem',
                   }}
                 >
-                  <option value="asset">Asset</option>
-                  <option value="liability">Liability</option>
-                  <option value="equity">Equity</option>
-                  <option value="revenue">Revenue</option>
-                  <option value="expense">Expense</option>
+                  <option value="asset">Ativo</option>
+                  <option value="liability">Passivo</option>
+                  <option value="equity">Patrimônio Líquido</option>
+                  <option value="revenue">Receita</option>
+                  <option value="expense">Despesa</option>
                 </select>
               </div>
               <div>
                 <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.25rem' }}>
-                  Category
+                  Categoria
                 </label>
                 <input
                   type="text"
@@ -250,12 +250,12 @@ export default function AccountsPage() {
                     borderRadius: '0.375rem',
                     fontSize: '0.875rem',
                   }}
-                  placeholder="e.g., Current Assets"
+                  placeholder="ex: Ativos Circulantes"
                 />
               </div>
               <div>
                 <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.25rem' }}>
-                  Currency
+                  Moeda
                 </label>
                 <select
                   value={formData.currency}
@@ -282,7 +282,7 @@ export default function AccountsPage() {
                   style={{ marginRight: '0.5rem' }}
                 />
                 <label htmlFor="active" style={{ fontSize: '0.875rem', fontWeight: '500' }}>
-                  Active
+                  Ativa
                 </label>
               </div>
             </div>
@@ -299,13 +299,13 @@ export default function AccountsPage() {
                   fontSize: '0.875rem',
                 }}
               >
-                Cancel
+                Cancelar
               </button>
               <button
                 type="submit"
                 style={{
                   padding: '0.5rem 1rem',
-                  background: '#3b82f6',
+                  background: '#1FB7C4',
                   color: 'white',
                   border: 'none',
                   borderRadius: '0.375rem',
@@ -314,7 +314,7 @@ export default function AccountsPage() {
                   fontSize: '0.875rem',
                 }}
               >
-                {editingId ? 'Update' : 'Create'}
+                {editingId ? 'Atualizar' : 'Criar'}
               </button>
             </div>
           </form>
@@ -333,12 +333,12 @@ export default function AccountsPage() {
               fontSize: '0.875rem',
             }}
           >
-            <option value="">All Types</option>
-            <option value="asset">Asset</option>
-            <option value="liability">Liability</option>
-            <option value="equity">Equity</option>
-            <option value="revenue">Revenue</option>
-            <option value="expense">Expense</option>
+            <option value="">Todos os Tipos</option>
+            <option value="asset">Ativo</option>
+            <option value="liability">Passivo</option>
+            <option value="equity">Patrimônio Líquido</option>
+            <option value="revenue">Receita</option>
+            <option value="expense">Despesa</option>
           </select>
           <select
             value={activeFilter}
@@ -350,36 +350,44 @@ export default function AccountsPage() {
               fontSize: '0.875rem',
             }}
           >
-            <option value="">All Status</option>
-            <option value="true">Active</option>
-            <option value="false">Inactive</option>
+            <option value="">Todos os Status</option>
+            <option value="true">Ativa</option>
+            <option value="false">Inativa</option>
           </select>
         </div>
 
         {loading ? (
-          <p style={{ textAlign: 'center', padding: '2rem', color: '#9ca3af' }}>Loading...</p>
+          <p style={{ textAlign: 'center', padding: '2rem', color: '#9ca3af' }}>Carregando...</p>
         ) : accounts.length === 0 ? (
-          <p style={{ textAlign: 'center', padding: '2rem', color: '#9ca3af' }}>No accounts found</p>
+          <p style={{ textAlign: 'center', padding: '2rem', color: '#9ca3af' }}>Nenhuma conta encontrada</p>
         ) : (
           <table style={{ width: '100%', fontSize: '0.875rem' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
-                <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Code</th>
-                <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Name</th>
-                <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Type</th>
-                <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Category</th>
-                <th style={{ textAlign: 'right', padding: '0.75rem', fontWeight: '600' }}>Balance</th>
-                <th style={{ textAlign: 'center', padding: '0.75rem', fontWeight: '600' }}>Entries</th>
+                <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Código</th>
+                <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Nome</th>
+                <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Tipo</th>
+                <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600' }}>Categoria</th>
+                <th style={{ textAlign: 'right', padding: '0.75rem', fontWeight: '600' }}>Saldo</th>
+                <th style={{ textAlign: 'center', padding: '0.75rem', fontWeight: '600' }}>Lançamentos</th>
                 <th style={{ textAlign: 'center', padding: '0.75rem', fontWeight: '600' }}>Status</th>
-                <th style={{ textAlign: 'right', padding: '0.75rem', fontWeight: '600' }}>Actions</th>
+                <th style={{ textAlign: 'right', padding: '0.75rem', fontWeight: '600' }}>Ações</th>
               </tr>
             </thead>
             <tbody>
-              {accounts.map((account) => (
+              {accounts.map((account) => {
+                const typeLabels: Record<string, string> = {
+                  asset: 'Ativo',
+                  liability: 'Passivo',
+                  equity: 'Patrimônio Líquido',
+                  revenue: 'Receita',
+                  expense: 'Despesa'
+                };
+                return (
                 <tr key={account.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
                   <td style={{ padding: '0.75rem', fontFamily: 'monospace' }}>{account.code}</td>
                   <td style={{ padding: '0.75rem' }}>{account.name}</td>
-                  <td style={{ padding: '0.75rem', textTransform: 'capitalize' }}>{account.type}</td>
+                  <td style={{ padding: '0.75rem' }}>{typeLabels[account.type] || account.type}</td>
                   <td style={{ padding: '0.75rem', color: '#6b7280' }}>{account.category || '-'}</td>
                   <td style={{ padding: '0.75rem', textAlign: 'right', fontFamily: 'monospace' }}>
                     {account.currency} {Number(account.balance).toFixed(2)}
@@ -398,7 +406,7 @@ export default function AccountsPage() {
                         color: account.active ? '#065f46' : '#991b1b',
                       }}
                     >
-                      {account.active ? 'Active' : 'Inactive'}
+                      {account.active ? 'Ativa' : 'Inativa'}
                     </span>
                   </td>
                   <td style={{ padding: '0.75rem', textAlign: 'right' }}>
@@ -414,7 +422,7 @@ export default function AccountsPage() {
                         marginRight: '0.5rem',
                       }}
                     >
-                      Edit
+                      Editar
                     </button>
                     <button
                       onClick={() => handleDelete(account.id)}
@@ -428,11 +436,12 @@ export default function AccountsPage() {
                         fontSize: '0.75rem',
                       }}
                     >
-                      Delete
+                      Deletar
                     </button>
                   </td>
                 </tr>
-              ))}
+              );
+              })}
             </tbody>
           </table>
         )}
