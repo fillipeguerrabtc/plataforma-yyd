@@ -18,13 +18,8 @@ export async function POST(request: Request) {
 
   const response = NextResponse.json({ success: true });
   
-  response.cookies.set('auth-token', '', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: 0,
-    path: '/',
-  });
+  // CRITICAL: Use cookies.delete() with exact same path as login to properly remove the httpOnly cookie
+  response.cookies.delete('auth-token', { path: '/' });
 
   return response;
 }
