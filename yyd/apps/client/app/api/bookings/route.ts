@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
     const bookingDate = new Date(date);
     const month = bookingDate.getMonth() + 1;
 
-    let priceEur = 100; // Default fallback
+    let priceEur = 600; // Default fallback (BRL, field name kept for compatibility)
     const applicablePrices = product.seasonPrices.filter(
       (sp) =>
         sp.startMonth <= month &&

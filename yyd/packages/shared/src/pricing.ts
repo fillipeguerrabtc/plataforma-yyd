@@ -9,7 +9,7 @@ export type PricingTier = {
   tier: string;
   minPeople: number;
   maxPeople: number | null;
-  priceEur: number;
+  priceEur: number; // Note: Now stores BRL values, field name kept for compatibility
   pricePerPerson: boolean;
 };
 
@@ -41,7 +41,7 @@ export function getSeason(date: Date): Season {
  * @param tiers - Available pricing tiers (must include season)
  * @param numberOfPeople - Party size
  * @param date - Booking date (determines season)
- * @returns Total price in EUR or null if no matching tier
+ * @returns Total price in BRL or null if no matching tier
  */
 export function calculatePrice(
   tiers: PricingTier[],
@@ -94,15 +94,15 @@ export function getPriceRangeBySeason(
 
 /**
  * Format price for display
- * @param priceEur - Price in EUR
- * @param currency - Currency code (default: EUR)
- * @param locale - Locale for formatting (default: en-US)
+ * @param priceEur - Price value (BRL for new bookings, field name kept for compatibility)
+ * @param currency - Currency code (default: BRL)
+ * @param locale - Locale for formatting (default: pt-BR)
  * @returns Formatted price string
  */
 export function formatPrice(
   priceEur: number,
-  currency: string = 'EUR',
-  locale: string = 'en-US'
+  currency: string = 'BRL',
+  locale: string = 'pt-BR'
 ): string {
   return new Intl.NumberFormat(locale, {
     style: 'currency',
