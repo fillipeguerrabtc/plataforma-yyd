@@ -2,28 +2,50 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { prisma } from '@/lib/prisma';
 import { requirePermission } from '@/lib/auth';
+import { logCRUD } from '@/lib/audit';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-06-20',
 });
 
 export async function POST(request: NextRequest) {
-  console.log('🔵 POST /api/stripe-connect/direct-transfer called');
+  const startTime = Date.now();
+  console.log('🔵 [STRIPE TRANSFER] Request initiated');
+  
   try {
-    console.log('🔵 Checking permissions...');
-    requirePermission(request, 'finance', 'create');
-    console.log('✅ Permission check passed');
+    // Permission check with user data
+    const user = requirePermission(request, 'finance', 'create');
+    console.log(`✅ [AUTH] User ${user.email} authorized for finance.create`);
     
     const body = await request.json();
-    console.log('📥 Request body:', body);
+    console.log('📥 [REQUEST] Payload received:', JSON.stringify(body, null, 2));
     const { entityType, entityId, amount, description } = body;
     
+    // Enhanced validation
     if (!entityType || !entityId || !amount) {
-      return NextResponse.json({ error: 'Campos obrigatórios: entityType, entityId, amount' }, { status: 400 });
+      console.log('❌ [VALIDATION] Missing required fields');
+      return NextResponse.json({ 
+        error: 'Campos obrigatórios: entityType, entityId, amount',
+        details: { entityType: !!entityType, entityId: !!entityId, amount: !!amount }
+      }, { status: 400 });
     }
     
-    if (amount <= 0) {
-      return NextResponse.json({ error: 'Valor deve ser maior que zero' }, { status: 400 });
+    const amountNum = parseFloat(amount);
+    if (isNaN(amountNum) || amountNum <= 0) {
+      console.log(`❌ [VALIDATION] Invalid amount: ${amount}`);
+      return NextResponse.json({ error: 'Valor deve ser um número positivo válido' }, { status: 400 });
+    }
+
+    if (amountNum > 100000) {
+      console.log(`⚠️  [VALIDATION] Large amount detected: €${amountNum}`);
+      return NextResponse.json({ 
+        error: 'Valor muito alto. Para transferências acima de €100.000, contate o suporte.' 
+      }, { status: 400 });
+    }
+
+    if (!['guide', 'staff', 'vendor'].includes(entityType)) {
+      console.log(`❌ [VALIDATION] Invalid entityType: ${entityType}`);
+      return NextResponse.json({ error: 'entityType inválido. Use: guide, staff ou vendor' }, { status: 400 });
     }
 
     // Get entity and stripe account ID
@@ -101,9 +123,10 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Fazer transfer do saldo da plataforma para o beneficiário
+    // Create transfer with enhanced metadata
+    console.log(`💸 [STRIPE] Creating transfer of €${amountNum} to ${stripeAccountId}`);
     const transfer = await stripe.transfers.create({
-      amount: Math.round(amount * 100), // Converter para centavos
+      amount: Math.round(amountNum * 100),
       currency: 'eur',
       destination: stripeAccountId,
       description: description || `Pagamento para ${beneficiaryName}`,
@@ -113,8 +136,38 @@ export async function POST(request: NextRequest) {
         beneficiary_name: beneficiaryName,
         beneficiary_email: beneficiaryEmail,
         source: 'backoffice_direct_transfer',
+        initiated_by: user.email,
+        initiated_at: new Date().toISOString(),
       },
     });
+    
+    console.log(`✅ [STRIPE] Transfer successful: ${transfer.id}`);
+    
+    // Log to audit trail
+    await logCRUD(
+      user.userId,
+      user.email,
+      'create',
+      'stripe_transfers',
+      transfer.id,
+      {
+        before: null,
+        after: {
+          transferId: transfer.id,
+          entityType,
+          entityId,
+          beneficiaryName,
+          beneficiaryEmail,
+          amount: amountNum,
+          description,
+          stripeDestination: stripeAccountId,
+        }
+      },
+      request
+    );
+    
+    const duration = Date.now() - startTime;
+    console.log(`⏱️  [PERFORMANCE] Request completed in ${duration}ms`);
     
     return NextResponse.json({
       success: true,
@@ -128,9 +181,20 @@ export async function POST(request: NextRequest) {
     });
     
   } catch (error: any) {
-    console.error('❌ Erro ao fazer transfer:', error);
+    const duration = Date.now() - startTime;
+    console.error(`❌ [ERROR] Transfer failed after ${duration}ms:`, {
+      message: error.message,
+      code: error.code,
+      type: error.type,
+      stack: error.stack,
+    });
+    
     return NextResponse.json(
-      { error: error.message || 'Erro ao processar transferência' },
+      { 
+        error: error.message || 'Erro ao processar transferência',
+        code: error.code,
+        type: error.type,
+      },
       { status: 500 }
     );
   }

@@ -3,16 +3,22 @@ import Stripe from 'stripe';
 import { prisma } from '@/lib/prisma';
 import { requirePermission } from '@/lib/auth';
 import { sendPaymentNotifications } from '@/lib/payment-notifications';
+import { logCRUD } from '@/lib/audit';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-06-20',
 });
 
 export async function POST(request: NextRequest) {
+  const startTime = Date.now();
+  console.log('🔵 [PAYROLL STRIPE TRANSFER] Request initiated');
+  
   try {
-    requirePermission(request, 'finance', 'create');
+    const user = requirePermission(request, 'finance', 'create');
+    console.log(`✅ [AUTH] User ${user.email} authorized for payroll payment`);
     
     const { payrollId } = await request.json();
+    console.log(`📥 [REQUEST] Processing payroll: ${payrollId}`);
     
     if (!payrollId) {
       return NextResponse.json({ error: 'payrollId é obrigatório' }, { status: 400 });
@@ -90,9 +96,12 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Fazer transfer do saldo da plataforma para o saldo do beneficiário
+    // Create transfer
+    const amountEur = parseFloat(payroll.netAmount.toString());
+    console.log(`💸 [STRIPE] Creating payroll transfer of €${amountEur} to ${stripeAccountId}`);
+    
     const transfer = await stripe.transfers.create({
-      amount: Math.round(parseFloat(payroll.netAmount.toString()) * 100), // Converter para centavos
+      amount: Math.round(amountEur * 100),
       currency: 'eur',
       destination: stripeAccountId,
       description: `Pagamento ${beneficiaryName} - ${payroll.period}`,
@@ -102,10 +111,14 @@ export async function POST(request: NextRequest) {
         beneficiary_name: beneficiaryName,
         beneficiary_type: beneficiaryType,
         period: payroll.period,
+        initiated_by: user.email,
+        initiated_at: new Date().toISOString(),
       },
     });
     
-    // Atualizar payroll
+    console.log(`✅ [STRIPE] Transfer successful: ${transfer.id}`);
+    
+    // Update payroll
     await prisma.payroll.update({
       where: { id: payrollId },
       data: {
@@ -115,14 +128,37 @@ export async function POST(request: NextRequest) {
         stripeTransferId: transfer.id,
       },
     });
+    
+    // Log to audit trail
+    await logCRUD(
+      user.userId,
+      user.email,
+      'update',
+      'payroll',
+      payrollId,
+      {
+        before: { status: payroll.status },
+        after: { 
+          status: 'paid',
+          stripeTransferId: transfer.id,
+          beneficiaryName,
+          amount: amountEur,
+        }
+      },
+      request
+    );
 
     // Send payment notification emails (beneficiary + finance dept)
     try {
       await sendPaymentNotifications({ payrollId });
+      console.log('✅ [EMAIL] Payment notifications sent');
     } catch (emailError) {
-      console.error('❌ Error sending payment notification emails:', emailError);
+      console.error('❌ [EMAIL] Error sending payment notification emails:', emailError);
       // Don't fail the transfer if email notification fails
     }
+    
+    const duration = Date.now() - startTime;
+    console.log(`⏱️  [PERFORMANCE] Payroll payment completed in ${duration}ms`);
     
     return NextResponse.json({
       success: true,
@@ -134,9 +170,20 @@ export async function POST(request: NextRequest) {
     });
     
   } catch (error: any) {
-    console.error('Erro ao fazer transfer:', error);
+    const duration = Date.now() - startTime;
+    console.error(`❌ [ERROR] Payroll transfer failed after ${duration}ms:`, {
+      message: error.message,
+      code: error.code,
+      type: error.type,
+      stack: error.stack,
+    });
+    
     return NextResponse.json(
-      { error: error.message || 'Erro ao processar pagamento' },
+      { 
+        error: error.message || 'Erro ao processar pagamento',
+        code: error.code,
+        type: error.type,
+      },
       { status: 500 }
     );
   }
