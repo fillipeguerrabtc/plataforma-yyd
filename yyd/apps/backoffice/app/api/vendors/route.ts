@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
         paymentTerms: body.paymentTerms || null,
         notes: body.notes || null,
         status: body.status || 'active',
-        currency: body.currency || 'EUR',
+        currency: body.currency || 'BRL',
       },
     });
 

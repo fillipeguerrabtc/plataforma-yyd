@@ -9,7 +9,7 @@ const AccountCreateSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   type: z.enum(['asset', 'liability', 'equity', 'revenue', 'expense']),
   category: z.string().optional(),
-  currency: z.string().default('EUR'),
+  currency: z.string().default('BRL'),
 });
 
 export async function GET(request: NextRequest) {

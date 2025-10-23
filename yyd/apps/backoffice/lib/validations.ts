@@ -10,7 +10,7 @@ export const PayrollCreateSchema = z.object({
   periodEnd: z.coerce.date(),
   grossAmount: z.coerce.number().positive(),
   deductions: z.coerce.number().nonnegative().default(0),
-  currency: z.string().default('EUR'),
+  currency: z.string().default('BRL'),
   status: z.enum(['pending', 'approved', 'paid', 'cancelled']).default('pending'),
   paymentMethod: z.string().optional(),
   notes: z.string().optional(),

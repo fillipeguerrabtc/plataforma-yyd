@@ -146,7 +146,7 @@ async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
         bookingId: booking.id,
         stripePaymentIntent: paymentIntent.id,
         amount: totalAmount,
-        currency: 'EUR',
+        currency: 'BRL',
         status: 'succeeded',
         paidAt: new Date(),
       },
@@ -359,7 +359,7 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
         bookingId: booking.id,
         stripePaymentIntent: session.payment_intent as string || '',
         amount: (session.amount_total || 0) / 100,
-        currency: 'EUR',
+        currency: 'BRL',
         status: 'succeeded',
         paidAt: new Date(),
         metadata: {

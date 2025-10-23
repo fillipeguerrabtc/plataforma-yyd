@@ -44,7 +44,7 @@ export async function sendPaymentNotifications(params: PaymentNotificationParams
       recipientEmail,
       recipientName,
       amount: parseFloat(payroll.netAmount.toString()),
-      currency: 'EUR',
+      currency: 'BRL',
       paymentDate: payroll.paidAt || new Date(),
       description: `Pagamento - ${payroll.period}`,
     });
@@ -63,7 +63,7 @@ export async function sendPaymentNotifications(params: PaymentNotificationParams
           <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <p><strong>Beneficiário:</strong> ${recipientName}</p>
             <p><strong>Email:</strong> ${recipientEmail}</p>
-            <p><strong>Valor:</strong> EUR ${parseFloat(payroll.netAmount.toString()).toFixed(2)}</p>
+            <p><strong>Valor:</strong> R$ ${parseFloat(payroll.netAmount.toString()).toFixed(2)}</p>
             <p><strong>Período:</strong> ${payroll.period}</p>
             <p><strong>Data:</strong> ${(payroll.paidAt || new Date()).toLocaleDateString('pt-PT')}</p>
             <p><strong>Método:</strong> ${payroll.paymentMethod}</p>

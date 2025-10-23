@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     }
 
     const accountMap = new Map(accounts.map((a) => [a.id, a]));
-    const currency = accounts[0]?.currency || 'EUR';
+    const currency = accounts[0]?.currency || 'BRL';
 
     for (const account of accounts) {
       if (account.currency !== currency) {
