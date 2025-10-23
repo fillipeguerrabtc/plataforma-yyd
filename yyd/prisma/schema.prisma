@@ -8,17 +8,20 @@ datasource db {
 }
 
 model User {
-  id              String           @id @default(dbgenerated("gen_random_uuid()")) @db.VarChar
-  email           String           @unique @db.VarChar(255)
-  name            String           @db.VarChar(255)
-  passwordHash    String           @db.VarChar(255)
-  role            UserRole         @default(guide)
-  userTypes       String[]         @default(["staff"])
-  active          Boolean          @default(true)
-  lastLoginAt     DateTime?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  userPermissions UserPermission[]
+  id                        String           @id @default(dbgenerated("gen_random_uuid()")) @db.VarChar
+  email                     String           @unique @db.VarChar(255)
+  name                      String           @db.VarChar(255)
+  passwordHash              String           @db.VarChar(255)
+  role                      UserRole         @default(guide)
+  userTypes                 String[]         @default(["staff"])
+  active                    Boolean          @default(true)
+  stripeConnectedAccountId  String?          @unique
+  stripeAccountStatus       String?
+  stripeOnboardingCompleted Boolean          @default(false)
+  lastLoginAt               DateTime?
+  createdAt                 DateTime         @default(now())
+  updatedAt                 DateTime         @updatedAt
+  userPermissions           UserPermission[]
 
   @@index([email])
   @@index([role])

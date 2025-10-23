@@ -48,6 +48,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       canAccessModules: body.canAccessModules || [],
       accessLevel: body.accessLevel,
       notes: body.notes || null,
+      stripeConnectedAccountId: body.stripeConnectedAccountId || null,
     };
 
     let hashedPassword = null;
@@ -65,6 +66,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       name: body.name,
       role: body.role,
       active: body.status === 'active',
+      stripeConnectedAccountId: body.stripeConnectedAccountId || null,
     };
 
     if (hashedPassword) {
@@ -79,6 +81,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
         passwordHash: hashedPassword || staff.passwordHash || '',
         role: body.role || 'support',
         active: body.status === 'active',
+        stripeConnectedAccountId: body.stripeConnectedAccountId || null,
       },
       update: userUpdateData,
     });

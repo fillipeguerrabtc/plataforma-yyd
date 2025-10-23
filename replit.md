@@ -113,6 +113,21 @@ The client-facing platform aims for an identical visual identity to the original
 - **WhatsApp Multilingual**: Confirmed automatic language detection (EN/PT/ES) via browser settings
 - **Password Fields**: Added password fields to guide creation/edit forms (optional on create, optional on update)
 
+### Stripe Connect Integration
+- **User Model Update**: Added Stripe Connect fields to User model (staff):
+  - `stripeConnectedAccountId` (unique) - Stripe account ID for receiving payments
+  - `stripeAccountStatus` - Current status of connected account
+  - `stripeOnboardingCompleted` - Whether onboarding is complete
+- **Staff Payment Integration**: Staff members can now receive payments via Stripe Connect
+  - Stripe Account ID field added to staff edit forms
+  - API endpoints updated to persist Stripe Connect data for both Staff and User tables
+  - Direct transfer endpoint (`/api/stripe-connect/direct-transfer`) for manual payments
+- **Payments Interface**: New modern payment interface at `/finance/stripe-connect`:
+  - Clean UI focused solely on making transfers
+  - Supports payments to Staff, Guides, and Vendors
+  - Transfer history with detailed transaction logs
+  - Real-time balance updates in both YYD and beneficiary Stripe dashboards
+
 ### Service Management
 - **Aurora IA**: Service runs on port 8008, proxied through Client app at `/api/aurora/chat`
 - **Workflow Configuration**: Aurora, Backoffice (port 3001), and Client workflows properly configured
