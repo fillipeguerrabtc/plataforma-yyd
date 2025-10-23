@@ -130,18 +130,27 @@ The client-facing platform aims for an identical visual identity to the original
 
 ### Currency Migration (October 23, 2025)
 - **Complete EUR → BRL Migration**: Migrated entire platform from Euro (EUR/€) to Brazilian Real (BRL/R$)
-  - **Reason**: Aligning with Brazilian Stripe test accounts (YYD and employee accounts)
-  - **Scope**: Client + Backoffice + Aurora IA knowledge base
-  - **Changes**:
+  - **Reason**: Aligning with Brazilian Stripe test accounts (YYD and employee accounts) to eliminate cross-border currency conversions
+  - **Scope**: Client + Backoffice + Aurora IA + Database
+  - **Database Conversion (Verified)**:
+    - `product_season_prices`: 20 tour prices converted R$510–R$9.900 (multiplied by 6)
+    - `tour_addons`: 8 addon prices converted R$90–R$240 (multiplied by 6)
+    - Historical bookings preserved in original currency for audit trail
+  - **Code Changes**:
     - Shared constants: `DEFAULT_CURRENCY = 'BRL'`
     - All Stripe API calls: `currency: 'brl'`
     - All Payment records: `currency: 'BRL'`
-    - All UI displays: R$ instead of €
+    - shared/pricing.ts: Comments and defaults updated to BRL
+    - All UI displays: R$ instead of € (0 € symbols outside test scripts)
     - Financial APIs (accounts, ledger, vendors, payroll): BRL defaults
     - Email notifications and PDFs: R$ formatting
-    - Aurora knowledge base: Tour prices in R$
-  - **Data Integrity**: No data loss - only display/API currency changed
-  - **Result**: Resolves "cross border and foreign exchange" errors with Brazilian Stripe accounts
+    - Aurora knowledge base: Tour prices R$2.040-9.900
+  - **Validation**:
+    - Database: SQL verification of all 28 price records in BRL
+    - Stripe: Successful R$1.000 transfer processed without EUR conversion
+    - UI: Complete removal of € symbols from production code
+  - **Result**: System now operates 100% in BRL end-to-end, eliminating Stripe currency conversion errors
+  - **Architect Approval**: Conversion verified functionally complete with database, API, and Stripe evidence aligned
 
 ### Authentication Security (October 23, 2025)
 - **Session Cookie Fix**: Removed `maxAge` from authentication cookie
