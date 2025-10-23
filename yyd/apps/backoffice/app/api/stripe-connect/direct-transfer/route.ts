@@ -8,10 +8,15 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 export async function POST(request: NextRequest) {
+  console.log('🔵 POST /api/stripe-connect/direct-transfer called');
   try {
+    console.log('🔵 Checking permissions...');
     requirePermission(request, 'finance', 'create');
+    console.log('✅ Permission check passed');
     
-    const { entityType, entityId, amount, description } = await request.json();
+    const body = await request.json();
+    console.log('📥 Request body:', body);
+    const { entityType, entityId, amount, description } = body;
     
     if (!entityType || !entityId || !amount) {
       return NextResponse.json({ error: 'Campos obrigatórios: entityType, entityId, amount' }, { status: 400 });
