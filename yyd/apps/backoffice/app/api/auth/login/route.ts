@@ -102,12 +102,13 @@ export async function POST(request: Request) {
       token,
     });
 
+    // CRITICAL: Session cookie (NO maxAge) - expires when browser/tab closes
     response.cookies.set('auth-token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      // NO maxAge = session cookie (expires when browser/tab closes)
-      path: '/', // CRITICAL: Cookie must be available on all routes
+      path: '/',
+      // Session cookie - no maxAge or expires means it's deleted when browser closes
     });
 
     return response;

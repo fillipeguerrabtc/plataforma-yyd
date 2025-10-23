@@ -5,6 +5,10 @@ import { redirect } from 'next/navigation';
 import { getUserFromRequest } from '@/lib/auth';
 import { hasPermission, canAccess, UserRole } from '@/lib/rbac';
 
+// CRITICAL: Force dynamic rendering - NEVER cache this page
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 async function getDashboardStats() {
   const [
     totalBookings,

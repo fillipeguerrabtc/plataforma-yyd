@@ -54,11 +54,18 @@ export async function middleware(request: NextRequest) {
   requestHeaders.set('x-user-email', user.email);
   requestHeaders.set('x-user-role', user.role);
 
-  return NextResponse.next({
+  const response = NextResponse.next({
     request: {
       headers: requestHeaders,
     },
   });
+
+  // CRITICAL: Prevent caching of authenticated pages
+  response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  response.headers.set('Pragma', 'no-cache');
+  response.headers.set('Expires', '0');
+
+  return response;
 }
 
 export const config = {

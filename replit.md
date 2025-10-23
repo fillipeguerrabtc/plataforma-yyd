@@ -48,10 +48,15 @@ The client-facing platform aims for an identical visual identity to the original
 
 ### Dashboard Security Fix (October 23, 2025)
 - **Critical Bug Fixed**: Unauthenticated access to admin dashboard
-  - **Problem**: Direct URL access bypassed login requirement
-  - **Solution**: `checkAuthAndGetRole()` function redirects to `/login` before loading any data
-  - **Verification**: Auth check executes FIRST, data loads ONLY if authenticated
-  - **File**: `yyd/apps/backoffice/app/page.tsx`
+  - **Problem**: Direct URL access bypassed login requirement + browser cache
+  - **Solutions Implemented**:
+    1. Force dynamic rendering: `export const dynamic = 'force-dynamic'` in `app/page.tsx`
+    2. Cache control headers in middleware: `Cache-Control: no-store, no-cache`
+    3. Session cookie (no maxAge) - expires when browser/tab closes
+    4. Logout endpoint clears cookie with `maxAge: 0`
+  - **Verification**: Server returns HTTP 307 redirect when no valid cookie
+  - **Files**: `app/page.tsx`, `middleware.ts`, `app/api/auth/login/route.ts`, `app/api/auth/logout/route.ts`
+  - **Testing**: Use incognito/anonymous mode or clear browser cache (Ctrl+Shift+Delete)
 
 ### Unified Financial Management Page (October 23, 2025)
 - **Complete Financial Overview Integration**:
