@@ -18,8 +18,15 @@ export async function POST(request: Request) {
 
   const response = NextResponse.json({ success: true });
   
-  // CRITICAL: Use cookies.delete() with exact same path as login to properly remove the httpOnly cookie
-  response.cookies.delete('auth-token', { path: '/' });
+  // CRITICAL: Overwrite cookie with empty value and ALL original attributes to ensure browser deletes it
+  response.cookies.set('auth-token', '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 0,
+    expires: new Date(0),
+    path: '/',
+  });
 
   return response;
 }
