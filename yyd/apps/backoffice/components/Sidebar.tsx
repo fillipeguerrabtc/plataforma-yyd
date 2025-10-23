@@ -319,9 +319,19 @@ export default function Sidebar() {
           <p style={{ marginTop: '0.25rem' }}>{currentUser?.email || ''}</p>
         </div>
         <button
-          onClick={() => {
-            document.cookie = 'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-            window.location.href = '/login';
+          onClick={async () => {
+            try {
+              await fetch('/api/auth/logout', {
+                method: 'POST',
+                credentials: 'include',
+              });
+              localStorage.removeItem('yyd-user');
+              window.location.href = '/login';
+            } catch (error) {
+              console.error('Logout error:', error);
+              localStorage.removeItem('yyd-user');
+              window.location.href = '/login';
+            }
           }}
           style={{
             width: '100%',
