@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
     
     // Create transfer
     const amountEur = parseFloat(payroll.netAmount.toString());
-    console.log(`💸 [STRIPE] Creating payroll transfer of €${amountEur} to ${stripeAccountId}`);
+    console.log(`💸 [STRIPE] Creating payroll transfer of R$${amountEur} to ${stripeAccountId}`);
     
     const transfer = await stripe.transfers.create({
       amount: Math.round(amountEur * 100),
@@ -166,7 +166,7 @@ export async function POST(request: NextRequest) {
       amount: transfer.amount / 100,
       currency: transfer.currency.toUpperCase(),
       destination: transfer.destination,
-      message: `Transferência de €${(transfer.amount / 100).toFixed(2)} realizada com sucesso!`,
+      message: `Transferência de R$${(transfer.amount / 100).toFixed(2)} realizada com sucesso!`,
     });
     
   } catch (error: any) {

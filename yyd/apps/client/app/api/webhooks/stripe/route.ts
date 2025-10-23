@@ -115,7 +115,7 @@ async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
   
   if (paymentIntent.amount !== expectedAmount) {
     console.error(
-      `⚠️ Payment amount mismatch for booking ${bookingId}: expected €${totalAmount} (${expectedAmount} cents), got ${paymentIntent.amount} cents`
+      `⚠️ Payment amount mismatch for booking ${bookingId}: expected R$${totalAmount} (${expectedAmount} cents), got ${paymentIntent.amount} cents`
     );
   }
 
@@ -293,7 +293,7 @@ async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
       data: { balance: { increment: totalAmount } },
     });
 
-    console.log(`💰 Ledger entries created for €${totalAmount} - Payment ${paymentIntent.id}`);
+    console.log(`💰 Ledger entries created for R$${totalAmount} - Payment ${paymentIntent.id}`);
   } catch (ledgerError: any) {
     console.error(`❌ Failed to create ledger entries: ${ledgerError.message}`);
     // Don't fail the webhook - booking/payment is still confirmed

@@ -136,7 +136,7 @@ export default function CheckoutPage() {
                   {new Date(booking.date).toLocaleDateString()} · {booking.numberOfPeople} people
                 </p>
                 <p className="text-lg font-bold text-brand-turquoise mt-2">
-                  €{parseFloat(booking.totalPriceEur?.toString() || '0')}
+                  R${parseFloat(booking.totalPriceEur?.toString() || '0')}
                 </p>
               </div>
             )}

@@ -389,14 +389,14 @@ export default function BookTourPage() {
                           <div className="flex items-center justify-between mb-1">
                             <h3 className="font-semibold text-black">{addon.nameEn}</h3>
                             <span className="font-bold text-black">
-                              +€{addon.priceType === 'per_person' 
+                              +R${addon.priceType === 'per_person' 
                                 ? (addon.priceEur * formData.numberOfPeople).toFixed(2)
                                 : addon.priceEur.toFixed(2)}
                             </span>
                           </div>
                           <p className="text-sm text-gray-600">{addon.descriptionEn}</p>
                           <p className="text-xs text-gray-500 mt-1">
-                            €{addon.priceEur} {addon.priceType === 'per_person' ? 'per person' : 'per booking'}
+                            R${addon.priceEur} {addon.priceType === 'per_person' ? 'per person' : 'per booking'}
                           </p>
                         </div>
                       </label>
@@ -430,14 +430,14 @@ export default function BookTourPage() {
                   <div className="flex justify-between">
                     <span className="text-gray-600">Base price</span>
                     <span className="font-semibold">
-                      €{getBasePrice()}
+                      R${getBasePrice()}
                     </span>
                   </div>
                   {addons.filter(a => selectedAddons[a.code]).map(addon => (
                     <div key={addon.id} className="flex justify-between text-sm">
                       <span className="text-gray-600">{addon.nameEn}</span>
                       <span className="font-semibold">
-                        +€{addon.priceType === 'per_person' 
+                        +R${addon.priceType === 'per_person' 
                           ? (addon.priceEur * formData.numberOfPeople).toFixed(2)
                           : addon.priceEur.toFixed(2)}
                       </span>
@@ -448,7 +448,7 @@ export default function BookTourPage() {
                 <div className="pt-4 border-t-2 border-black mb-6">
                   <div className="flex justify-between items-baseline">
                     <span className="text-lg font-bold text-black">Total</span>
-                    <span className="text-3xl font-bold text-black">€{total.toFixed(2)}</span>
+                    <span className="text-3xl font-bold text-black">R${total.toFixed(2)}</span>
                   </div>
                 </div>
 

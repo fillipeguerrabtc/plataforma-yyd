@@ -139,7 +139,7 @@ export default function ToursPage() {
                     <div>
                       <span className="text-sm text-gray-500">From</span>
                       <div className="text-2xl font-bold text-black">
-                        €{getMinPrice(tour)}
+                        R${getMinPrice(tour)}
                       </div>
                     </div>
                     <button className="btn-yyd-primary">

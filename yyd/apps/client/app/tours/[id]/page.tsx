@@ -358,7 +358,7 @@ export default function TourDetailPage() {
                                   <span className="text-gray-700 font-medium">{excluded}</span>
                                   {itemPrice && (
                                     <span className="text-[#1FB7C4] font-bold text-sm">
-                                      +€{itemPrice}/person
+                                      +R${itemPrice}/person
                                     </span>
                                   )}
                                 </div>
@@ -499,7 +499,7 @@ export default function TourDetailPage() {
                     <p className="text-sm text-gray-600 mb-2 font-medium">Starting from</p>
                     <div className="flex items-baseline gap-2">
                       <span className="text-4xl font-bold text-black font-montserrat">
-                        €{getMinPrice()}
+                        R${getMinPrice()}
                       </span>
                       <span className="text-gray-600">/ group</span>
                     </div>
@@ -560,7 +560,7 @@ export default function TourDetailPage() {
                     {selectedDate && calculatedPrice > 0 && (
                       <div className="bg-gradient-to-br from-[#1FB7C4]/10 to-[#16A2B2]/5 border-2 border-[#1FB7C4] rounded-xl p-5">
                         <p className="text-sm text-gray-700 font-medium mb-2">Total Price</p>
-                        <p className="text-4xl font-bold text-black font-montserrat">€{calculatedPrice.toFixed(2)}</p>
+                        <p className="text-4xl font-bold text-black font-montserrat">R${calculatedPrice.toFixed(2)}</p>
                         <p className="text-xs text-gray-600 mt-2">
                           For {numberOfPeople} {numberOfPeople === 1 ? 'person' : 'people'} on {new Date(selectedDate).toLocaleDateString()}
                         </p>
