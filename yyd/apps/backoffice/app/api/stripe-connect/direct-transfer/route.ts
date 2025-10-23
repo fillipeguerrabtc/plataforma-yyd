@@ -37,9 +37,9 @@ export async function POST(request: NextRequest) {
     }
 
     if (amountNum > 100000) {
-      console.log(`⚠️  [VALIDATION] Large amount detected: €${amountNum}`);
+      console.log(`⚠️  [VALIDATION] Large amount detected: R$${amountNum}`);
       return NextResponse.json({ 
-        error: 'Valor muito alto. Para transferências acima de €100.000, contate o suporte.' 
+        error: 'Valor muito alto. Para transferências acima de R$100.000, contate o suporte.' 
       }, { status: 400 });
     }
 
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
     const account = await stripe.accounts.retrieve(stripeAccountId);
     const isBrazil = account.country === 'BR';
     
-    console.log(`💸 [STRIPE] Creating transfer of €${amountNum} to ${stripeAccountId} (Country: ${account.country})`);
+    console.log(`💸 [STRIPE] Creating transfer of R$${amountNum} to ${stripeAccountId} (Country: ${account.country})`);
     
     let transfer;
     
@@ -230,7 +230,7 @@ export async function POST(request: NextRequest) {
       destination: transfer.destination,
       beneficiary: beneficiaryName,
       createdAt: new Date(transfer.created * 1000).toISOString(),
-      message: `✅ Transferência de €${(transfer.amount / 100).toFixed(2)} para ${beneficiaryName} realizada com sucesso!`,
+      message: `✅ Transferência de R$${(transfer.amount / 100).toFixed(2)} para ${beneficiaryName} realizada com sucesso!`,
     });
     
   } catch (error: any) {
