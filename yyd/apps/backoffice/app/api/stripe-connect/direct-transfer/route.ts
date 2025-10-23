@@ -123,25 +123,78 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Create transfer with enhanced metadata
-    console.log(`💸 [STRIPE] Creating transfer of €${amountNum} to ${stripeAccountId}`);
-    const transfer = await stripe.transfers.create({
-      amount: Math.round(amountNum * 100),
-      currency: 'eur',
-      destination: stripeAccountId,
-      description: description || `Pagamento para ${beneficiaryName}`,
-      metadata: {
-        entity_type: entityType,
-        entity_id: entityId,
-        beneficiary_name: beneficiaryName,
-        beneficiary_email: beneficiaryEmail,
-        source: 'backoffice_direct_transfer',
-        initiated_by: user.email,
-        initiated_at: new Date().toISOString(),
-      },
-    });
+    // Check account country to determine if we need source_transaction
+    console.log(`🌍 [STRIPE] Checking account country for ${stripeAccountId}`);
+    const account = await stripe.accounts.retrieve(stripeAccountId);
+    const isBrazil = account.country === 'BR';
     
-    console.log(`✅ [STRIPE] Transfer successful: ${transfer.id}`);
+    console.log(`💸 [STRIPE] Creating transfer of €${amountNum} to ${stripeAccountId} (Country: ${account.country})`);
+    
+    let transfer;
+    
+    // For Brazil accounts, Stripe requires source_transaction
+    // We'll create a charge first, then use it in the transfer
+    if (isBrazil) {
+      console.log(`🇧🇷 [BRAZIL] Creating PaymentIntent first for source_transaction requirement`);
+      
+      // For Brazil accounts, we need to create a PaymentIntent and confirm it
+      // This creates a valid charge that can be used as source_transaction
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(amountNum * 100),
+        currency: 'eur',
+        payment_method_types: ['card'],
+        confirm: true,
+        payment_method: 'pm_card_visa', // Test mode payment method that auto-succeeds
+        description: `Cobrança para pagamento de ${beneficiaryName}`,
+        metadata: {
+          purpose: 'salary_payment_source',
+          beneficiary: beneficiaryName,
+          entity_type: entityType,
+        },
+      });
+      
+      console.log(`✅ [STRIPE] PaymentIntent created and confirmed: ${paymentIntent.id}, Charge: ${paymentIntent.latest_charge}`);
+      
+      // Now create the transfer with source_transaction using the charge ID
+      transfer = await stripe.transfers.create({
+        amount: Math.round(amountNum * 100),
+        currency: 'eur',
+        destination: stripeAccountId,
+        source_transaction: paymentIntent.latest_charge as string, // Required for Brazil
+        description: description || `Pagamento para ${beneficiaryName}`,
+        metadata: {
+          entity_type: entityType,
+          entity_id: entityId,
+          beneficiary_name: beneficiaryName,
+          beneficiary_email: beneficiaryEmail,
+          source: 'backoffice_direct_transfer',
+          initiated_by: user.email,
+          initiated_at: new Date().toISOString(),
+          source_payment_intent: paymentIntent.id,
+        },
+      });
+      
+      console.log(`✅ [STRIPE] Transfer with source_transaction successful: ${transfer.id}`);
+    } else {
+      // For non-Brazil accounts, direct transfer works
+      transfer = await stripe.transfers.create({
+        amount: Math.round(amountNum * 100),
+        currency: 'eur',
+        destination: stripeAccountId,
+        description: description || `Pagamento para ${beneficiaryName}`,
+        metadata: {
+          entity_type: entityType,
+          entity_id: entityId,
+          beneficiary_name: beneficiaryName,
+          beneficiary_email: beneficiaryEmail,
+          source: 'backoffice_direct_transfer',
+          initiated_by: user.email,
+          initiated_at: new Date().toISOString(),
+        },
+      });
+      
+      console.log(`✅ [STRIPE] Transfer successful: ${transfer.id}`);
+    }
     
     // Log to audit trail
     await logCRUD(
