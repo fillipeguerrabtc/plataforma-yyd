@@ -26,7 +26,16 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(guides);
+    // Enrich with Stripe status metadata
+    const enrichedGuides = guides.map((guide) => ({
+      ...guide,
+      hasStripeAccount: !!guide.stripeConnectedAccountId,
+      stripeStatus: guide.stripeConnectedAccountId 
+        ? (guide.stripeAccountStatus || 'unknown')
+        : 'not_configured',
+    }));
+
+    return NextResponse.json(enrichedGuides);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

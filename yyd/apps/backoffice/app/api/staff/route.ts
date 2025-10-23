@@ -11,7 +11,16 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: 'desc' },
     });
 
-    return NextResponse.json(staff);
+    // Enrich with Stripe status metadata
+    const enrichedStaff = staff.map((member) => ({
+      ...member,
+      hasStripeAccount: !!member.stripeConnectedAccountId,
+      stripeStatus: member.stripeConnectedAccountId 
+        ? (member.stripeAccountStatus || 'unknown')
+        : 'not_configured',
+    }));
+
+    return NextResponse.json(enrichedStaff);
   } catch (error) {
     console.error('Error fetching staff:', error);
     return NextResponse.json({ error: 'Failed to fetch staff' }, { status: 500 });

@@ -7,7 +7,16 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: 'desc' },
     });
 
-    return NextResponse.json(vendors);
+    // Enrich with Stripe status metadata
+    const enrichedVendors = vendors.map((vendor) => ({
+      ...vendor,
+      hasStripeAccount: !!vendor.stripeConnectedAccountId,
+      stripeStatus: vendor.stripeConnectedAccountId 
+        ? (vendor.stripeAccountStatus || 'unknown')
+        : 'not_configured',
+    }));
+
+    return NextResponse.json(enrichedVendors);
   } catch (error) {
     console.error('Error fetching vendors:', error);
     return NextResponse.json({ error: 'Failed to fetch vendors' }, { status: 500 });
