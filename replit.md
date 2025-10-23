@@ -203,6 +203,43 @@ The client-facing platform aims for an identical visual identity to the original
   - ✅ Rollback on any failure (atomicity guaranteed)
   - **Architect Reviewed**: Approved for production with atomic transactions and mandatory validations
 
+### Dashboard Security Fix (October 23, 2025)
+- **Critical Bug Fixed**: Unauthenticated access to admin dashboard
+  - **Problem**: Direct URL access to backoffice bypassed login requirement
+  - **Root Cause**: `app/page.tsx` returned default 'staff' role for unauthenticated users
+  - **Solution**: Created `checkAuthAndGetRole()` function that redirects to `/login` before loading any data
+  - **Verification**: Auth check executes FIRST, data loads ONLY if authenticated
+  - **Files**: `yyd/apps/backoffice/app/page.tsx`
+
+### Financial Transactions System (October 23, 2025)
+- **Comprehensive Transaction History**:
+  - New endpoint `/api/financial/transactions` that unifies ALL financial data:
+    * Stripe Payments (tour sales - income)
+    * Salary Transactions via Stripe Connect (expenses)
+    * Accounts Payable (vendor payments - expenses)
+    * Accounts Receivable (other income)
+  - Categorization: `tour_sale`, `salary`, `vendor`, `receivable`
+  - Filter support: `?type=income|expense|all`
+  
+- **New Transaction History Page** (`/financial/transactions`):
+  - Complete table showing ALL transactions (income + expenses)
+  - Filter tabs: Todas | Receitas | Despesas
+  - Visual badges for categories (🎫 Tour, 👤 Salário, 🏢 Fornecedor, 💵 Recebível)
+  - Summary cards: Total Income, Total Expenses, Net Position, Transaction Count
+  - Clear formatting: +R$ for income (green), -R$ for expenses (red)
+  - Full details: Date, Type, Category, Description, Source/Beneficiary, Amount
+  
+- **Clickable Financial Cards**:
+  - "Receita Total" and "Despesas Totais" cards now clickable in `/financial`
+  - Hover effects: colored border, elevation, shadow
+  - Click redirects to transaction history with filter applied
+  - "Ver histórico →" text appears on hover
+  
+- **Expenses Calculation Fix**:
+  - `/api/financial/reconciliation` now includes `Transaction.type='payment_out'` in expense totals
+  - Despesas Totais now correctly shows R$1.756,87 (includes Stripe salary payments)
+  - All dashboards show consistent financial data
+
 ### Service Management
 - **Aurora IA**: Service runs on port 8008, proxied through Client app at `/api/aurora/chat`
 - **Workflow Configuration**: Aurora, Backoffice (port 3001), and Client workflows properly configured

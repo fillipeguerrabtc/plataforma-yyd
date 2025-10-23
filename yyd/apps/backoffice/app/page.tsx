@@ -47,34 +47,35 @@ async function getDashboardStats() {
   };
 }
 
-async function getUserRoleFromCookies(): Promise<UserRole> {
-  const cookieStore = cookies();
+async function checkAuthAndGetRole(): Promise<UserRole> {
+  const cookieStore = await cookies();
   const token = cookieStore.get('auth-token');
   
   if (!token) {
-    redirect('/login'); // SECURITY: Redirect unauthenticated users immediately
+    redirect('/login');
   }
 
   try {
-    // Create a fake request object to reuse getUserFromRequest
     const request = new Request('http://localhost', {
       headers: { cookie: `auth-token=${token.value}` },
     });
+    
     const user = getUserFromRequest(request);
     
-    if (!user) {
-      redirect('/login'); // SECURITY: Invalid token - redirect to login
+    if (!user || !user.role) {
+      redirect('/login');
     }
     
-    return user.role;
-  } catch {
-    redirect('/login'); // SECURITY: Error verifying token - redirect to login
+    return user.role as UserRole;
+  } catch (error) {
+    console.error('Dashboard auth error:', error);
+    redirect('/login');
   }
 }
 
 export default async function Dashboard() {
+  const userRole = await checkAuthAndGetRole(); // SECURITY: Check auth FIRST before loading any data
   const stats = await getDashboardStats();
-  const userRole = await getUserRoleFromCookies();
   
   // Check permissions for each card
   const canViewBookings = canAccess(userRole, 'bookings');

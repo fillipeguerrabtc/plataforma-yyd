@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 type Tab = 'overview' | 'payables' | 'receivables' | 'reconciliation';
 
@@ -112,17 +113,19 @@ function TabButton({ label, active, onClick }: { label: string; active: boolean;
 function OverviewView({ data }: { data: any }) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
-      <StatCard
+      <ClickableStatCard
         title="Receita Total"
         value={`R$${Number(data.summary.totalRevenue).toFixed(2)}`}
         color="var(--brand-turquoise)"
         icon="💰"
+        href="/financial/transactions?type=income"
       />
-      <StatCard
+      <ClickableStatCard
         title="Despesas Totais"
         value={`R$${Number(data.summary.totalExpenses).toFixed(2)}`}
         color="var(--brand-bordeaux)"
         icon="💸"
+        href="/financial/transactions?type=expense"
       />
       <StatCard
         title="Posição Líquida"
@@ -273,6 +276,45 @@ function StatCard({ title, value, color, icon }: { title: string; value: string;
         </div>
       </div>
     </div>
+  );
+}
+
+function ClickableStatCard({ title, value, color, icon, href }: { title: string; value: string; color: string; icon: string; href: string }) {
+  return (
+    <Link href={href} style={{ textDecoration: 'none' }}>
+      <div
+        style={{
+          background: 'white',
+          padding: '1.5rem',
+          borderRadius: '12px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+          cursor: 'pointer',
+          transition: 'all 0.2s',
+          border: '2px solid transparent',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.borderColor = color;
+          e.currentTarget.style.transform = 'translateY(-2px)';
+          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderColor = 'transparent';
+          e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div>
+            <p style={{ fontSize: '0.875rem', color: 'var(--gray-600)', marginBottom: '0.5rem' }}>{title}</p>
+            <p style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--brand-black)' }}>{value}</p>
+            <p style={{ fontSize: '0.75rem', color, marginTop: '0.5rem', fontWeight: '600' }}>Ver histórico →</p>
+          </div>
+          <div style={{ width: '48px', height: '48px', background: `${color}15`, borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>
+            {icon}
+          </div>
+        </div>
+      </div>
+    </Link>
   );
 }
 
